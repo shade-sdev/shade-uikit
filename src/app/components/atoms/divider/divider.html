@@ -1,0 +1,21 @@
+@if (orientation() === 'horizontal') {
+  @if (label()) {
+    <div class="flex items-center gap-3" role="separator" aria-orientation="horizontal">
+      <div class="flex-1 h-px bg-slate-200 dark:bg-border-dark"></div>
+      <span class="text-xs text-slate-400 font-medium whitespace-nowrap">{{ label() }}</span>
+      <div class="flex-1 h-px bg-slate-200 dark:bg-border-dark"></div>
+    </div>
+  } @else {
+    <hr
+      class="border-0 h-px bg-slate-200 dark:bg-border-dark"
+      role="separator"
+      aria-orientation="horizontal"
+    />
+  }
+} @else {
+  <div
+    class="w-px self-stretch bg-slate-200 dark:bg-border-dark"
+    role="separator"
+    aria-orientation="vertical"
+  ></div>
+}

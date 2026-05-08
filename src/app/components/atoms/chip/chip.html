@@ -1,0 +1,15 @@
+<span
+  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+>
+  <ng-content />
+  @if (removable()) {
+    <button
+      type="button"
+      (click)="removed.emit()"
+      class="ml-0.5 -mr-0.5 flex items-center justify-center rounded-full p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+      aria-label="Remove"
+    >
+      <span class="material-symbols-outlined leading-none" style="font-size: 14px">close</span>
+    </button>
+  }
+</span>

@@ -1,0 +1,20 @@
+<ng-content />
+
+@if (loading()) {
+  <div
+    [class]="
+      'inset-0 z-20 flex items-center justify-center ' +
+      'bg-white/70 dark:bg-background-dark/70 backdrop-blur-sm rounded-xl ' +
+      (fullPage() ? 'fixed' : 'absolute')
+    "
+    aria-live="polite"
+    aria-busy="true"
+  >
+    <div class="flex flex-col items-center gap-3">
+      <sk-spinner size="lg" class="text-primary" />
+      @if (message()) {
+        <p class="text-sm font-medium text-slate-600 dark:text-slate-400">{{ message() }}</p>
+      }
+    </div>
+  </div>
+}

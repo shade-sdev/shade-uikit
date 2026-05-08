@@ -1,0 +1,78 @@
+<header
+  class="h-16 flex items-center justify-between gap-4 px-4 lg:px-6 border-b border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark shrink-0"
+>
+  <!-- Left: mobile menu toggle + search -->
+  <div class="flex items-center gap-3 flex-1 min-w-0">
+    <button
+      type="button"
+      (click)="menuClick.emit()"
+      class="flex lg:hidden items-center justify-center size-9 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+      aria-label="Toggle navigation menu"
+    >
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    @if (showSearch()) {
+      <div class="relative hidden sm:flex items-center flex-1 max-w-md">
+        <span
+          class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] pointer-events-none"
+        >
+          search
+        </span>
+        <input
+          type="search"
+          [placeholder]="searchPlaceholder()"
+          class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-background-dark border-none rounded-lg text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40"
+        />
+      </div>
+    }
+  </div>
+
+  <!-- Right: actions + controls -->
+  <div class="flex items-center gap-1 shrink-0">
+    <!-- Custom header actions slot -->
+    <ng-content />
+
+    <!-- Notifications -->
+    <button
+      type="button"
+      class="relative flex items-center justify-center size-9 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+      aria-label="Notifications"
+    >
+      <span class="material-symbols-outlined">notifications</span>
+      @if (notificationCount() > 0) {
+        <span
+          class="absolute top-1 right-1 min-w-[16px] h-4 px-0.5 flex items-center justify-center rounded-full bg-rose-500 text-white text-[9px] font-bold leading-none"
+          aria-live="polite"
+          [attr.aria-label]="notificationCount() + ' notifications'"
+        >
+          {{ notificationCount() > 99 ? '99+' : notificationCount() }}
+        </span>
+      }
+    </button>
+
+    <!-- Theme toggle -->
+    <button
+      type="button"
+      (click)="theme.toggle()"
+      class="flex items-center justify-center size-9 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+      [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+    >
+      @if (theme.isDark()) {
+        <span class="material-symbols-outlined">light_mode</span>
+      } @else {
+        <span class="material-symbols-outlined">dark_mode</span>
+      }
+    </button>
+
+    @if (user()) {
+      <div class="w-px h-6 bg-slate-200 dark:bg-border-dark mx-1"></div>
+      <sk-avatar
+        [src]="user()!.avatarUrl ?? null"
+        [name]="user()!.name"
+        size="sm"
+        class="cursor-pointer"
+      />
+    }
+  </div>
+</header>

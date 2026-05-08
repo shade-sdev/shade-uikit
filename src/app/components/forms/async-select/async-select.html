@@ -1,0 +1,87 @@
+<div class="flex flex-col gap-1.5 w-full">
+  @if (label()) {
+    <label [for]="id()" class="text-sm font-medium text-slate-700 dark:text-slate-300">
+      {{ label() }}
+      @if (required()) {
+        <span class="text-rose-500 ml-0.5" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <div class="relative">
+    <button
+      [id]="id()"
+      type="button"
+      [disabled]="_disabled()"
+      [class]="triggerClass()"
+      [attr.aria-haspopup]="'listbox'"
+      [attr.aria-expanded]="isOpen()"
+      (click)="openPanel($event)"
+    >
+      <span class="truncate">{{ selectedLabel() || placeholder() }}</span>
+      <span
+        class="material-symbols-outlined text-slate-400 text-[20px] transition-transform shrink-0"
+        [class.rotate-180]="isOpen()"
+        aria-hidden="true"
+        >expand_more</span
+      >
+    </button>
+
+    @if (isOpen()) {
+      <div
+        class="absolute z-40 top-full left-0 right-0 mt-1 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-xl overflow-hidden"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="p-2 border-b border-slate-100 dark:border-border-dark">
+          <div class="relative">
+            <span
+              class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none"
+              >search</span
+            >
+            <input
+              type="text"
+              [value]="searchText()"
+              placeholder="Search..."
+              (input)="onSearch($event)"
+              class="w-full pl-8 pr-3 py-2 text-sm bg-slate-50 dark:bg-background-dark rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-primary/30 text-slate-900 dark:text-white placeholder:text-slate-400"
+              autofocus
+            />
+          </div>
+        </div>
+
+        <div class="overflow-auto max-h-52">
+          @if (loading()) {
+            <div class="p-3 space-y-2">
+              @for (s of [1, 2, 3]; track s) {
+                <sk-skeleton height="2rem" />
+              }
+            </div>
+          } @else if (options().length === 0) {
+            <p class="px-3 py-4 text-sm text-slate-400 text-center">No results found</p>
+          } @else {
+            @for (option of options(); track option.value) {
+              <button
+                type="button"
+                (click)="select(option, $event)"
+                class="flex items-center justify-between w-full px-3 py-2.5 text-sm text-left text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                {{ option.label }}
+                @if (_value() === option.value) {
+                  <span class="material-symbols-outlined text-primary text-[18px]">check</span>
+                }
+              </button>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (error()) {
+    <p class="text-xs text-rose-500 font-medium flex items-center gap-1">
+      <span class="material-symbols-outlined text-[14px]">error</span>{{ error() }}
+    </p>
+  } @else if (hint()) {
+    <p class="text-xs text-slate-500 dark:text-slate-400">{{ hint() }}</p>
+  }
+</div>

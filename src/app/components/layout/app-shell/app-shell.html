@@ -1,0 +1,44 @@
+<div
+  class="flex h-screen overflow-hidden text-slate-900 dark:text-slate-100 bg-background-light dark:bg-background-dark"
+>
+  <!-- Mobile sidebar backdrop -->
+  @if (mobileMenuOpen()) {
+    <div
+      class="fixed inset-0 z-20 bg-black/50 lg:hidden"
+      (click)="mobileMenuOpen.set(false)"
+      aria-hidden="true"
+    ></div>
+  }
+
+  <!-- Sidebar container -->
+  <div
+    [class]="
+      'fixed inset-y-0 left-0 z-30 lg:relative lg:z-auto flex transition-transform duration-300 ease-in-out ' +
+      (mobileMenuOpen() ? 'translate-x-0' : '-translate-x-full lg:translate-x-0')
+    "
+  >
+    <sk-sidebar
+      [groups]="navGroups()"
+      [items]="navItems()"
+      [logo]="logo()"
+      [user]="user()"
+    />
+  </div>
+
+  <!-- Main column -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <sk-header
+      [notificationCount]="notificationCount()"
+      [searchPlaceholder]="searchPlaceholder()"
+      [showSearch]="showSearch()"
+      [user]="user()"
+      (menuClick)="mobileMenuOpen.update((v) => !v)"
+    >
+      <ng-content select="[header-actions]" />
+    </sk-header>
+
+    <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+      <ng-content />
+    </main>
+  </div>
+</div>

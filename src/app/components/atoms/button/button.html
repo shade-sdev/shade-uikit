@@ -1,0 +1,6 @@
+<button [type]="type()" [disabled]="isDisabled()" [class]="classes()">
+  @if (loading()) {
+    <sk-spinner size="sm" />
+  }
+  <ng-content />
+</button>

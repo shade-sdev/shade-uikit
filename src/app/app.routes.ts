@@ -1,3 +1,9 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  { path: '', redirectTo: 'showcase', pathMatch: 'full' },
+  {
+    path: 'showcase',
+    loadComponent: () => import('./showcase/showcase').then((m) => m.ShowcaseComponent),
+  },
+];

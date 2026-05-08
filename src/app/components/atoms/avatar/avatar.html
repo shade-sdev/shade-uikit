@@ -1,0 +1,17 @@
+<div class="relative inline-flex shrink-0">
+  <div
+    [class]="'rounded-full overflow-hidden bg-primary/10 text-primary flex items-center justify-center font-semibold select-none ' + sizeClass()"
+    [attr.aria-label]="name() || 'User avatar'"
+  >
+    @if (src()) {
+      <img [src]="src()" [alt]="name()" class="w-full h-full object-cover" />
+    } @else {
+      {{ initials() }}
+    }
+  </div>
+  @if (status()) {
+    <span
+      [class]="'absolute bottom-0 right-0 rounded-full ring-2 ring-white dark:ring-surface-dark ' + statusDotClass()"
+    ></span>
+  }
+</div>

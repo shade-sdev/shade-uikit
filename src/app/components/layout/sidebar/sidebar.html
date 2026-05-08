@@ -1,0 +1,121 @@
+<aside class="flex flex-col h-full overflow-hidden" aria-label="Main navigation">
+  <!-- Logo -->
+  <div
+    class="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-border-dark shrink-0"
+  >
+    <div
+      class="size-8 bg-primary rounded-lg flex items-center justify-center text-white shrink-0"
+    >
+      <span class="material-symbols-outlined text-[20px]">{{ logo().icon }}</span>
+    </div>
+    <div class="min-w-0">
+      <h1
+        class="font-bold text-sm tracking-tight text-slate-900 dark:text-white truncate uppercase"
+      >
+        {{ logo().name }}
+      </h1>
+      @if (logo().subtitle) {
+        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">
+          {{ logo().subtitle }}
+        </p>
+      }
+    </div>
+  </div>
+
+  <!-- Nav items -->
+  <nav class="flex-1 overflow-y-auto py-3 px-3 space-y-0.5">
+    @for (group of resolvedGroups(); track $index) {
+      @if (group.label) {
+        <p
+          class="px-3 pt-4 pb-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest first:pt-1"
+        >
+          {{ group.label }}
+        </p>
+      }
+      @for (item of group.items; track item.label) {
+        @if (isVisible(item)) {
+          @if (!item.children?.length) {
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="bg-primary/10 !text-primary font-semibold"
+              [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-primary/5 transition-colors text-sm font-medium"
+              [attr.aria-label]="item.label"
+            >
+              <span class="material-symbols-outlined text-[20px] shrink-0">{{ item.icon }}</span>
+              <span class="flex-1 truncate">{{ item.label }}</span>
+              @if (item.badge) {
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary"
+                >
+                  {{ item.badge }}
+                </span>
+              }
+            </a>
+          } @else {
+            <button
+              type="button"
+              (click)="toggleExpand(item.label)"
+              class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-primary/5 transition-colors text-sm font-medium"
+              [attr.aria-expanded]="isExpanded(item.label)"
+            >
+              <span class="material-symbols-outlined text-[20px] shrink-0">{{ item.icon }}</span>
+              <span class="flex-1 text-left truncate">{{ item.label }}</span>
+              <span
+                class="material-symbols-outlined text-[16px] transition-transform duration-200 shrink-0"
+                [class.rotate-180]="isExpanded(item.label)"
+              >
+                expand_more
+              </span>
+            </button>
+            @if (isExpanded(item.label)) {
+              <div class="ml-4 pl-3 border-l border-slate-200 dark:border-border-dark space-y-0.5">
+                @for (child of item.children!; track child.label) {
+                  <a
+                    [routerLink]="child.route"
+                    routerLinkActive="bg-primary/10 !text-primary font-semibold"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-primary/5 transition-colors text-sm font-medium"
+                  >
+                    <span class="material-symbols-outlined text-[18px] shrink-0">{{
+                      child.icon
+                    }}</span>
+                    <span class="flex-1 truncate">{{ child.label }}</span>
+                    @if (child.badge) {
+                      <span
+                        class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary"
+                      >
+                        {{ child.badge }}
+                      </span>
+                    }
+                  </a>
+                }
+              </div>
+            }
+          }
+        }
+      }
+    }
+  </nav>
+
+  <!-- User profile -->
+  @if (user()) {
+    <div class="shrink-0 p-3 border-t border-slate-200 dark:border-border-dark">
+      <div
+        class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-border-dark cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+      >
+        <sk-avatar [src]="user()!.avatarUrl ?? null" [name]="user()!.name" size="sm" />
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold truncate text-slate-900 dark:text-white">
+            {{ user()!.name }}
+          </p>
+          @if (user()!.role) {
+            <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user()!.role }}</p>
+          }
+        </div>
+        <span class="material-symbols-outlined text-slate-400 text-[18px] shrink-0">
+          unfold_more
+        </span>
+      </div>
+    </div>
+  }
+</aside>

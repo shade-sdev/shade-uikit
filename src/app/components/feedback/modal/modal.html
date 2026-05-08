@@ -1,0 +1,47 @@
+@if (isOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="title() || 'Dialog'"
+  >
+    <!-- Backdrop -->
+    <div
+      class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+      (click)="onBackdropClick()"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Dialog panel -->
+    <div [class]="dialogClass()" cdkTrapFocus cdkTrapFocusAutoCapture>
+      <!-- Header -->
+      @if (title() || showClose()) {
+        <div
+          class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-border-dark shrink-0"
+        >
+          @if (title()) {
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ title() }}</h2>
+          }
+          @if (showClose()) {
+            <button
+              type="button"
+              (click)="close()"
+              class="ml-auto flex items-center justify-center size-8 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Close dialog"
+            >
+              <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Body -->
+      <div class="flex-1 overflow-y-auto px-6 py-4">
+        <ng-content />
+      </div>
+
+      <!-- Footer slot -->
+      <ng-content select="[modal-footer]" />
+    </div>
+  </div>
+}

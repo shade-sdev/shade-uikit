@@ -1,0 +1,10 @@
+@for (line of linesArray(); track $index; let last = $last) {
+  <div
+    [class]="'animate-pulse bg-slate-200 dark:bg-slate-700 ' + shapeClass()"
+    [style.width]="!last && lines() > 1 ? '75%' : width()"
+    [style.height]="height()"
+    [class.mb-2]="!last"
+    role="presentation"
+    aria-hidden="true"
+  ></div>
+}

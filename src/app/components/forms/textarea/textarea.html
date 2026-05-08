@@ -1,0 +1,33 @@
+<div class="flex flex-col gap-1.5 w-full">
+  @if (label()) {
+    <label [for]="id()" class="text-sm font-medium text-slate-700 dark:text-slate-300">
+      {{ label() }}
+      @if (required()) {
+        <span class="text-rose-500 ml-0.5" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <textarea
+    [id]="id()"
+    [rows]="rows()"
+    [value]="_value() ?? ''"
+    [placeholder]="placeholder()"
+    [disabled]="_disabled()"
+    [required]="required()"
+    [class]="textareaClass()"
+    [attr.aria-describedby]="error() ? id() + '-error' : hint() ? id() + '-hint' : null"
+    [attr.aria-invalid]="error() ? 'true' : null"
+    (input)="handleInput($event)"
+    (blur)="markTouched()"
+  ></textarea>
+
+  @if (error()) {
+    <p [id]="id() + '-error'" class="text-xs text-rose-500 font-medium flex items-center gap-1">
+      <span class="material-symbols-outlined text-[14px]">error</span>
+      {{ error() }}
+    </p>
+  } @else if (hint()) {
+    <p [id]="id() + '-hint'" class="text-xs text-slate-500 dark:text-slate-400">{{ hint() }}</p>
+  }
+</div>

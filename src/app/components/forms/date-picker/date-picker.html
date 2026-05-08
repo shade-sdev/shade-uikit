@@ -1,0 +1,114 @@
+<div class="flex flex-col gap-1.5 w-full">
+  @if (label()) {
+    <label [for]="id()" class="text-sm font-medium text-slate-700 dark:text-slate-300">
+      {{ label() }}
+      @if (required()) {
+        <span class="text-rose-500 ml-0.5" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <div class="relative" (click)="$event.stopPropagation()">
+    <button
+      [id]="id()"
+      type="button"
+      [disabled]="_disabled()"
+      [class]="triggerClass()"
+      [attr.aria-haspopup]="'dialog'"
+      [attr.aria-expanded]="isOpen()"
+      (click)="openPanel($event)"
+    >
+      <span class="flex items-center gap-2 truncate">
+        <span class="material-symbols-outlined text-slate-400 text-[18px] shrink-0">calendar_today</span>
+        {{ displayValue() || placeholder() }}
+      </span>
+      <span class="flex items-center gap-1 shrink-0">
+        @if (displayValue()) {
+          <span
+            class="material-symbols-outlined text-slate-400 text-[16px] hover:text-slate-600 dark:hover:text-slate-200"
+            role="button"
+            tabindex="0"
+            aria-label="Clear date"
+            (click)="clearValue($event)"
+            (keydown.enter)="clearValue($event)"
+            >close</span
+          >
+        }
+        <span
+          class="material-symbols-outlined text-slate-400 text-[20px] transition-transform"
+          [class.rotate-180]="isOpen()"
+          aria-hidden="true"
+          >expand_more</span
+        >
+      </span>
+    </button>
+
+    @if (isOpen()) {
+      <div
+        class="absolute z-40 top-full left-0 mt-1 w-72 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-xl overflow-hidden"
+        role="dialog"
+        aria-label="Date picker"
+      >
+        <!-- Month navigation -->
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-border-dark">
+          <button
+            type="button"
+            class="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
+            (click)="prevMonth()"
+            aria-label="Previous month"
+          >
+            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+          </button>
+          <span class="text-sm font-semibold text-slate-800 dark:text-white">{{ monthLabel() }}</span>
+          <button
+            type="button"
+            class="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
+            (click)="nextMonth()"
+            aria-label="Next month"
+          >
+            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+          </button>
+        </div>
+
+        <!-- Day headers -->
+        <div class="grid grid-cols-7 px-3 pt-3 pb-1">
+          @for (day of weekDays; track day) {
+            <div class="text-center text-xs font-medium text-slate-400 py-1">{{ day }}</div>
+          }
+        </div>
+
+        <!-- Calendar grid -->
+        <div class="grid grid-cols-7 px-3 pb-3 gap-y-1">
+          @for (day of calendarDays(); track day.date.getTime()) {
+            <button
+              type="button"
+              (click)="selectDay(day, $event)"
+              [attr.aria-label]="day.date.toDateString()"
+              [attr.aria-pressed]="day.selected"
+              [class]="
+                'h-8 w-full rounded-lg text-xs font-medium transition-colors flex items-center justify-center ' +
+                (!day.currentMonth
+                  ? 'text-slate-300 dark:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  : day.selected
+                    ? 'bg-primary text-white font-semibold'
+                    : day.today
+                      ? 'text-primary font-semibold ring-1 ring-primary/40 hover:bg-primary/10'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800')
+              "
+            >
+              {{ day.date.getDate() }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (error()) {
+    <p class="text-xs text-rose-500 font-medium flex items-center gap-1">
+      <span class="material-symbols-outlined text-[14px]">error</span>{{ error() }}
+    </p>
+  } @else if (hint()) {
+    <p class="text-xs text-slate-500 dark:text-slate-400">{{ hint() }}</p>
+  }
+</div>

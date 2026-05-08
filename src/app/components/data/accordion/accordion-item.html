@@ -1,0 +1,28 @@
+<div class="border-b border-slate-200 dark:border-border-dark last:border-b-0">
+  <button
+    type="button"
+    [attr.aria-expanded]="isOpen()"
+    [disabled]="disabled()"
+    (click)="toggle()"
+    class="flex items-center justify-between w-full px-4 py-4 text-left text-sm font-medium text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    <span class="flex items-center gap-2">
+      @if (icon()) {
+        <span class="material-symbols-outlined text-[18px] text-primary">{{ icon() }}</span>
+      }
+      {{ title() }}
+    </span>
+    <span
+      class="material-symbols-outlined text-[20px] text-slate-400 transition-transform shrink-0"
+      [class.rotate-180]="isOpen()"
+      aria-hidden="true"
+      >expand_more</span
+    >
+  </button>
+
+  @if (isOpen()) {
+    <div class="px-4 pb-4 text-sm text-slate-600 dark:text-slate-400">
+      <ng-content />
+    </div>
+  }
+</div>

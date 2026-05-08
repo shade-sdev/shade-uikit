@@ -1,0 +1,72 @@
+<div class="flex flex-col gap-1.5 w-full">
+  @if (label()) {
+    <label [for]="id()" class="text-sm font-medium text-slate-700 dark:text-slate-300">
+      {{ label() }}
+      @if (required()) {
+        <span class="text-rose-500 ml-0.5" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <div class="relative">
+    <button
+      [id]="id()"
+      type="button"
+      [disabled]="_disabled()"
+      [class]="triggerClass()"
+      [attr.aria-haspopup]="'listbox'"
+      [attr.aria-expanded]="isOpen()"
+      (click)="toggle($event)"
+    >
+      <span class="truncate">{{ selectedLabel() || placeholder() }}</span>
+      <span
+        class="material-symbols-outlined text-slate-400 text-[20px] transition-transform duration-200 shrink-0"
+        [class.rotate-180]="isOpen()"
+        aria-hidden="true"
+      >
+        expand_more
+      </span>
+    </button>
+
+    @if (isOpen()) {
+      <div
+        class="absolute z-40 top-full left-0 right-0 mt-1 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-xl overflow-auto max-h-60"
+        role="listbox"
+        (click)="$event.stopPropagation()"
+      >
+        @for (option of options(); track option.value) {
+          <button
+            type="button"
+            role="option"
+            [attr.aria-selected]="_value() === option.value"
+            [disabled]="option.disabled"
+            (click)="select(option, $event)"
+            [class]="
+              'flex items-center justify-between w-full px-3 py-2.5 text-sm text-left transition-colors ' +
+              (option.disabled
+                ? 'opacity-40 cursor-not-allowed'
+                : 'hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer') +
+              (_value() === option.value ? ' text-primary font-semibold' : ' text-slate-900 dark:text-white')
+            "
+          >
+            {{ option.label }}
+            @if (_value() === option.value) {
+              <span class="material-symbols-outlined text-primary text-[18px]">check</span>
+            }
+          </button>
+        }
+        @if (options().length === 0) {
+          <p class="px-3 py-4 text-sm text-slate-400 text-center">No options available</p>
+        }
+      </div>
+    }
+  </div>
+
+  @if (error()) {
+    <p class="text-xs text-rose-500 font-medium flex items-center gap-1">
+      <span class="material-symbols-outlined text-[14px]">error</span>{{ error() }}
+    </p>
+  } @else if (hint()) {
+    <p class="text-xs text-slate-500 dark:text-slate-400">{{ hint() }}</p>
+  }
+</div>

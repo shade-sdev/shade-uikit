@@ -1,0 +1,21 @@
+@if (visible()) {
+  <div
+    role="alert"
+    [class]="'flex items-start gap-3 p-4 rounded-lg border ' + config().container"
+  >
+    <span class="material-symbols-outlined shrink-0 text-[20px] mt-0.5">{{ config().iconName }}</span>
+    <div class="flex-1 text-sm font-medium">
+      <ng-content />
+    </div>
+    @if (dismissible()) {
+      <button
+        type="button"
+        (click)="dismiss()"
+        class="shrink-0 rounded p-0.5 hover:opacity-70 transition-opacity"
+        aria-label="Dismiss"
+      >
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    }
+  </div>
+}

@@ -1,0 +1,22 @@
+<!-- Trigger -->
+<div (click)="toggle()">
+  <ng-content select="[popover-trigger]" />
+</div>
+
+<!-- Panel -->
+@if (open()) {
+  <!-- Backdrop to close on outside click -->
+  <div
+    class="fixed inset-0 z-30"
+    (click)="close()"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    [class]="panelClass()"
+    [style.width]="width() !== 'auto' ? width() : null"
+    role="dialog"
+  >
+    <ng-content />
+  </div>
+}

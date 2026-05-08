@@ -1,0 +1,397 @@
+<sk-app-shell
+  [navGroups]="navGroups"
+  [logo]="logo"
+  [user]="user"
+  [notificationCount]="3"
+>
+  <sk-toast-container />
+
+  <!-- Page content -->
+  <div class="flex flex-col gap-6 p-6 max-w-6xl mx-auto">
+    <sk-breadcrumb
+      [items]="[{ label: 'Home', route: '/' }, { label: 'Showcase' }]"
+    />
+
+    <sk-page-header title="Component Showcase" subtitle="All Shade UI Kit components in one place">
+      <sk-button size="sm" (click)="toast.success('Showcase loaded!', { title: 'Welcome' })">
+        <span class="material-symbols-outlined text-[16px]">celebration</span>
+        Toast Demo
+      </sk-button>
+    </sk-page-header>
+
+    <sk-tabs>
+      <!-- ─── ATOMS ─────────────────────────────────────────────── -->
+      <sk-tab label="Atoms" icon="atom">
+        <div class="flex flex-col gap-6">
+
+          <!-- Buttons -->
+          <sk-card>
+            <div class="p-5 flex flex-col gap-4">
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Buttons</h3>
+              <div class="flex flex-wrap gap-3">
+                <sk-button variant="primary">Primary</sk-button>
+                <sk-button variant="secondary">Secondary</sk-button>
+                <sk-button variant="outline">Outline</sk-button>
+                <sk-button variant="ghost">Ghost</sk-button>
+                <sk-button variant="danger">Danger</sk-button>
+                <sk-button [loading]="true">Loading</sk-button>
+                <sk-button [disabled]="true">Disabled</sk-button>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <sk-button variant="primary" size="sm">Small</sk-button>
+                <sk-button variant="primary" size="md">Medium</sk-button>
+                <sk-button variant="primary" size="lg">Large</sk-button>
+              </div>
+            </div>
+          </sk-card>
+
+          <!-- Badges -->
+          <sk-card>
+            <div class="p-5 flex flex-col gap-4">
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Badges</h3>
+              <div class="flex flex-wrap gap-2">
+                <sk-badge variant="active">Active</sk-badge>
+                <sk-badge variant="draft">Draft</sk-badge>
+                <sk-badge variant="completed">Completed</sk-badge>
+                <sk-badge variant="failed">Failed</sk-badge>
+                <sk-badge variant="pending">Pending</sk-badge>
+                <sk-badge variant="info">Info</sk-badge>
+              </div>
+            </div>
+          </sk-card>
+
+          <!-- Alerts -->
+          <sk-card>
+            <div class="p-5 flex flex-col gap-3">
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Alerts</h3>
+              <sk-alert variant="success" title="Success">Your changes have been saved successfully.</sk-alert>
+              <sk-alert variant="info" title="Info" [dismissible]="true">A new software version is available for download.</sk-alert>
+              <sk-alert variant="warning" title="Warning">Your subscription expires in 3 days.</sk-alert>
+              <sk-alert variant="error" title="Error">Failed to connect to the server. Please retry.</sk-alert>
+            </div>
+          </sk-card>
+
+          <!-- Avatars + Progress + Spinner -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <sk-card>
+              <div class="p-5 flex flex-col gap-4">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Avatars</h3>
+                <div class="flex items-center gap-3">
+                  <sk-avatar name="Alice Martin" size="sm" status="online" />
+                  <sk-avatar name="Bob Chen" size="md" status="away" />
+                  <sk-avatar name="Carol D" size="lg" status="offline" />
+                </div>
+              </div>
+            </sk-card>
+
+            <sk-card>
+              <div class="p-5 flex flex-col gap-3">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Progress</h3>
+                <sk-progress [value]="30" color="primary" label="Storage" [showValue]="true" />
+                <sk-progress [value]="65" color="success" label="Uploads" [showValue]="true" />
+                <sk-progress [value]="80" color="warning" label="CPU" [showValue]="true" />
+                <sk-progress [value]="95" color="danger" label="Memory" [showValue]="true" />
+              </div>
+            </sk-card>
+
+            <sk-card>
+              <div class="p-5 flex flex-col gap-3">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Spinners</h3>
+                <div class="flex items-center gap-4">
+                  <sk-spinner size="sm" />
+                  <sk-spinner size="md" />
+                  <sk-spinner size="lg" />
+                </div>
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide mt-2">Chips</h3>
+                <div class="flex flex-wrap gap-2">
+                  @for (chip of chipList(); track chip) {
+                    <sk-chip [removable]="true" (removed)="removeChip(chip)">{{ chip }}</sk-chip>
+                  }
+                </div>
+              </div>
+            </sk-card>
+          </div>
+
+          <!-- Divider + Empty State -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <sk-card>
+              <div class="p-5 flex flex-col gap-3">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Dividers</h3>
+                <sk-divider />
+                <sk-divider label="OR" />
+                <sk-divider label="Section Break" />
+              </div>
+            </sk-card>
+            <sk-card>
+              <div class="p-5">
+                <sk-empty-state
+                  icon="inbox"
+                  title="No items found"
+                  message="Try adjusting your search or filters."
+                />
+              </div>
+            </sk-card>
+          </div>
+
+        </div>
+      </sk-tab>
+
+      <!-- ─── FORMS ──────────────────────────────────────────────── -->
+      <sk-tab label="Forms" icon="edit_note">
+        <form [formGroup]="form" class="flex flex-col gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <sk-card>
+              <div class="p-5 flex flex-col gap-4">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Text Inputs</h3>
+                <sk-input formControlName="name" label="Full Name" placeholder="Jane Doe" hint="Your full legal name" prefixIcon="person" />
+                <sk-textarea formControlName="bio" label="Bio" placeholder="Tell us about yourself..." [rows]="3" hint="Max 500 characters" />
+              </div>
+            </sk-card>
+
+            <sk-card>
+              <div class="p-5 flex flex-col gap-4">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Dropdowns</h3>
+                <sk-select formControlName="country" label="Country" [options]="staticOptions" placeholder="Select a country" />
+                <sk-async-select formControlName="asyncCountry" label="Async Country" [loadFn]="countryLoadFn" placeholder="Search country..." />
+              </div>
+            </sk-card>
+
+            <sk-card>
+              <div class="p-5 flex flex-col gap-4">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Multi & Combo</h3>
+                <sk-multi-select formControlName="multiCountry" label="Countries" [options]="staticOptions" placeholder="Select countries..." />
+                <sk-combo-box formControlName="combo" label="Combo Box" [options]="staticOptions" placeholder="Type or select..." />
+              </div>
+            </sk-card>
+
+            <sk-card>
+              <div class="p-5 flex flex-col gap-4">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Date & Toggle</h3>
+                <sk-date-picker formControlName="date" label="Date of Birth" hint="Select a date from the calendar" />
+                <div class="flex flex-col gap-3">
+                  <sk-toggle formControlName="toggle" label="Enable notifications" />
+                  <sk-checkbox formControlName="checkbox" label="I agree to the terms and conditions" />
+                </div>
+              </div>
+            </sk-card>
+
+          </div>
+
+          <sk-card>
+            <div class="p-5 flex flex-col gap-4">
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Button Group & Radio</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <sk-button-group
+                  formControlName="priority"
+                  label="Priority"
+                  [options]="priorityOptions"
+                />
+                <sk-radio-group
+                  formControlName="role"
+                  label="Role"
+                  [options]="roleOptions"
+                />
+              </div>
+            </div>
+          </sk-card>
+
+        </form>
+      </sk-tab>
+
+      <!-- ─── FEEDBACK ───────────────────────────────────────────── -->
+      <sk-tab label="Feedback" icon="notifications">
+        <div class="flex flex-col gap-4">
+
+          <sk-card>
+            <div class="p-5 flex flex-col gap-4">
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Toasts</h3>
+              <div class="flex flex-wrap gap-3">
+                <sk-button variant="outline" size="sm" (click)="toast.success('Record saved!', { title: 'Success' })">
+                  Success Toast
+                </sk-button>
+                <sk-button variant="outline" size="sm" (click)="toast.error('Something went wrong.', { title: 'Error' })">
+                  Error Toast
+                </sk-button>
+                <sk-button variant="outline" size="sm" (click)="toast.warning('Disk space low.', { title: 'Warning' })">
+                  Warning Toast
+                </sk-button>
+                <sk-button variant="outline" size="sm" (click)="toast.info('Update available.', { title: 'Info' })">
+                  Info Toast
+                </sk-button>
+              </div>
+            </div>
+          </sk-card>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <sk-card>
+              <div class="p-5 flex flex-col gap-4">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Modal</h3>
+                <sk-button variant="primary" size="sm" (click)="showModal.set(true)">Open Modal</sk-button>
+                <sk-modal [isOpen]="showModal()" (closed)="showModal.set(false)">
+                  <div class="flex flex-col gap-4">
+                    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Confirm Action</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                      Are you sure you want to proceed? This action cannot be undone.
+                    </p>
+                    <div class="flex justify-end gap-3">
+                      <sk-button variant="ghost" size="sm" (click)="showModal.set(false)">Cancel</sk-button>
+                      <sk-button variant="danger" size="sm" (click)="showModal.set(false); toast.success('Action confirmed')">Confirm</sk-button>
+                    </div>
+                  </div>
+                </sk-modal>
+              </div>
+            </sk-card>
+
+            <sk-card>
+              <div class="p-5 flex flex-col gap-4">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Tooltip & Popover</h3>
+                <div class="flex flex-wrap gap-3">
+                  <sk-button variant="outline" size="sm" [skTooltip]="'This is a tooltip!'">Hover Me</sk-button>
+                  <sk-button variant="outline" size="sm" [skTooltip]="'Save your work'" tooltipPosition="top">Top Tooltip</sk-button>
+                </div>
+                <sk-popover>
+                  <ng-template #trigger>
+                    <sk-button variant="secondary" size="sm">Open Popover</sk-button>
+                  </ng-template>
+                  <div class="p-1 text-sm text-slate-700 dark:text-slate-300">
+                    <p class="font-medium mb-1">Popover Content</p>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs">Click outside to close.</p>
+                  </div>
+                </sk-popover>
+              </div>
+            </sk-card>
+
+            <sk-card>
+              <div class="p-5 flex flex-col gap-3">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Skeleton</h3>
+                <sk-skeleton variant="text" height="1rem" width="60%" />
+                <sk-skeleton variant="text" height="1rem" width="80%" />
+                <sk-skeleton variant="block" height="6rem" />
+                <div class="flex gap-3">
+                  <sk-skeleton variant="circle" width="2.5rem" height="2.5rem" />
+                  <div class="flex flex-col gap-2 flex-1">
+                    <sk-skeleton variant="text" height="0.875rem" width="40%" />
+                    <sk-skeleton variant="text" height="0.75rem" width="60%" />
+                  </div>
+                </div>
+              </div>
+            </sk-card>
+
+            <sk-card>
+              <div class="p-5 flex flex-col gap-4">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Loading Overlay</h3>
+                <div class="relative h-24 rounded-lg border border-slate-200 dark:border-border-dark overflow-hidden">
+                  <div class="p-4 text-sm text-slate-600 dark:text-slate-400">Underlying content</div>
+                  <sk-loading-overlay [loading]="loadingOverlay()" />
+                </div>
+                <sk-button variant="outline" size="sm" (click)="triggerLoadingOverlay()">Trigger (2s)</sk-button>
+              </div>
+            </sk-card>
+
+          </div>
+        </div>
+      </sk-tab>
+
+      <!-- ─── DATA ───────────────────────────────────────────────── -->
+      <sk-tab label="Data" icon="table_chart">
+        <div class="flex flex-col gap-6">
+
+          <!-- Table -->
+          <sk-card>
+            <div class="p-5 flex flex-col gap-3">
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Table</h3>
+              <sk-table
+                [columns]="tableColumns"
+                [loadFn]="loadEmployees"
+                [selectable]="true"
+                [pageSize]="5"
+                [pageSizeOptions]="[5, 10, 25]"
+              />
+            </div>
+          </sk-card>
+
+          <!-- Tabs inside tabs -->
+          <sk-card>
+            <div class="p-5 flex flex-col gap-3">
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Tabs</h3>
+              <sk-tabs>
+                <sk-tab label="Overview" icon="info">
+                  <p class="text-sm text-slate-600 dark:text-slate-400 py-2">Overview content goes here. This tab is active by default.</p>
+                </sk-tab>
+                <sk-tab label="Analytics" icon="bar_chart">
+                  <p class="text-sm text-slate-600 dark:text-slate-400 py-2">Analytics charts and metrics would appear here.</p>
+                </sk-tab>
+                <sk-tab label="Settings" icon="settings">
+                  <p class="text-sm text-slate-600 dark:text-slate-400 py-2">Configuration options and settings.</p>
+                </sk-tab>
+                <sk-tab label="Disabled" icon="block" [disabled]="true">
+                  <p>Hidden</p>
+                </sk-tab>
+              </sk-tabs>
+            </div>
+          </sk-card>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- Accordion -->
+            <sk-card>
+              <div class="p-5 flex flex-col gap-3">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Accordion (single)</h3>
+                <sk-accordion [single]="true">
+                  <sk-accordion-item title="What is Shade UI?" icon="help">
+                    A reusable Angular component library built with Tailwind CSS v4, designed for backoffice applications.
+                  </sk-accordion-item>
+                  <sk-accordion-item title="How do I install it?" icon="download">
+                    Import the components you need directly from the barrel export at <code>@shade/ui</code>.
+                  </sk-accordion-item>
+                  <sk-accordion-item title="Is dark mode supported?" icon="dark_mode">
+                    Yes! All components support dark mode via the <code>ThemeService</code> which toggles the <code>dark</code> class on the HTML element.
+                  </sk-accordion-item>
+                </sk-accordion>
+              </div>
+            </sk-card>
+
+            <!-- Calendar -->
+            <sk-card>
+              <div class="p-5 flex flex-col gap-3">
+                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Calendar</h3>
+                <sk-calendar [events]="calendarEvents" />
+              </div>
+            </sk-card>
+
+          </div>
+
+          <!-- Masonry -->
+          <sk-card>
+            <div class="p-5 flex flex-col gap-3">
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Masonry Layout</h3>
+              <sk-masonry [columns]="[2, 2, 3]" gap="md">
+                @for (item of [
+                  { title: 'Design System', h: 'h-24', color: 'bg-primary/10' },
+                  { title: 'Angular 21', h: 'h-36', color: 'bg-emerald-500/10' },
+                  { title: 'Tailwind v4', h: 'h-20', color: 'bg-amber-500/10' },
+                  { title: 'Dark Mode', h: 'h-32', color: 'bg-rose-500/10' },
+                  { title: 'Signals', h: 'h-28', color: 'bg-violet-500/10' },
+                  { title: 'CVA Forms', h: 'h-16', color: 'bg-sky-500/10' },
+                ]; track item.title) {
+                  <div
+                    [class]="
+                      item.h + ' mb-4 ' + item.color +
+                      ' rounded-xl border border-slate-200 dark:border-border-dark flex items-center justify-center text-sm font-medium text-slate-700 dark:text-slate-300'
+                    "
+                  >
+                    {{ item.title }}
+                  </div>
+                }
+              </sk-masonry>
+            </div>
+          </sk-card>
+
+        </div>
+      </sk-tab>
+
+    </sk-tabs>
+  </div>
+</sk-app-shell>

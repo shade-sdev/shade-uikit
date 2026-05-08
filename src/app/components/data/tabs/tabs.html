@@ -1,0 +1,37 @@
+<div class="flex flex-col w-full">
+  <!-- Tab bar -->
+  <div
+    class="flex items-end border-b border-slate-200 dark:border-border-dark overflow-x-auto"
+    role="tablist"
+    aria-orientation="horizontal"
+  >
+    @for (tab of tabs; track $index) {
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="currentIndex() === $index"
+        [attr.aria-disabled]="tab.disabled()"
+        [disabled]="tab.disabled()"
+        (click)="activateTab($index)"
+        [class]="
+          'flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all border-b-2 -mb-px ' +
+          (tab.disabled()
+            ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed border-transparent'
+            : currentIndex() === $index
+              ? 'text-primary border-primary'
+              : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600')
+        "
+      >
+        @if (tab.icon()) {
+          <span class="material-symbols-outlined text-[18px]">{{ tab.icon() }}</span>
+        }
+        {{ tab.label() }}
+      </button>
+    }
+  </div>
+
+  <!-- Tab panels -->
+  <div class="pt-4">
+    <ng-content />
+  </div>
+</div>
