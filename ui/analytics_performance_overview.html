@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Analytics - Performance Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">Enterprise SaaS</h2>
+</div>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-semibold border-b-2 border-primary py-4 -mb-4" href="#">Analytics</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Reports</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Settings</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<label class="hidden lg:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+<div class="text-slate-400 flex items-center justify-center pl-3">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input w-full border-none bg-transparent focus:ring-0 text-sm" placeholder="Search analytics..." value=""/>
+</div>
+</label>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-200 dark:border-slate-700" data-alt="User profile avatar circle" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDksBCqoRQ2fW64kWQEVohPLmJ35gpQTbFGaBsXKSlm6knaGv2gVtWiNy3FPAEtQgFz32Ie9s7zcEOS8h2sGH04w8lJAOhfLK8gKbFrfLQnA1jzR6FBsunIt6jzPXxTmkuwOMd7OELSUgGDcY1q7CnqTa_PmzwyoZqNAMQiRCkgE_Do5S_aHb-4O1x_VfdpH3Cx346nZPo1HjmNVCBcdSKKgsn5u6m3Dr63U_EVnVoaf8FZyrfXAM_fACnT2dGHO0C358yORJ56_An8");'></div>
+</div>
+</header>
+<div class="flex flex-1">
+<!-- Sidebar -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hidden lg:flex flex-col p-4 gap-6">
+<div class="flex flex-col gap-1">
+<p class="text-xs font-bold text-slate-400 uppercase tracking-wider px-3 mb-2">Main Menu</p>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="text-sm font-medium">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary text-white shadow-lg shadow-primary/20" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="text-sm font-medium">Performance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Audience</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-medium">Revenue</span>
+</a>
+</div>
+<div class="flex flex-col gap-1 mt-auto">
+<div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+<p class="text-xs font-semibold text-slate-900 dark:text-white mb-1">Storage Usage</p>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mb-2">
+<div class="bg-primary h-full rounded-full" style="width: 65%"></div>
+</div>
+<p class="text-[10px] text-slate-500">65% of 10GB used</p>
+<button class="mt-3 w-full py-1.5 text-xs font-bold text-primary border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors">Upgrade Plan</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 overflow-y-auto bg-background-light dark:bg-background-dark p-6">
+<!-- Dashboard Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+<div>
+<h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Performance Overview</h1>
+<p class="text-slate-500 text-sm">Monitor your key growth metrics and user behavior.</p>
+</div>
+<div class="flex items-center gap-3 bg-white dark:bg-slate-900 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-2 px-3 border-r border-slate-200 dark:border-slate-800">
+<span class="material-symbols-outlined text-slate-400 text-lg">calendar_today</span>
+<span class="text-sm font-medium">Oct 1, 2023 - Oct 31, 2023</span>
+</div>
+<button class="flex items-center justify-center p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">tune</span>
+</button>
+<button class="bg-primary text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-primary/90 shadow-md shadow-primary/10 transition-colors">
+                            Export
+                        </button>
+</div>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+<span class="material-symbols-outlined text-blue-600">group</span>
+</div>
+<span class="text-xs font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">+14.2%</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Total Users</p>
+<p class="text-2xl font-bold text-slate-900 dark:text-white">128,430</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+<span class="material-symbols-outlined text-purple-600">bolt</span>
+</div>
+<span class="text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full">-2.1%</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Active Sessions</p>
+<p class="text-2xl font-bold text-slate-900 dark:text-white">43,201</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+<span class="material-symbols-outlined text-emerald-600">monetization_on</span>
+</div>
+<span class="text-xs font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">+8.4%</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Revenue</p>
+<p class="text-2xl font-bold text-slate-900 dark:text-white">$84,200</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+<span class="material-symbols-outlined text-orange-600">timer</span>
+</div>
+<span class="text-xs font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">+0.5%</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Avg. Session Duration</p>
+<p class="text-2xl font-bold text-slate-900 dark:text-white">04:22</p>
+</div>
+</div>
+<!-- Analytics Widgets -->
+<div class="grid grid-cols-12 gap-6">
+<!-- User Growth Area Chart -->
+<div class="col-span-12 lg:col-span-8 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">User Growth</h3>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">Weekly</button>
+<button class="px-3 py-1 text-xs font-bold bg-primary text-white rounded-lg">Monthly</button>
+</div>
+</div>
+<div class="h-64 relative overflow-hidden">
+<div class="absolute inset-0 flex items-end justify-between gap-1">
+<!-- Mock Area Chart Visual -->
+<div class="w-full h-full bg-gradient-to-t from-primary/10 to-transparent flex items-end">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 1000 200">
+<path d="M0,200 L0,150 C100,120 200,180 300,100 C400,20 500,140 600,110 C700,80 800,40 900,60 L1000,20 L1000,200 Z" fill="url(#grad1)"></path>
+<path d="M0,150 C100,120 200,180 300,100 C400,20 500,140 600,110 C700,80 800,40 900,60 L1000,20" fill="none" stroke="#135bec" stroke-width="4"></path>
+<defs>
+<lineargradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:rgb(19,91,236);stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:rgb(19,91,236);stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+</div>
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+<div class="border-b border-slate-400 w-full h-0"></div>
+<div class="border-b border-slate-400 w-full h-0"></div>
+<div class="border-b border-slate-400 w-full h-0"></div>
+<div class="border-b border-slate-400 w-full h-0"></div>
+</div>
+</div>
+<div class="flex justify-between mt-4 px-2">
+<span class="text-xs text-slate-400">Jan</span>
+<span class="text-xs text-slate-400">Mar</span>
+<span class="text-xs text-slate-400">May</span>
+<span class="text-xs text-slate-400">Jul</span>
+<span class="text-xs text-slate-400">Sep</span>
+<span class="text-xs text-slate-400">Nov</span>
+</div>
+</div>
+<!-- Revenue by Channel Bar Chart -->
+<div class="col-span-12 lg:col-span-4 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6">Revenue by Channel</h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">Direct</span>
+<span class="text-sm font-bold text-slate-900 dark:text-white">$42,301</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden flex">
+<div class="bg-primary h-full" style="width: 70%"></div>
+<div class="bg-primary/40 h-full" style="width: 20%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">Social</span>
+<span class="text-sm font-bold text-slate-900 dark:text-white">$28,150</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden flex">
+<div class="bg-primary h-full" style="width: 55%"></div>
+<div class="bg-primary/40 h-full" style="width: 15%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">Search</span>
+<span class="text-sm font-bold text-slate-900 dark:text-white">$13,749</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden flex">
+<div class="bg-primary h-full" style="width: 40%"></div>
+<div class="bg-primary/40 h-full" style="width: 10%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">Referral</span>
+<span class="text-sm font-bold text-slate-900 dark:text-white">$8,200</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden flex">
+<div class="bg-primary h-full" style="width: 25%"></div>
+<div class="bg-primary/40 h-full" style="width: 5%"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex justify-center gap-6">
+<div class="flex items-center gap-2">
+<span class="size-2 bg-primary rounded-full"></span>
+<span class="text-xs text-slate-500">New Sales</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-2 bg-primary/40 rounded-full"></span>
+<span class="text-xs text-slate-500">Upsells</span>
+</div>
+</div>
+</div>
+<!-- Traffic by Region Map -->
+<div class="col-span-12 lg:col-span-7 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Traffic by Region</h3>
+<button class="text-primary text-sm font-bold hover:underline">View Detailed Map</button>
+</div>
+<div class="relative w-full h-[300px] rounded-lg bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center overflow-hidden">
+<!-- Abstract Map Placeholder -->
+<div class="absolute inset-0 opacity-10 dark:opacity-20 flex items-center justify-center">
+<span class="material-symbols-outlined text-[300px]">public</span>
+</div>
+<!-- Map Data Points -->
+<div class="absolute top-[20%] left-[25%] size-4 bg-primary/40 rounded-full animate-pulse flex items-center justify-center">
+<div class="size-2 bg-primary rounded-full"></div>
+<div class="absolute -top-10 bg-slate-900 text-white text-[10px] px-2 py-1 rounded shadow-lg">USA: 42%</div>
+</div>
+<div class="absolute top-[40%] left-[50%] size-3 bg-primary/40 rounded-full flex items-center justify-center">
+<div class="size-1.5 bg-primary rounded-full"></div>
+</div>
+<div class="absolute top-[30%] left-[75%] size-5 bg-primary/40 rounded-full flex items-center justify-center">
+<div class="size-2.5 bg-primary rounded-full"></div>
+</div>
+<div class="absolute bottom-[30%] left-[40%] size-3 bg-primary/40 rounded-full flex items-center justify-center">
+<div class="size-1.5 bg-primary rounded-full"></div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 mt-6">
+<div class="text-center">
+<p class="text-xs text-slate-500 mb-1">North America</p>
+<p class="text-sm font-bold text-slate-900 dark:text-white">54,302 (42.1%)</p>
+</div>
+<div class="text-center">
+<p class="text-xs text-slate-500 mb-1">Europe</p>
+<p class="text-sm font-bold text-slate-900 dark:text-white">38,122 (29.7%)</p>
+</div>
+<div class="text-center">
+<p class="text-xs text-slate-500 mb-1">Asia Pacific</p>
+<p class="text-sm font-bold text-slate-900 dark:text-white">22,109 (17.2%)</p>
+</div>
+</div>
+</div>
+<!-- User Activity by Hour Heatmap -->
+<div class="col-span-12 lg:col-span-5 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Activity by Hour</h3>
+<span class="text-xs text-slate-500">Past 24 Hours</span>
+</div>
+<div class="grid grid-cols-6 grid-rows-4 gap-2 h-[300px]">
+<!-- Row 1 -->
+<div class="bg-primary/5 rounded flex items-center justify-center text-[10px] text-slate-400">00:00</div>
+<div class="bg-primary/5 rounded"></div>
+<div class="bg-primary/10 rounded"></div>
+<div class="bg-primary/5 rounded"></div>
+<div class="bg-primary/20 rounded"></div>
+<div class="bg-primary/10 rounded"></div>
+<!-- Row 2 -->
+<div class="bg-primary/5 rounded flex items-center justify-center text-[10px] text-slate-400">06:00</div>
+<div class="bg-primary/30 rounded"></div>
+<div class="bg-primary/50 rounded"></div>
+<div class="bg-primary/60 rounded"></div>
+<div class="bg-primary/80 rounded"></div>
+<div class="bg-primary/70 rounded"></div>
+<!-- Row 3 -->
+<div class="bg-primary/5 rounded flex items-center justify-center text-[10px] text-slate-400">12:00</div>
+<div class="bg-primary/100 rounded"></div>
+<div class="bg-primary/90 rounded"></div>
+<div class="bg-primary/80 rounded"></div>
+<div class="bg-primary/70 rounded"></div>
+<div class="bg-primary/60 rounded"></div>
+<!-- Row 4 -->
+<div class="bg-primary/5 rounded flex items-center justify-center text-[10px] text-slate-400">18:00</div>
+<div class="bg-primary/40 rounded"></div>
+<div class="bg-primary/30 rounded"></div>
+<div class="bg-primary/20 rounded"></div>
+<div class="bg-primary/10 rounded"></div>
+<div class="bg-primary/5 rounded"></div>
+</div>
+<div class="flex items-center justify-end gap-2 mt-6">
+<span class="text-[10px] text-slate-400 uppercase">Less</span>
+<div class="flex gap-1">
+<div class="size-3 bg-primary/10 rounded-sm"></div>
+<div class="size-3 bg-primary/40 rounded-sm"></div>
+<div class="size-3 bg-primary/70 rounded-sm"></div>
+<div class="size-3 bg-primary rounded-sm"></div>
+</div>
+<span class="text-[10px] text-slate-400 uppercase">More</span>
+</div>
+</div>
+</div>
+<!-- Footer Stats -->
+<footer class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 text-slate-500 text-sm">
+<p>© 2023 Analytics Enterprise SaaS Admin Panel. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+</div>
+</footer>
+</main>
+</div>
+</div>
+</div>
+</body></html>

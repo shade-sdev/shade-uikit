@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+<title>Reusable UI Components Library</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 lg:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">layers</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">SaaS UI Kit</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary py-1" href="#">Components</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Layouts</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Docs</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<label class="hidden sm:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-slate-400 flex border-none bg-slate-100 dark:bg-slate-800 items-center justify-center pl-4 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-0 border-none bg-slate-100 dark:bg-slate-800 placeholder:text-slate-400 px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal" placeholder="Search components..." value=""/>
+</div>
+</label>
+<button class="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold transition-opacity hover:opacity-90">
+<span>Export Code</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-200 dark:border-slate-700" data-alt="User profile avatar portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAvI4BWx5A3Hmg8xlMshfpotx3jxGsPOLn80m862tzxhd6gxZVypEkMLgV9LoCw7spi1JHlKAo5J1hvFCOBHykhbGn671eH9vEvslC_IXbY8jxGUktg85-33c4l7OOqDuXuAfBUwJQ5LFC9AobDeckqwAzqpXStdmu6zhRmdevew1OZlhxgIuDOwkmNX-wUEXJZFaEuUptr0KPIJ7nZU4gnBRqB9gO73ZKrCBLkfy5DSY-uCIB10f_aNVuLxrL8W5zq-gMw7QD2kldE");'></div>
+</div>
+</header>
+<div class="flex flex-1">
+<!-- Sidebar Navigation -->
+<aside class="hidden lg:flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 gap-6">
+<div>
+<h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Foundation</h3>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">palette</span>
+<span class="text-sm font-medium">Colors</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">text_fields</span>
+<span class="text-sm font-medium">Typography</span>
+</a>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Elements</h3>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined text-[20px]">ads_click</span>
+<span class="text-sm font-bold">Buttons</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="text-sm font-medium">Alerts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">label</span>
+<span class="text-sm font-medium">Badges</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">align_horizontal_left</span>
+<span class="text-sm font-medium">Progress</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">tab</span>
+<span class="text-sm font-medium">Tabs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">window</span>
+<span class="text-sm font-medium">Modals</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto p-6 lg:p-10">
+<div class="max-w-5xl mx-auto flex flex-col gap-10">
+<!-- Page Header -->
+<section class="flex flex-col gap-2">
+<h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">UI Components Library</h1>
+<p class="text-slate-500 dark:text-slate-400 text-lg">A comprehensive set of reusable components following the enterprise design system.</p>
+</section>
+<!-- Buttons Section -->
+<section class="space-y-6" id="buttons">
+<div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+<span class="material-symbols-outlined text-primary">ads_click</span>
+<h2 class="text-xl font-bold">Buttons</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+<h3 class="text-sm font-semibold text-slate-400 uppercase mb-6">Button Variations</h3>
+<div class="flex flex-wrap gap-4">
+<button class="px-5 py-2.5 bg-primary text-white font-semibold rounded-lg hover:opacity-90 transition-all text-sm">Primary</button>
+<button class="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-sm">Secondary</button>
+<button class="px-5 py-2.5 bg-transparent border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-semibold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm">Outline</button>
+<button class="px-5 py-2.5 bg-transparent text-slate-600 dark:text-slate-400 font-semibold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-sm">Ghost</button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+<h3 class="text-sm font-semibold text-slate-400 uppercase mb-6">With Icons &amp; States</h3>
+<div class="flex flex-wrap gap-4">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white font-semibold rounded-lg text-sm">
+<span class="material-symbols-outlined text-base">add</span>
+                                        Create New
+                                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary/20 text-primary font-semibold rounded-lg text-sm opacity-50 cursor-not-allowed">
+                                        Processing...
+                                    </button>
+<button class="p-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Alerts Section -->
+<section class="space-y-6" id="alerts">
+<div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+<span class="material-symbols-outlined text-primary">notifications</span>
+<h2 class="text-xl font-bold">Alerts</h2>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<div class="flex items-center gap-3 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg text-emerald-800 dark:text-emerald-400">
+<span class="material-symbols-outlined">check_circle</span>
+<p class="text-sm font-medium">Successfully saved your preferences!</p>
+</div>
+<div class="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-blue-800 dark:text-blue-400">
+<span class="material-symbols-outlined">info</span>
+<p class="text-sm font-medium">A new software update is available. <a class="underline font-bold" href="#">Learn more</a></p>
+</div>
+<div class="flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-amber-800 dark:text-amber-400">
+<span class="material-symbols-outlined">warning</span>
+<p class="text-sm font-medium">Your subscription will expire in 3 days.</p>
+</div>
+<div class="flex items-center gap-3 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg text-rose-800 dark:text-rose-400">
+<span class="material-symbols-outlined">error</span>
+<p class="text-sm font-medium">There was an error processing your request.</p>
+</div>
+</div>
+</section>
+<!-- Badges & Progress Bars -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<section class="space-y-6" id="badges">
+<div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+<span class="material-symbols-outlined text-primary">label</span>
+<h2 class="text-xl font-bold">Badges</h2>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-wrap gap-3">
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary">Active</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Draft</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">Completed</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400">Failed</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">Pending</span>
+</div>
+</section>
+<section class="space-y-6" id="progress">
+<div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+<span class="material-symbols-outlined text-primary">align_horizontal_left</span>
+<h2 class="text-xl font-bold">Progress Bars</h2>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col gap-6">
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span>System Load</span>
+<span>65%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 65%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span>Storage</span>
+<span>92%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+<div class="bg-rose-500 h-2 rounded-full" style="width: 92%"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Tabs Section -->
+<section class="space-y-6" id="tabs">
+<div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+<span class="material-symbols-outlined text-primary">tab</span>
+<h2 class="text-xl font-bold">Tabs</h2>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+<div class="flex border-b border-slate-200 dark:border-slate-800 mb-6 overflow-x-auto">
+<button class="px-6 py-3 border-b-2 border-primary text-primary text-sm font-bold">Account</button>
+<button class="px-6 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium">Security</button>
+<button class="px-6 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium">Billing</button>
+<button class="px-6 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium">Notifications</button>
+</div>
+<div class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                Use these tabs to toggle between different sections of the account management page. The active state is highlighted with the primary theme color.
+                            </div>
+</div>
+</section>
+<!-- Modal Mockup Section -->
+<section class="space-y-6" id="modals">
+<div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+<span class="material-symbols-outlined text-primary">window</span>
+<h2 class="text-xl font-bold">Modals</h2>
+</div>
+<div class="bg-slate-100 dark:bg-slate-950 p-12 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-center">
+<!-- Modal Mockup -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md overflow-hidden">
+<div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+<h3 class="font-bold text-lg">Confirm Deletion</h3>
+<button class="text-slate-400 hover:text-slate-600">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6">
+<div class="w-12 h-12 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined">delete_forever</span>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm mb-6">Are you sure you want to delete this project? This action cannot be undone and all data will be permanently removed from our servers.</p>
+<div class="flex flex-col sm:flex-row gap-3">
+<button class="flex-1 py-2.5 bg-rose-600 text-white font-bold rounded-lg text-sm hover:bg-rose-700 transition-colors">Delete Permanently</button>
+<button class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold rounded-lg text-sm hover:bg-slate-200 transition-colors">Cancel</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer -->
+<footer class="mt-20 py-8 border-t border-slate-200 dark:border-slate-800 text-center">
+<p class="text-slate-500 text-sm">© 2024 SaaS Admin UI Kit. All rights reserved.</p>
+</footer>
+</main>
+</div>
+</div>
+</div>
+</body></html>
