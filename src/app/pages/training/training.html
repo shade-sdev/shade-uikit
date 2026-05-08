@@ -1,0 +1,90 @@
+<div class="flex flex-col gap-6 max-w-7xl mx-auto">
+
+  <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Training' }]" />
+
+  <sk-page-header title="Training Management" subtitle="Track course assignments, progress, and compliance across all employees.">
+    <sk-button variant="primary" size="sm" (click)="showModal.set(true)">
+      <span class="material-symbols-outlined text-[16px]">add</span>
+      Assign Training
+    </sk-button>
+  </sk-page-header>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    @for (s of stats(); track s.label) {
+      <sk-card>
+        <div class="p-4 flex items-center gap-4">
+          <div [class]="'size-10 rounded-xl flex items-center justify-center shrink-0 ' + s.bg">
+            <span [class]="'material-symbols-outlined text-[20px] ' + s.iconColor">{{ s.icon }}</span>
+          </div>
+          <div>
+            <p class="text-xl font-bold text-slate-900 dark:text-white">{{ s.value }}</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{ s.label }}</p>
+          </div>
+        </div>
+      </sk-card>
+    }
+  </div>
+
+  <!-- Filters -->
+  <sk-card>
+    <div class="p-4 flex flex-wrap gap-3">
+      <sk-select [options]="statusOptions"   placeholder="All Statuses"    [(ngModel)]="statusFilter"   class="w-44" />
+      <sk-select [options]="categoryOptions" placeholder="All Categories"  [(ngModel)]="categoryFilter" class="w-44" />
+      <sk-select [options]="deptOptions"     placeholder="All Departments" [(ngModel)]="deptFilter"     class="w-44" />
+    </div>
+  </sk-card>
+
+  <!-- Table -->
+  <sk-table
+    [columns]="columns"
+    [loadFn]="loadFn"
+    [pageSize]="10"
+    [pageSizeOptions]="[10, 25]"
+    emptyMessage="No training records match your filters."
+  />
+
+  <!-- Assign Training Modal -->
+  <sk-modal [isOpen]="showModal()" (closed)="showModal.set(false)">
+    <div class="flex flex-col gap-5 min-w-[400px]">
+      <div>
+        <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Assign Training</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Assign a new course to an employee.</p>
+      </div>
+
+      <sk-select
+        [options]="employeeOptions()"
+        label="Employee"
+        placeholder="Select an employee"
+        [ngModel]="newEmployee()"
+        (ngModelChange)="newEmployee.set($event)"
+      />
+      <sk-input
+        label="Course Name"
+        placeholder="e.g. Security Best Practices"
+        [ngModel]="newCourse()"
+        (ngModelChange)="newCourse.set($event)"
+      />
+      <sk-select
+        [options]="categoryOptions.slice(1)"
+        label="Category"
+        placeholder="Select a category"
+        [ngModel]="newCategory()"
+        (ngModelChange)="newCategory.set($event)"
+      />
+      <sk-date-picker
+        label="Due Date"
+        [ngModel]="newDueDate()"
+        (ngModelChange)="newDueDate.set($event)"
+      />
+
+      <div class="flex justify-end gap-3 pt-2 border-t border-slate-100 dark:border-border-dark">
+        <sk-button variant="ghost" (click)="showModal.set(false)">Cancel</sk-button>
+        <sk-button variant="primary" [disabled]="!newCourse() || !newEmployee()" (click)="addTraining()">
+          Assign Course
+        </sk-button>
+      </div>
+    </div>
+  </sk-modal>
+
+</div>

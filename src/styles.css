@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #135bec;
   --color-background-light: #f6f6f8;
@@ -27,4 +29,12 @@ body {
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   user-select: none;
+}
+
+/* Active sidebar nav item */
+.active-nav-item {
+  @apply bg-slate-900 text-white dark:bg-white/10 dark:text-white font-semibold;
+}
+.active-nav-item .material-symbols-outlined {
+  @apply text-white dark:text-primary;
 }

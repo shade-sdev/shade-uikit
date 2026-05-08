@@ -1,0 +1,179 @@
+<div class="flex flex-col gap-6 max-w-7xl mx-auto">
+
+  <sk-page-header
+    [title]="'Good morning, ' + (auth.user()?.name?.split(' ')?.at(0) ?? 'there') + ' 👋'"
+    subtitle="Here's what's happening with your workforce today."
+  >
+    <sk-button variant="primary" size="sm" routerLink="/employees">
+      <span class="material-symbols-outlined text-[16px]">person_add</span>
+      Add Employee
+    </sk-button>
+  </sk-page-header>
+
+  <!-- KPI cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    @for (card of kpiCards(); track card.label) {
+      <sk-card>
+        <div class="p-5">
+          <div class="flex items-start justify-between mb-3">
+            <div [class]="'size-10 rounded-xl flex items-center justify-center ' + card.iconBg">
+              <span [class]="'material-symbols-outlined text-[20px] ' + card.iconColor">{{ card.icon }}</span>
+            </div>
+            <span [class]="'text-xs font-semibold px-2 py-1 rounded-full ' + card.changeBg + ' ' + card.changeColor">
+              {{ card.change }}
+            </span>
+          </div>
+          <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ card.value }}</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{{ card.label }}</p>
+        </div>
+      </sk-card>
+    }
+  </div>
+
+  <!-- Middle row -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+    <!-- Department breakdown -->
+    <sk-card>
+      <div class="p-5 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-800 dark:text-white">Departments</h2>
+          <span class="text-xs text-slate-400">{{ stats().total }} total</span>
+        </div>
+        <div class="space-y-3">
+          @for (dept of deptStats(); track dept.dept) {
+            <div class="flex items-center gap-3">
+              <div [class]="'size-2 rounded-full shrink-0 ' + dept.color"></div>
+              <span class="text-sm text-slate-700 dark:text-slate-300 w-28 truncate">{{ dept.dept }}</span>
+              <div class="flex-1">
+                <div class="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  <div [class]="'h-full rounded-full transition-all ' + dept.color" [style.width.%]="dept.pct"></div>
+                </div>
+              </div>
+              <span class="text-xs text-slate-500 dark:text-slate-400 w-6 text-right">{{ dept.count }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </sk-card>
+
+    <!-- Training overview -->
+    <sk-card>
+      <div class="p-5 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-800 dark:text-white">Training Status</h2>
+          <a routerLink="/training" class="text-xs text-primary font-medium hover:underline">View all →</a>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="text-slate-600 dark:text-slate-400">Completed</span>
+              <span class="font-semibold text-emerald-600">{{ trainingStats().completed }}%</span>
+            </div>
+            <sk-progress [value]="trainingStats().completed" color="success" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="text-slate-600 dark:text-slate-400">In Progress</span>
+              <span class="font-semibold text-blue-600">{{ trainingStats().inProgress }}%</span>
+            </div>
+            <sk-progress [value]="trainingStats().inProgress" color="primary" />
+          </div>
+        </div>
+        <sk-divider />
+        <div class="grid grid-cols-2 gap-3">
+          <div class="text-center p-3 rounded-xl bg-rose-50 dark:bg-rose-900/20">
+            <p class="text-xl font-bold text-rose-600">{{ trainingStats().overdue }}</p>
+            <p class="text-xs text-rose-500 mt-0.5">Overdue</p>
+          </div>
+          <div class="text-center p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+            <p class="text-xl font-bold text-slate-700 dark:text-slate-300">{{ trainingStats().notStarted }}</p>
+            <p class="text-xs text-slate-500 mt-0.5">Not Started</p>
+          </div>
+        </div>
+      </div>
+    </sk-card>
+
+    <!-- Activity feed -->
+    <sk-card>
+      <div class="p-5 flex flex-col gap-4">
+        <h2 class="text-sm font-semibold text-slate-800 dark:text-white">Recent Activity</h2>
+        <div class="space-y-3">
+          @for (item of activityFeed(); track item.id) {
+            <div class="flex items-start gap-3">
+              <div class="size-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
+                <span [class]="'material-symbols-outlined text-[16px] ' + item.color">{{ item.icon }}</span>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-xs text-slate-700 dark:text-slate-300 leading-snug">{{ item.text }}</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">{{ item.time }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </sk-card>
+
+  </div>
+
+  <!-- Bottom row -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+    <!-- Pending absences -->
+    <sk-card>
+      <div class="p-5 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-800 dark:text-white">Pending Absence Requests</h2>
+          <a routerLink="/absences" class="text-xs text-primary font-medium hover:underline">Manage →</a>
+        </div>
+        @if (pendingAbsences().length === 0) {
+          <p class="text-sm text-slate-400 text-center py-4">No pending requests</p>
+        } @else {
+          <div class="space-y-2">
+            @for (a of pendingAbsences(); track a.id) {
+              <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer" routerLink="/absences">
+                <sk-avatar [name]="getEmployeeName(a.employeeId)" size="sm" />
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-slate-800 dark:text-white truncate">{{ getEmployeeName(a.employeeId) }}</p>
+                  <p class="text-xs text-slate-500">{{ absenceTypeLabel[a.type] }} · {{ a.days }} day{{ a.days > 1 ? 's' : '' }}</p>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Pending</span>
+                  <p class="text-[11px] text-slate-400 mt-0.5">{{ a.startDate }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </sk-card>
+
+    <!-- Recent hires -->
+    <sk-card>
+      <div class="p-5 flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-800 dark:text-white">Recent Employees</h2>
+          <a routerLink="/employees" class="text-xs text-primary font-medium hover:underline">View all →</a>
+        </div>
+        <div class="space-y-2">
+          @for (emp of recentEmployees(); track emp.id) {
+            <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" [routerLink]="['/employees', emp.id]">
+              <sk-avatar [name]="emp.name" size="sm" />
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-slate-800 dark:text-white truncate">{{ emp.name }}</p>
+                <p class="text-xs text-slate-500 truncate">{{ emp.role }} · {{ emp.department }}</p>
+              </div>
+              <div class="text-right shrink-0">
+                <span [class]="'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ' + statusColors[emp.status]">
+                  {{ emp.status }}
+                </span>
+                <p class="text-[11px] text-slate-400 mt-0.5">{{ calcTenure(emp.joinDate) }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </sk-card>
+
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<div class="flex flex-col gap-6 max-w-7xl mx-auto">
+
+  <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Employees' }]" />
+
+  <sk-page-header title="Employees" subtitle="Manage your entire workforce from one place.">
+    <sk-button variant="primary" size="sm">
+      <span class="material-symbols-outlined text-[16px]">person_add</span>
+      Add Employee
+    </sk-button>
+  </sk-page-header>
+
+  <!-- Headcount stats -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    @for (s of headcountStats(); track s.label) {
+      <sk-card>
+        <div class="px-4 py-3 flex items-center gap-3">
+          <div class="flex-1 min-w-0">
+            <p [class]="'text-xl font-bold ' + s.color">{{ s.value }}</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{ s.label }}</p>
+          </div>
+        </div>
+      </sk-card>
+    }
+  </div>
+
+  <!-- Filters -->
+  <sk-card>
+    <div class="p-4 flex flex-col sm:flex-row gap-3">
+      <div class="relative flex-1">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none">search</span>
+        <input
+          type="text"
+          placeholder="Search by name, email or role…"
+          (input)="onSearch($event)"
+          class="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg border border-transparent bg-slate-100 dark:bg-background-dark text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
+        />
+      </div>
+      <div class="flex gap-3">
+        <sk-select
+          [options]="deptOptions"
+          placeholder="Department"
+          [ngModel]="deptFilter()"
+          (ngModelChange)="deptFilter.set($event)"
+          class="w-44"
+        />
+        <sk-select
+          [options]="statusOptions"
+          placeholder="Status"
+          [ngModel]="statusFilter()"
+          (ngModelChange)="statusFilter.set($event)"
+          class="w-36"
+        />
+      </div>
+    </div>
+  </sk-card>
+
+  <!-- Table -->
+  <sk-table
+    [columns]="columns"
+    [loadFn]="loadFn"
+    [selectable]="true"
+    [pageSize]="10"
+    [pageSizeOptions]="[10, 25, 50]"
+    emptyMessage="No employees found matching your filters."
+    (rowSelected)="onRowSelected($event)"
+  />
+
+</div>

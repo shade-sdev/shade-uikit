@@ -1,121 +1,119 @@
 <aside class="flex flex-col h-full overflow-hidden" aria-label="Main navigation">
+
   <!-- Logo -->
-  <div
-    class="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-border-dark shrink-0"
-  >
-    <div
-      class="size-8 bg-primary rounded-lg flex items-center justify-center text-white shrink-0"
-    >
-      <span class="material-symbols-outlined text-[20px]">{{ logo().icon }}</span>
+  <div class="flex items-center gap-3 px-4 h-16 border-b border-slate-200 dark:border-border-dark shrink-0">
+    <div class="size-8 bg-primary rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm shadow-primary/40">
+      <span class="material-symbols-outlined text-[18px]">{{ logo().icon }}</span>
     </div>
     <div class="min-w-0">
-      <h1
-        class="font-bold text-sm tracking-tight text-slate-900 dark:text-white truncate uppercase"
-      >
+      <p class="text-sm font-bold tracking-tight text-slate-900 dark:text-white truncate leading-tight">
         {{ logo().name }}
-      </h1>
+      </p>
       @if (logo().subtitle) {
-        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate leading-tight">
           {{ logo().subtitle }}
         </p>
       }
     </div>
   </div>
 
-  <!-- Nav items -->
-  <nav class="flex-1 overflow-y-auto py-3 px-3 space-y-0.5">
+  <!-- Nav -->
+  <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-5">
     @for (group of resolvedGroups(); track $index) {
-      @if (group.label) {
-        <p
-          class="px-3 pt-4 pb-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest first:pt-1"
-        >
-          {{ group.label }}
-        </p>
-      }
-      @for (item of group.items; track item.label) {
-        @if (isVisible(item)) {
-          @if (!item.children?.length) {
-            <a
-              [routerLink]="item.route"
-              routerLinkActive="bg-primary/10 !text-primary font-semibold"
-              [routerLinkActiveOptions]="{ exact: item.route === '/' }"
-              class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-primary/5 transition-colors text-sm font-medium"
-              [attr.aria-label]="item.label"
-            >
-              <span class="material-symbols-outlined text-[20px] shrink-0">{{ item.icon }}</span>
-              <span class="flex-1 truncate">{{ item.label }}</span>
-              @if (item.badge) {
-                <span
-                  class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary"
-                >
-                  {{ item.badge }}
-                </span>
-              }
-            </a>
-          } @else {
-            <button
-              type="button"
-              (click)="toggleExpand(item.label)"
-              class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-primary/5 transition-colors text-sm font-medium"
-              [attr.aria-expanded]="isExpanded(item.label)"
-            >
-              <span class="material-symbols-outlined text-[20px] shrink-0">{{ item.icon }}</span>
-              <span class="flex-1 text-left truncate">{{ item.label }}</span>
-              <span
-                class="material-symbols-outlined text-[16px] transition-transform duration-200 shrink-0"
-                [class.rotate-180]="isExpanded(item.label)"
-              >
-                expand_more
-              </span>
-            </button>
-            @if (isExpanded(item.label)) {
-              <div class="ml-4 pl-3 border-l border-slate-200 dark:border-border-dark space-y-0.5">
-                @for (child of item.children!; track child.label) {
+      <div>
+        @if (group.label) {
+          <p class="px-2 mb-1.5 text-[10px] font-semibold text-slate-400 dark:text-slate-600 uppercase tracking-widest">
+            {{ group.label }}
+          </p>
+        }
+        <ul class="space-y-0.5">
+          @for (item of group.items; track item.label) {
+            @if (isVisible(item)) {
+              <li>
+                @if (!item.children?.length) {
+                  <!-- Leaf nav item -->
                   <a
-                    [routerLink]="child.route"
-                    routerLinkActive="bg-primary/10 !text-primary font-semibold"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-primary/5 transition-colors text-sm font-medium"
+                    [routerLink]="item.route"
+                    routerLinkActive="active-nav-item"
+                    [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+                    [attr.aria-label]="item.label"
+                    class="nav-item group flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all duration-150 text-sm font-medium"
                   >
-                    <span class="material-symbols-outlined text-[18px] shrink-0">{{
-                      child.icon
-                    }}</span>
-                    <span class="flex-1 truncate">{{ child.label }}</span>
-                    @if (child.badge) {
-                      <span
-                        class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary"
-                      >
-                        {{ child.badge }}
+                    <span class="material-symbols-outlined text-[19px] shrink-0 transition-colors">{{ item.icon }}</span>
+                    <span class="flex-1 truncate">{{ item.label }}</span>
+                    @if (item.badge) {
+                      <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary dark:bg-primary/20">
+                        {{ item.badge }}
                       </span>
                     }
                   </a>
+                } @else {
+                  <!-- Expandable parent item -->
+                  <button
+                    type="button"
+                    (click)="toggleExpand(item.label)"
+                    [attr.aria-expanded]="isExpanded(item.label)"
+                    class="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all duration-150 text-sm font-medium"
+                  >
+                    <span class="material-symbols-outlined text-[19px] shrink-0">{{ item.icon }}</span>
+                    <span class="flex-1 text-left truncate">{{ item.label }}</span>
+                    <span
+                      class="material-symbols-outlined text-[16px] text-slate-400 transition-transform duration-200 shrink-0"
+                      [class.rotate-180]="isExpanded(item.label)"
+                    >expand_more</span>
+                  </button>
+
+                  @if (isExpanded(item.label)) {
+                    <ul class="mt-0.5 ml-2.5 pl-3 border-l border-slate-200 dark:border-white/[0.08] space-y-0.5">
+                      @for (child of item.children!; track child.label) {
+                        <li>
+                          <a
+                            [routerLink]="child.route"
+                            routerLinkActive="active-nav-item"
+                            class="nav-item flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all duration-150 text-sm font-medium"
+                          >
+                            <span class="material-symbols-outlined text-[16px] shrink-0">{{ child.icon }}</span>
+                            <span class="flex-1 truncate">{{ child.label }}</span>
+                            @if (child.badge) {
+                              <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary dark:bg-primary/20">
+                                {{ child.badge }}
+                              </span>
+                            }
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  }
                 }
-              </div>
+              </li>
             }
           }
-        }
-      }
+        </ul>
+      </div>
     }
   </nav>
 
   <!-- User profile -->
   @if (user()) {
-    <div class="shrink-0 p-3 border-t border-slate-200 dark:border-border-dark">
-      <div
-        class="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-border-dark cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+    <div class="shrink-0 px-3 py-3 border-t border-slate-200 dark:border-border-dark">
+      <button
+        type="button"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors group"
       >
         <sk-avatar [src]="user()!.avatarUrl ?? null" [name]="user()!.name" size="sm" />
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold truncate text-slate-900 dark:text-white">
+          <p class="text-sm font-semibold truncate text-slate-900 dark:text-white leading-tight">
             {{ user()!.name }}
           </p>
           @if (user()!.role) {
-            <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user()!.role }}</p>
+            <p class="text-xs text-slate-400 dark:text-slate-500 truncate leading-tight">{{ user()!.role }}</p>
           }
         </div>
-        <span class="material-symbols-outlined text-slate-400 text-[18px] shrink-0">
-          unfold_more
+        <span class="material-symbols-outlined text-[18px] text-slate-400 dark:text-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-400 transition-colors shrink-0">
+          more_horiz
         </span>
-      </div>
+      </button>
     </div>
   }
+
 </aside>

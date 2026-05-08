@@ -1,0 +1,82 @@
+<div class="flex flex-col gap-6 max-w-7xl mx-auto">
+
+  <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Absences' }]" />
+
+  <sk-page-header title="Absence Management" subtitle="Review and manage employee absence requests across the organization.">
+  </sk-page-header>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    @for (s of stats(); track s.label) {
+      <sk-card>
+        <div class="p-4 flex items-center gap-4">
+          <div [class]="'size-10 rounded-xl flex items-center justify-center shrink-0 ' + s.bg">
+            <span [class]="'material-symbols-outlined text-[20px] ' + s.iconColor">{{ s.icon }}</span>
+          </div>
+          <div>
+            <p class="text-xl font-bold text-slate-900 dark:text-white">{{ s.value }}</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{ s.label }}</p>
+          </div>
+        </div>
+      </sk-card>
+    }
+  </div>
+
+  <!-- Filters -->
+  <sk-card>
+    <div class="p-4 flex flex-wrap gap-3">
+      <sk-select [options]="statusOptions" placeholder="All Statuses"    [(ngModel)]="statusFilter" class="w-44" />
+      <sk-select [options]="typeOptions"   placeholder="All Types"       [(ngModel)]="typeFilter"   class="w-44" />
+      <sk-select [options]="deptOptions"   placeholder="All Departments" [(ngModel)]="deptFilter"   class="w-44" />
+    </div>
+  </sk-card>
+
+  <!-- Table — click delegated to action buttons inside cells -->
+  <div (click)="onTableClick($event)">
+    <sk-table
+      [columns]="columns"
+      [loadFn]="loadFn"
+      [pageSize]="10"
+      [pageSizeOptions]="[10, 25]"
+      emptyMessage="No absence requests match your filters."
+    />
+  </div>
+
+  <!-- Reject confirmation modal -->
+  <sk-modal [isOpen]="showDetailModal()" (closed)="showDetailModal.set(false)">
+    <div class="flex flex-col gap-5 min-w-[380px]">
+      <div>
+        <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Reject Request</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Provide a reason for rejecting this absence request.
+        </p>
+      </div>
+
+      @if (selectedRecord(); as rec) {
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex items-center gap-3">
+          <div class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+            {{ getEmployeeName(rec.employeeId).split(' ').map(n => n[0]).join('').slice(0,2) }}
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ getEmployeeName(rec.employeeId) }}</p>
+            <p class="text-xs text-slate-500">{{ rec.startDate }} → {{ rec.endDate }} · {{ rec.days }}d</p>
+          </div>
+        </div>
+      }
+
+      <sk-textarea
+        label="Reason for Rejection"
+        placeholder="e.g. Conflict with project deadline..."
+        [rows]="3"
+        [ngModel]="rejectReason()"
+        (ngModelChange)="rejectReason.set($event)"
+      />
+
+      <div class="flex justify-end gap-3 pt-2 border-t border-slate-100 dark:border-border-dark">
+        <sk-button variant="ghost" (click)="showDetailModal.set(false)">Cancel</sk-button>
+        <sk-button variant="danger" (click)="confirmReject()">Confirm Rejection</sk-button>
+      </div>
+    </div>
+  </sk-modal>
+
+</div>

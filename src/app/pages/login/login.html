@@ -1,0 +1,134 @@
+<div class="min-h-screen bg-background-light dark:bg-background-dark flex">
+
+  <!-- Left branding panel -->
+  <div class="hidden lg:flex flex-col justify-between w-[45%] bg-slate-900 dark:bg-surface-dark p-12 relative overflow-hidden">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-violet-500/10 pointer-events-none"></div>
+    <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -top-20 -right-20 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Logo -->
+    <div class="relative flex items-center gap-3">
+      <div class="size-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/40">
+        <span class="material-symbols-outlined text-white text-[22px]">corporate_fare</span>
+      </div>
+      <div>
+        <p class="text-white font-bold text-lg leading-none">PeopleOS</p>
+        <p class="text-slate-400 text-xs">HR Management</p>
+      </div>
+    </div>
+
+    <!-- Center content -->
+    <div class="relative space-y-8">
+      <div class="space-y-4">
+        <h2 class="text-4xl font-bold text-white leading-tight">
+          Manage your workforce<br />with confidence.
+        </h2>
+        <p class="text-slate-400 text-lg leading-relaxed">
+          Streamline HR operations — employee records, training, and absences — all in one place.
+        </p>
+      </div>
+
+      <!-- Feature highlights -->
+      <div class="space-y-3">
+        @for (f of features; track f.icon) {
+          <div class="flex items-center gap-3">
+            <div class="size-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-primary text-[18px]">{{ f.icon }}</span>
+            </div>
+            <span class="text-slate-300 text-sm">{{ f.label }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Demo credentials hint -->
+    <div class="relative bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
+      <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Demo Credentials</p>
+      <div class="grid grid-cols-2 gap-3">
+        @for (cred of demoCredentials; track cred.email) {
+          <div class="space-y-0.5">
+            <p class="text-white text-xs font-medium">{{ cred.label }}</p>
+            <p class="text-slate-400 text-xs font-mono">{{ cred.email }}</p>
+            <p class="text-slate-400 text-xs font-mono">{{ cred.password }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Right login form -->
+  <div class="flex-1 flex items-center justify-center p-6 lg:p-12">
+    <div class="w-full max-w-md space-y-8">
+
+      <!-- Mobile logo -->
+      <div class="flex lg:hidden items-center gap-3">
+        <div class="size-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/40">
+          <span class="material-symbols-outlined text-white text-[20px]">corporate_fare</span>
+        </div>
+        <p class="text-slate-900 dark:text-white font-bold text-lg">PeopleOS</p>
+      </div>
+
+      <!-- Header -->
+      <div class="space-y-2">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Welcome back</h1>
+        <p class="text-slate-500 dark:text-slate-400">Sign in to your HR dashboard</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5">
+        @if (error()) {
+          <sk-alert variant="error">{{ error() }}</sk-alert>
+        }
+
+        <sk-input
+          formControlName="email"
+          label="Email address"
+          type="email"
+          placeholder="you@company.com"
+          prefixIcon="mail"
+        />
+
+        <sk-input
+          formControlName="password"
+          label="Password"
+          type="password"
+          placeholder="••••••••"
+          prefixIcon="lock"
+        />
+
+        <sk-button
+          type="submit"
+          variant="primary"
+          [fullWidth]="true"
+          size="lg"
+          [loading]="loading()"
+          [disabled]="form.invalid"
+        >
+          Sign in
+        </sk-button>
+      </form>
+
+      <!-- Mobile demo credentials -->
+      <div class="lg:hidden bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl p-4 space-y-2">
+        <p class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Demo Credentials</p>
+        @for (cred of demoCredentials; track cred.email) {
+          <div class="flex items-center justify-between">
+            <span class="text-slate-600 dark:text-slate-400 text-xs">{{ cred.label }}</span>
+            <button
+              type="button"
+              class="text-primary text-xs font-medium hover:underline"
+              (click)="form.patchValue({ email: cred.email, password: cred.password })"
+            >
+              Use these →
+            </button>
+          </div>
+        }
+      </div>
+
+      <p class="text-center text-xs text-slate-400">
+        PeopleOS v2.4 · © 2025 Corp Inc. All rights reserved.
+      </p>
+    </div>
+  </div>
+</div>
