@@ -54,11 +54,14 @@
     [data]="tableData()"
     [columns]="columns"
     [quickFilter]="true"
+    [selectable]="true"
     [clickable]="true"
+    [bulkActions]="tableBulkActions"
     [pageSize]="10"
     [pageSizeOptions]="[10, 25, 50]"
     emptyMessage="No employees found matching your filters."
     (rowClick)="viewEmployee($event)"
+    (bulkAction)="onBulkAction($event)"
   />
 
   <!-- Add Employee Modal -->

@@ -45,6 +45,20 @@ export interface SortState {
   dir: 'asc' | 'desc';
 }
 
+/**
+ * A bulk action shown in the selection toolbar when rows are checked.
+ * Pass an array via [bulkActions]; listen with (bulkAction) to receive
+ * { action, rows } and perform any operation you like.
+ */
+export interface BulkAction {
+  /** Unique key — use this in (bulkAction) to identify which button was clicked */
+  key: string;
+  label: string;
+  icon?: string;
+  /** Defaults to 'outline' */
+  variant?: 'primary' | 'danger' | 'outline' | 'ghost';
+}
+
 @Component({
   selector: 'sk-table',
   imports: [SkeletonComponent],
@@ -82,9 +96,16 @@ export class TableComponent<T extends Record<string, any> = Record<string, any>>
   /** Show a built-in global search bar above the table. */
   readonly quickFilter     = input(false);
   readonly emptyMessage    = input('No data found');
+  /**
+   * Bulk actions shown in the selection toolbar when ≥1 row is checked.
+   * Listen with (bulkAction) to receive { action, rows } and do anything you like.
+   */
+  readonly bulkActions     = input<BulkAction[]>([]);
 
   readonly rowSelected = output<T[]>();
   readonly rowClick    = output<T>();
+  /** Emitted when a bulk action button is clicked. Carries the action config + every selected row. */
+  readonly bulkAction  = output<{ action: BulkAction; rows: T[] }>();
 
   // ── Shared interaction state ────────────────────────────────────────────────
 
@@ -183,8 +204,10 @@ export class TableComponent<T extends Record<string, any> = Record<string, any>>
   });
 
   protected readonly allSelected = computed(() => {
-    const rows = this.displayRows();
-    return rows.length > 0 && rows.every(r => this.selectedRows().has(this.rowId(r)));
+    // In client mode, "select all" covers every filtered row across all pages.
+    // In server mode, it covers only the current visible page.
+    const all = this.isClientMode() ? (this.filteredData() ?? []) : this.displayRows();
+    return all.length > 0 && all.every(r => this.selectedRows().has(this.rowId(r)));
   });
 
   protected readonly skeletonRows = computed(() =>
@@ -292,9 +315,18 @@ export class TableComponent<T extends Record<string, any> = Record<string, any>>
     if (this.allSelected()) {
       this.selectedRows.set(new Set());
     } else {
-      this.selectedRows.set(new Set(this.displayRows().map(r => this.rowId(r))));
+      const all = this.isClientMode() ? (this.filteredData() ?? []) : this.displayRows();
+      this.selectedRows.set(new Set(all.map(r => this.rowId(r))));
     }
     this.emitSelection();
+  }
+
+  protected clearSelection(): void {
+    this.selectedRows.set(new Set());
+  }
+
+  protected onBulkActionClick(action: BulkAction): void {
+    this.bulkAction.emit({ action, rows: this.getSelectedRows() });
   }
 
   protected toggleRow(row: T): void {
@@ -335,8 +367,13 @@ export class TableComponent<T extends Record<string, any> = Record<string, any>>
 
   private rowId(row: T): unknown { return (row as any)['id'] ?? row; }
 
+  /** Returns every selected row across all pages (client mode) or current page (server mode). */
+  private getSelectedRows(): T[] {
+    const source = this.isClientMode() ? (this.filteredData() ?? []) : this.displayRows();
+    return source.filter(r => this.selectedRows().has(this.rowId(r)));
+  }
+
   private emitSelection(): void {
-    const selected = this.displayRows().filter(r => this.selectedRows().has(this.rowId(r)));
-    this.rowSelected.emit(selected);
+    this.rowSelected.emit(this.getSelectedRows());
   }
 }

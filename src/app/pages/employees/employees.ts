@@ -5,7 +5,7 @@ import {
   employeesStore, Employee, STATUS_COLORS,
   Department, EmployeeStatus,
 } from '../../core/mock-data';
-import { ColumnDef } from '../../components/data/table/table';
+import { ColumnDef, BulkAction } from '../../components/data/table/table';
 import { BreadcrumbComponent } from '../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../components/layout/page-header/page-header';
 import { TableComponent } from '../../components/data/table/table';
@@ -141,9 +141,21 @@ export class EmployeesComponent {
     { key: 'location', header: 'Location', sortable: true, filterable: true },
   ];
 
+  // ── Bulk actions ─────────────────────────────────────────────────
+  protected readonly tableBulkActions: BulkAction[] = [
+    { key: 'delete', label: 'Delete', icon: 'delete', variant: 'danger' },
+  ];
+
   // ── Actions ──────────────────────────────────────────────────────
   protected viewEmployee(emp: Employee): void {
     this.router.navigate(['/employees', emp.id]);
+  }
+
+  protected onBulkAction(event: { action: BulkAction; rows: Employee[] }): void {
+    if (event.action.key === 'delete') {
+      const ids = new Set(event.rows.map(e => e.id));
+      employeesStore.update(list => list.filter(e => !ids.has(e.id)));
+    }
   }
 
   protected addEmployee(): void {

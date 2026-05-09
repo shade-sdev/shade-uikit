@@ -18,6 +18,47 @@
     </div>
   }
 
+  <!-- Bulk-action selection toolbar (visible when ≥1 row is checked) -->
+  @if (selectable() && selectedRows().size > 0) {
+    <div class="px-4 py-2.5 border-b border-primary/20 bg-primary/5 dark:bg-primary/10 flex items-center gap-3 flex-wrap">
+      <span class="text-sm font-semibold text-primary">
+        {{ selectedRows().size }} row{{ selectedRows().size === 1 ? '' : 's' }} selected
+      </span>
+
+      <div class="flex items-center gap-2 ml-auto flex-wrap">
+        @for (action of bulkActions(); track action.key) {
+          <button
+            type="button"
+            (click)="onBulkActionClick(action)"
+            [class]="
+              'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ' + (
+                action.variant === 'primary'  ? 'bg-primary text-white hover:bg-primary/90' :
+                action.variant === 'danger'   ? 'bg-rose-600 text-white hover:bg-rose-700' :
+                action.variant === 'ghost'    ? 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' :
+                                               'border border-slate-200 dark:border-border-dark text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+              )
+            "
+          >
+            @if (action.icon) {
+              <span class="material-symbols-outlined text-[15px]">{{ action.icon }}</span>
+            }
+            {{ action.label }}
+          </button>
+        }
+
+        <!-- Clear selection -->
+        <button
+          type="button"
+          (click)="clearSelection()"
+          class="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          aria-label="Clear selection"
+        >
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+    </div>
+  }
+
   <!-- Table wrapper -->
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
