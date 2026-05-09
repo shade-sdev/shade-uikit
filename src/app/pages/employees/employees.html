@@ -40,6 +40,15 @@
         (ngModelChange)="statusFilter.set($event)"
         class="w-40"
       />
+      <!-- Active filter chips -->
+      @if (deptFilter()) {
+        <sk-chip [removable]="true" (removed)="deptFilter.set('')">{{ deptFilter() }}</sk-chip>
+      }
+      @if (statusFilter()) {
+        <sk-chip [removable]="true" (removed)="statusFilter.set('')">
+          {{ statusOptions.find(o => o.value === statusFilter())?.label ?? statusFilter() }}
+        </sk-chip>
+      }
     </div>
   </sk-card>
 
@@ -123,6 +132,13 @@
           placeholder="e.g. New York"
           [ngModel]="newLocation()"
           (ngModelChange)="newLocation.set($event)"
+        />
+        <sk-async-select
+          [loadFn]="managerLoadFn"
+          label="Reports To (optional)"
+          placeholder="Search manager…"
+          [ngModel]="newManager()"
+          (ngModelChange)="newManager.set($event)"
         />
       </div>
 

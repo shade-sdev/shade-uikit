@@ -1,0 +1,202 @@
+<div class="flex flex-col gap-6 max-w-7xl mx-auto">
+
+  <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Directory' }]" />
+
+  <sk-page-header title="Employee Directory" subtitle="Browse and connect with your entire team.">
+    <span class="inline-flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 font-medium">
+      <span class="material-symbols-outlined text-[18px]">people</span>
+      {{ filteredEmployees().length }} people
+    </span>
+  </sk-page-header>
+
+  <!-- Toolbar -->
+  <div class="flex flex-wrap items-center gap-3">
+    <!-- Inline search -->
+    <div class="relative flex-1 min-w-[200px] max-w-sm">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none">search</span>
+      <input
+        type="text"
+        placeholder="Search name, role, location…"
+        [value]="search()"
+        (input)="search.set($any($event.target).value)"
+        class="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
+      />
+    </div>
+
+    <!-- Department multi-select -->
+    <sk-multi-select
+      [options]="deptOptions"
+      placeholder="Filter departments…"
+      [ngModel]="selectedDepts()"
+      (ngModelChange)="selectedDepts.set($event)"
+      class="w-56"
+    />
+
+    <!-- Grid / List toggle -->
+    <sk-button-group
+      [options]="viewOptions"
+      size="sm"
+      [ngModel]="viewMode()"
+      (ngModelChange)="viewMode.set($event)"
+    />
+  </div>
+
+  <!-- Active filter chips -->
+  @if (selectedDepts().length > 0) {
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-xs text-slate-500 dark:text-slate-400 font-medium shrink-0">Showing:</span>
+      @for (dept of selectedDepts(); track dept) {
+        <sk-chip [removable]="true" (removed)="removeDeptFilter(dept)">{{ dept }}</sk-chip>
+      }
+      <button
+        type="button"
+        class="text-xs text-primary font-medium hover:underline ml-1"
+        (click)="selectedDepts.set([])"
+      >Clear all</button>
+    </div>
+  }
+
+  <!-- ── GRID VIEW ─────────────────────────────────────────────────────────── -->
+  @if (viewMode() === 'grid') {
+    @if (filteredEmployees().length === 0) {
+      <sk-empty-state
+        icon="person_search"
+        title="No employees found"
+        message="Try adjusting your search or department filters."
+      />
+    } @else {
+      <sk-masonry [columns]="[1, 2, 3, 4]" gap="md">
+        @for (emp of filteredEmployees(); track emp.id) {
+          <div class="break-inside-avoid mb-4">
+            <sk-card>
+              <div class="p-4 flex flex-col gap-3">
+
+                <!-- Avatar + actions -->
+                <div class="flex items-start justify-between">
+                  <sk-avatar [name]="emp.name" size="lg" />
+
+                  <sk-popover position="bottom-end" width="160px">
+                    <button
+                      popover-trigger
+                      type="button"
+                      [skTooltip]="'More actions'"
+                      class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <span class="material-symbols-outlined text-[20px]">more_horiz</span>
+                    </button>
+                    <div class="py-1">
+                      <a
+                        [routerLink]="['/employees', emp.id]"
+                        class="flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[16px] text-slate-400">person</span>
+                        View Profile
+                      </a>
+                      <button
+                        type="button"
+                        class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[16px] text-slate-400">mail</span>
+                        Send Message
+                      </button>
+                      <button
+                        type="button"
+                        class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                      >
+                        <span class="material-symbols-outlined text-[16px] text-slate-400">content_copy</span>
+                        Copy Email
+                      </button>
+                    </div>
+                  </sk-popover>
+                </div>
+
+                <!-- Identity -->
+                <div>
+                  <a
+                    [routerLink]="['/employees', emp.id]"
+                    class="text-sm font-semibold text-slate-900 dark:text-white hover:text-primary transition-colors"
+                  >{{ emp.name }}</a>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ emp.role }}</p>
+                </div>
+
+                <!-- Badges -->
+                <div class="flex flex-wrap gap-1.5">
+                  <span [class]="'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ' + deptColors[emp.department]">
+                    {{ emp.department }}
+                  </span>
+                  <sk-badge [variant]="statusVariant(emp.status)">{{ statusLabel(emp.status) }}</sk-badge>
+                </div>
+
+                <!-- Contact -->
+                <div class="space-y-1 pt-1 border-t border-slate-100 dark:border-border-dark">
+                  <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <span class="material-symbols-outlined text-[14px]">location_on</span>
+                    {{ emp.location }}
+                  </div>
+                  <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 truncate">
+                    <span class="material-symbols-outlined text-[14px]">mail</span>
+                    <span class="truncate">{{ emp.email }}</span>
+                  </div>
+                </div>
+
+              </div>
+            </sk-card>
+          </div>
+        }
+      </sk-masonry>
+    }
+  }
+
+  <!-- ── LIST VIEW ─────────────────────────────────────────────────────────── -->
+  @if (viewMode() === 'list') {
+    @if (filteredEmployees().length === 0) {
+      <sk-empty-state
+        icon="person_search"
+        title="No employees found"
+        message="Try adjusting your search or department filters."
+      />
+    } @else {
+      <sk-card>
+        <div class="divide-y divide-slate-100 dark:divide-border-dark">
+          @for (emp of filteredEmployees(); track emp.id) {
+            <div class="flex items-center gap-4 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+              <sk-avatar [name]="emp.name" size="md" />
+
+              <div class="flex-1 min-w-0">
+                <a
+                  [routerLink]="['/employees', emp.id]"
+                  class="text-sm font-semibold text-slate-900 dark:text-white hover:text-primary transition-colors"
+                >{{ emp.name }}</a>
+                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ emp.role }}</p>
+              </div>
+
+              <div class="hidden sm:block w-32">
+                <span [class]="'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ' + deptColors[emp.department]">
+                  {{ emp.department }}
+                </span>
+              </div>
+
+              <div class="hidden md:flex w-24">
+                <sk-badge [variant]="statusVariant(emp.status)">{{ statusLabel(emp.status) }}</sk-badge>
+              </div>
+
+              <div class="hidden lg:flex items-center gap-1 text-xs text-slate-400 w-28">
+                <span class="material-symbols-outlined text-[14px]">location_on</span>
+                {{ emp.location }}
+              </div>
+
+              <a
+                [routerLink]="['/employees', emp.id]"
+                [skTooltip]="'View profile'"
+                class="inline-flex items-center justify-center size-8 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/5 transition-colors"
+              >
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </a>
+            </div>
+          }
+        </div>
+      </sk-card>
+    }
+  }
+
+</div>

@@ -9,6 +9,7 @@ import { PageHeaderComponent } from '../../components/layout/page-header/page-he
 import { CardComponent } from '../../components/atoms/card/card';
 import { ButtonComponent } from '../../components/atoms/button/button';
 import { AvatarComponent } from '../../components/atoms/avatar/avatar';
+import { AlertComponent } from '../../components/atoms/alert/alert';
 import { ProgressComponent } from '../../components/atoms/progress/progress';
 import { DividerComponent } from '../../components/atoms/divider/divider';
 import { AuthService } from '../../core/auth.service';
@@ -17,7 +18,7 @@ import { AuthService } from '../../core/auth.service';
   selector: 'app-dashboard',
   imports: [
     RouterLink, PageHeaderComponent,
-    CardComponent, ButtonComponent, AvatarComponent,
+    CardComponent, ButtonComponent, AvatarComponent, AlertComponent,
     ProgressComponent, DividerComponent,
   ],
   templateUrl: './dashboard.html',

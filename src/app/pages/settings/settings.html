@@ -1,0 +1,310 @@
+<div class="flex flex-col gap-6 max-w-4xl mx-auto">
+
+  <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Settings' }]" />
+
+  <sk-page-header title="Settings" subtitle="Manage your account preferences and application configuration." />
+
+  <!-- Save success alert -->
+  @if (saved()) {
+    <sk-alert variant="success" [dismissible]="true">
+      Your settings have been saved successfully.
+    </sk-alert>
+  }
+
+  <sk-tabs>
+
+    <!-- ── PROFILE ──────────────────────────────────────────────────────────── -->
+    <sk-tab label="Profile" icon="person">
+      <div class="relative">
+        <sk-loading-overlay [loading]="saving()" message="Saving…" />
+
+        <div class="flex flex-col gap-6">
+
+          <!-- Avatar + name -->
+          <sk-card>
+            <div class="p-6 flex items-center gap-5">
+              <sk-avatar [name]="profileName()" size="lg" />
+              <div class="flex-1 min-w-0">
+                <p class="text-base font-semibold text-slate-900 dark:text-white">{{ profileName() }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">{{ profileRole() }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">{{ profileEmail() }}</p>
+              </div>
+              <sk-button variant="outline" size="sm">
+                <span class="material-symbols-outlined text-[16px]">photo_camera</span>
+                Change Photo
+              </sk-button>
+            </div>
+          </sk-card>
+
+          <!-- Personal info form -->
+          <sk-card>
+            <div class="p-6 flex flex-col gap-5">
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Personal Information</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <sk-input label="Full Name" [ngModel]="profileName()" (ngModelChange)="profileName.set($event)" />
+                <sk-input label="Email" type="email" [ngModel]="profileEmail()" (ngModelChange)="profileEmail.set($event)" />
+                <sk-input label="Job Title" [ngModel]="profileRole()" (ngModelChange)="profileRole.set($event)" />
+                <sk-input label="Phone" [ngModel]="profilePhone()" (ngModelChange)="profilePhone.set($event)" />
+                <sk-input label="Location" [ngModel]="profileLocation()" (ngModelChange)="profileLocation.set($event)" />
+                <sk-select
+                  label="Timezone"
+                  [options]="timezoneOptions"
+                  [ngModel]="profileTimezone()"
+                  (ngModelChange)="profileTimezone.set($event)"
+                />
+              </div>
+              <sk-textarea
+                label="Bio"
+                hint="A short description about yourself."
+                [rows]="3"
+                [ngModel]="profileBio()"
+                (ngModelChange)="profileBio.set($event)"
+              />
+            </div>
+          </sk-card>
+
+          <div class="flex justify-end">
+            <sk-button variant="primary" (click)="save()">
+              <span class="material-symbols-outlined text-[16px]">save</span>
+              Save Changes
+            </sk-button>
+          </div>
+        </div>
+      </div>
+    </sk-tab>
+
+    <!-- ── NOTIFICATIONS ────────────────────────────────────────────────────── -->
+    <sk-tab label="Notifications" icon="notifications">
+      <div class="flex flex-col gap-5">
+
+        <!-- Channels -->
+        <sk-card>
+          <div class="p-6 flex flex-col gap-5">
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Notification Channels</h3>
+
+            <div class="flex items-center justify-between py-2">
+              <div>
+                <p class="text-sm font-medium text-slate-800 dark:text-white">Email notifications</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Receive updates directly to your inbox</p>
+              </div>
+              <sk-toggle [ngModel]="notifEmail()" (ngModelChange)="notifEmail.set($event)" />
+            </div>
+            <sk-divider />
+            <div class="flex items-center justify-between py-2">
+              <div>
+                <p class="text-sm font-medium text-slate-800 dark:text-white">Push notifications</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Browser and mobile push alerts</p>
+              </div>
+              <sk-toggle [ngModel]="notifPush()" (ngModelChange)="notifPush.set($event)" />
+            </div>
+            <sk-divider />
+            <div class="flex items-center justify-between py-2">
+              <div>
+                <p class="text-sm font-medium text-slate-800 dark:text-white">Slack integration</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Send alerts to your Slack workspace</p>
+              </div>
+              <sk-toggle [ngModel]="notifSlack()" (ngModelChange)="notifSlack.set($event)" />
+            </div>
+          </div>
+        </sk-card>
+
+        <!-- Events -->
+        <sk-card>
+          <div class="p-6 flex flex-col gap-4">
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Notify Me About</h3>
+            <div class="space-y-3">
+              <sk-checkbox [ngModel]="notifAbsenceRequests()" (ngModelChange)="notifAbsenceRequests.set($event)">
+                New absence requests requiring approval
+              </sk-checkbox>
+              <sk-checkbox [ngModel]="notifTrainingOverdue()" (ngModelChange)="notifTrainingOverdue.set($event)">
+                Overdue training assignments
+              </sk-checkbox>
+              <sk-checkbox [ngModel]="notifNewHires()" (ngModelChange)="notifNewHires.set($event)">
+                New employee onboarding events
+              </sk-checkbox>
+              <sk-checkbox [ngModel]="notifPayroll()" (ngModelChange)="notifPayroll.set($event)">
+                Payroll processing reminders
+              </sk-checkbox>
+              <sk-checkbox [ngModel]="notifReports()" (ngModelChange)="notifReports.set($event)">
+                Scheduled report delivery
+              </sk-checkbox>
+            </div>
+          </div>
+        </sk-card>
+
+        <!-- Digest frequency -->
+        <sk-card>
+          <div class="p-6 flex flex-col gap-4">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Email Digest Frequency</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">How often to bundle and send email summaries</p>
+            </div>
+            <sk-button-group
+              [options]="digestOptions"
+              [ngModel]="digestFrequency()"
+              (ngModelChange)="digestFrequency.set($event)"
+            />
+          </div>
+        </sk-card>
+
+        <div class="flex justify-end">
+          <sk-button variant="primary" (click)="save()">
+            <span class="material-symbols-outlined text-[16px]">save</span>
+            Save Preferences
+          </sk-button>
+        </div>
+      </div>
+    </sk-tab>
+
+    <!-- ── APPEARANCE ────────────────────────────────────────────────────────── -->
+    <sk-tab label="Appearance" icon="palette">
+      <div class="flex flex-col gap-5">
+
+        <!-- Theme -->
+        <sk-card>
+          <div class="p-6 flex flex-col gap-4">
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Color Theme</h3>
+            <sk-radio-group
+              [options]="themeOptions"
+              layout="horizontal"
+              [ngModel]="theme()"
+              (ngModelChange)="theme.set($event)"
+            />
+          </div>
+        </sk-card>
+
+        <!-- Density -->
+        <sk-card>
+          <div class="p-6 flex flex-col gap-4">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Table Density</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Controls the row height and spacing in data tables</p>
+            </div>
+            <sk-button-group
+              [options]="densityOptions"
+              [ngModel]="density()"
+              (ngModelChange)="density.set($event)"
+            />
+          </div>
+        </sk-card>
+
+        <!-- Language -->
+        <sk-card>
+          <div class="p-6 flex flex-col gap-4">
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Language</h3>
+            <sk-radio-group
+              [options]="languageOptions"
+              layout="horizontal"
+              [ngModel]="language()"
+              (ngModelChange)="language.set($event)"
+            />
+          </div>
+        </sk-card>
+
+        <div class="flex justify-end">
+          <sk-button variant="primary" (click)="save()">
+            <span class="material-symbols-outlined text-[16px]">save</span>
+            Apply Appearance
+          </sk-button>
+        </div>
+      </div>
+    </sk-tab>
+
+    <!-- ── SECURITY ──────────────────────────────────────────────────────────── -->
+    <sk-tab label="Security" icon="lock">
+      <div class="flex flex-col gap-5">
+
+        <sk-alert variant="info">
+          Keep your account secure by using a strong password and enabling two-factor authentication.
+        </sk-alert>
+
+        <sk-accordion [single]="true">
+
+          <sk-accordion-item title="Change Password" icon="key">
+            <div class="flex flex-col gap-4 pt-2">
+              <sk-input
+                label="Current Password"
+                type="password"
+                placeholder="Enter current password"
+                [ngModel]="currentPassword()"
+                (ngModelChange)="currentPassword.set($event)"
+              />
+              <sk-input
+                label="New Password"
+                type="password"
+                placeholder="At least 8 characters"
+                [ngModel]="newPassword()"
+                (ngModelChange)="newPassword.set($event)"
+              />
+              <sk-input
+                label="Confirm New Password"
+                type="password"
+                placeholder="Repeat new password"
+                [ngModel]="confirmPassword()"
+                (ngModelChange)="confirmPassword.set($event)"
+              />
+              <div class="flex justify-end pt-1">
+                <sk-button variant="primary" size="sm"
+                  [disabled]="!currentPassword() || !newPassword() || newPassword() !== confirmPassword()">
+                  Update Password
+                </sk-button>
+              </div>
+            </div>
+          </sk-accordion-item>
+
+          <sk-accordion-item title="Two-Factor Authentication" icon="verified_user">
+            <div class="flex flex-col gap-4 pt-2">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-medium text-slate-800 dark:text-white">Enable 2FA</p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Add an extra layer of security using an authenticator app
+                  </p>
+                </div>
+                <sk-toggle [ngModel]="twoFaEnabled()" (ngModelChange)="twoFaEnabled.set($event)" />
+              </div>
+              @if (twoFaEnabled()) {
+                <sk-alert variant="success">
+                  Two-factor authentication is active. Your account is well protected.
+                </sk-alert>
+              }
+            </div>
+          </sk-accordion-item>
+
+          <sk-accordion-item title="Active Sessions" icon="devices">
+            <div class="flex flex-col gap-3 pt-2">
+              @for (session of [
+                { device: 'Chrome on macOS', location: 'New York, US', current: true,  time: 'Now' },
+                { device: 'Safari on iPhone', location: 'New York, US', current: false, time: '2 hours ago' },
+                { device: 'Firefox on Windows', location: 'Boston, US', current: false, time: '3 days ago' }
+              ]; track session.device) {
+                <div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[20px] text-slate-400">
+                      {{ session.device.includes('iPhone') ? 'smartphone' : 'computer' }}
+                    </span>
+                    <div>
+                      <p class="text-sm font-medium text-slate-800 dark:text-white">
+                        {{ session.device }}
+                        @if (session.current) {
+                          <span class="ml-2 text-xs text-emerald-600 font-semibold">Current</span>
+                        }
+                      </p>
+                      <p class="text-xs text-slate-400">{{ session.location }} · {{ session.time }}</p>
+                    </div>
+                  </div>
+                  @if (!session.current) {
+                    <sk-button variant="ghost" size="sm">Revoke</sk-button>
+                  }
+                </div>
+              }
+            </div>
+          </sk-accordion-item>
+
+        </sk-accordion>
+
+      </div>
+    </sk-tab>
+
+  </sk-tabs>
+</div>

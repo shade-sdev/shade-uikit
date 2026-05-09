@@ -59,9 +59,10 @@
         [ngModel]="newEmployee()"
         (ngModelChange)="newEmployee.set($event)"
       />
-      <sk-input
+      <sk-combo-box
         label="Course Name"
-        placeholder="e.g. Security Best Practices"
+        placeholder="Type or choose a course…"
+        [options]="courseSuggestions"
         [ngModel]="newCourse()"
         (ngModelChange)="newCourse.set($event)"
       />

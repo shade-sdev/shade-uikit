@@ -20,21 +20,23 @@ export class AppLayoutComponent {
     {
       label: 'Overview',
       items: [
-        { label: 'Dashboard',  icon: 'dashboard',    route: '/dashboard' },
+        { label: 'Dashboard',       icon: 'dashboard',      route: '/dashboard' },
       ],
     },
     {
       label: 'Workforce',
       items: [
-        { label: 'Employees',  icon: 'people',       route: '/employees' },
-        { label: 'Training',   icon: 'school',       route: '/training',  badge: 4 },
-        { label: 'Absences',   icon: 'event_busy',   route: '/absences',  badge: 4 },
+        { label: 'Employees',       icon: 'people',         route: '/employees' },
+        { label: 'Directory',       icon: 'contacts',       route: '/directory' },
+        { label: 'Training',        icon: 'school',         route: '/training',       badge: 4 },
+        { label: 'Absences',        icon: 'event_busy',     route: '/absences',       badge: 4 },
+        { label: 'Leave Calendar',  icon: 'calendar_month', route: '/leave-calendar' },
       ],
     },
     {
       label: 'Account',
       items: [
-        { label: 'Settings',   icon: 'settings',     route: '/settings' },
+        { label: 'Settings',        icon: 'settings',       route: '/settings' },
       ],
     },
   ];

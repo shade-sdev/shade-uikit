@@ -10,7 +10,11 @@
     @for (s of stats(); track s.label) {
       <sk-card>
         <div class="p-4 flex items-center gap-4">
-          <div [class]="'size-10 rounded-xl flex items-center justify-center shrink-0 ' + s.bg">
+          <div
+            [class]="'size-10 rounded-xl flex items-center justify-center shrink-0 ' + s.bg"
+            [skTooltip]="s.label"
+            skTooltipPosition="top"
+          >
             <span [class]="'material-symbols-outlined text-[20px] ' + s.iconColor">{{ s.icon }}</span>
           </div>
           <div>

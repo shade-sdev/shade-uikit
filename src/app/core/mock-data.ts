@@ -133,7 +133,18 @@ const ABSENCE_DATA: AbsenceRequest[] = [
   { id: 'a12', employeeId: 'e08', type: 'sick',        status: 'rejected',  startDate: '2024-04-15', endDate: '2024-04-18', days: 4,  reason: 'Chronic back pain', submittedDate: '2024-04-14' },
   { id: 'a13', employeeId: 'e19', type: 'vacation',    status: 'approved',  startDate: '2024-03-18', endDate: '2024-03-22', days: 5,  reason: 'Spring break holiday', submittedDate: '2024-03-01' },
   { id: 'a14', employeeId: 'e15', type: 'personal',    status: 'pending',   startDate: '2024-06-03', endDate: '2024-06-04', days: 2,  reason: 'House closing appointment', submittedDate: '2024-05-20' },
-  { id: 'a15', employeeId: 'e01', type: 'vacation',    status: 'approved',  startDate: '2024-02-19', endDate: '2024-02-23', days: 5,  reason: 'Winter break', submittedDate: '2024-02-01' },
+  { id: 'a15', employeeId: 'e01', type: 'vacation',    status: 'approved',  startDate: '2024-02-19', endDate: '2024-02-23', days: 5,  reason: 'Winter break',          submittedDate: '2024-02-01' },
+  // 2026 records — used by the leave calendar
+  { id: 'a16', employeeId: 'e01', type: 'vacation',  status: 'approved',  startDate: '2026-05-12', endDate: '2026-05-15', days: 4,  reason: 'Spring holiday',          submittedDate: '2026-04-20' },
+  { id: 'a17', employeeId: 'e03', type: 'sick',      status: 'approved',  startDate: '2026-05-08', endDate: '2026-05-09', days: 2,  reason: 'Flu recovery',            submittedDate: '2026-05-07' },
+  { id: 'a18', employeeId: 'e07', type: 'vacation',  status: 'approved',  startDate: '2026-05-19', endDate: '2026-05-23', days: 5,  reason: 'Family trip',             submittedDate: '2026-04-28' },
+  { id: 'a19', employeeId: 'e10', type: 'personal',  status: 'approved',  startDate: '2026-06-02', endDate: '2026-06-03', days: 2,  reason: 'House closing',           submittedDate: '2026-05-20' },
+  { id: 'a20', employeeId: 'e15', type: 'sick',      status: 'approved',  startDate: '2026-05-14', endDate: '2026-05-15', days: 2,  reason: 'Migraine',                submittedDate: '2026-05-13' },
+  { id: 'a21', employeeId: 'e02', type: 'vacation',  status: 'approved',  startDate: '2026-05-26', endDate: '2026-05-29', days: 4,  reason: 'Memorial Day extension',   submittedDate: '2026-05-01' },
+  { id: 'a22', employeeId: 'e04', type: 'personal',  status: 'approved',  startDate: '2026-05-21', endDate: '2026-05-21', days: 1,  reason: 'School event',            submittedDate: '2026-05-18' },
+  { id: 'a23', employeeId: 'e12', type: 'vacation',  status: 'pending',   startDate: '2026-06-15', endDate: '2026-06-26', days: 10, reason: 'Summer vacation abroad',   submittedDate: '2026-05-09' },
+  { id: 'a24', employeeId: 'e18', type: 'sick',      status: 'pending',   startDate: '2026-05-20', endDate: '2026-05-22', days: 3,  reason: 'Surgery recovery',        submittedDate: '2026-05-10' },
+  { id: 'a25', employeeId: 'e06', type: 'vacation',  status: 'approved',  startDate: '2026-06-09', endDate: '2026-06-13', days: 5,  reason: 'Anniversary trip',        submittedDate: '2026-05-05' },
 ];
 
 // ─── Reactive store ───────────────────────────────────────────────────────────

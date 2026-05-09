@@ -13,7 +13,7 @@ import { ButtonComponent } from '../../components/atoms/button/button';
 import { TableComponent } from '../../components/data/table/table';
 import { SelectComponent } from '../../components/forms/select/select';
 import { ModalComponent } from '../../components/feedback/modal/modal';
-import { InputComponent } from '../../components/forms/input/input';
+import { ComboBoxComponent } from '../../components/forms/combo-box/combo-box';
 import { DatePickerComponent } from '../../components/forms/date-picker/date-picker';
 
 @Component({
@@ -22,7 +22,7 @@ import { DatePickerComponent } from '../../components/forms/date-picker/date-pic
     FormsModule,
     BreadcrumbComponent, PageHeaderComponent, CardComponent,
     ButtonComponent, TableComponent,
-    SelectComponent, ModalComponent, InputComponent, DatePickerComponent,
+    SelectComponent, ModalComponent, ComboBoxComponent, DatePickerComponent,
   ],
   templateUrl: './training.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,6 +39,15 @@ export class TrainingComponent {
   protected newEmployee  = signal('');
   protected newCategory  = signal('');
   protected newDueDate   = signal('');
+
+  protected readonly courseSuggestions = [
+    'Leadership Excellence',    'Security Best Practices',  'GDPR Compliance',
+    'Agile & Scrum Mastery',    'React 18 Deep Dive',       'Cloud Architecture (AWS)',
+    'Financial Modeling',       'Diversity & Inclusion',    'Conflict Resolution',
+    'Design Systems at Scale',  'Kubernetes Advanced',      'Data Analysis Basics',
+    'HR Compliance & Labor Law','Six Sigma Green Belt',     'Customer Success Strategies',
+    'Product Analytics',        'Strategic Product Management', 'Terraform & IaC',
+  ].map(c => ({ value: c, label: c }));
 
   protected readonly statusOptions = [
     { value: '', label: 'All Statuses' },

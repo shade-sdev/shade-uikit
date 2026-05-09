@@ -5,14 +5,17 @@ import {
   employeesStore, Employee, STATUS_COLORS,
   Department, EmployeeStatus,
 } from '../../core/mock-data';
+import { Observable, delay, of } from 'rxjs';
 import { ColumnDef, BulkAction } from '../../components/data/table/table';
 import { BreadcrumbComponent } from '../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../components/layout/page-header/page-header';
 import { TableComponent } from '../../components/data/table/table';
 import { ButtonComponent } from '../../components/atoms/button/button';
 import { CardComponent } from '../../components/atoms/card/card';
+import { ChipComponent } from '../../components/atoms/chip/chip';
 import { SelectComponent } from '../../components/forms/select/select';
 import { InputComponent } from '../../components/forms/input/input';
+import { AsyncSelectComponent } from '../../components/forms/async-select/async-select';
 import { ModalComponent } from '../../components/feedback/modal/modal';
 import { calcTenure } from '../../core/mock-data';
 
@@ -21,7 +24,8 @@ import { calcTenure } from '../../core/mock-data';
   imports: [
     FormsModule,
     BreadcrumbComponent, PageHeaderComponent, TableComponent,
-    ButtonComponent, CardComponent, SelectComponent, InputComponent, ModalComponent,
+    ButtonComponent, CardComponent, ChipComponent, SelectComponent, InputComponent,
+    AsyncSelectComponent, ModalComponent,
   ],
   templateUrl: './employees.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,6 +47,17 @@ export class EmployeesComponent {
   protected readonly newPhone     = signal('');
   protected readonly newLocation  = signal('');
   protected readonly newSalary    = signal('');
+  protected readonly newManager   = signal<unknown>(null);
+
+  /** Async employee search for the manager selector */
+  protected readonly managerLoadFn = (search: string): Observable<{ value: unknown; label: string }[]> => {
+    const q    = search.trim().toLowerCase();
+    const opts = employeesStore()
+      .filter(e => !q || e.name.toLowerCase().includes(q) || e.role.toLowerCase().includes(q))
+      .slice(0, 10)
+      .map(e => ({ value: e.id, label: `${e.name} — ${e.role}` }));
+    return of(opts).pipe(delay(150));
+  };
 
   // ── Filter options ───────────────────────────────────────────────
   protected readonly deptOptions = [
@@ -169,13 +184,14 @@ export class EmployeesComponent {
       status:     this.newStatus() as EmployeeStatus,
       joinDate:   new Date().toISOString().slice(0, 10),
       salary:     Number(this.newSalary()) || 0,
+      managerId:  (this.newManager() as string) || undefined,
       phone:      this.newPhone(),
       location:   this.newLocation(),
     };
     employeesStore.update(list => [emp, ...list]);
     this.newName.set(''); this.newEmail.set(''); this.newRole.set('');
     this.newDept.set(''); this.newStatus.set('active'); this.newPhone.set('');
-    this.newLocation.set(''); this.newSalary.set('');
+    this.newLocation.set(''); this.newSalary.set(''); this.newManager.set(null);
     this.showModal.set(false);
   }
 }

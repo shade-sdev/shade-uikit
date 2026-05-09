@@ -10,6 +10,15 @@
     </sk-button>
   </sk-page-header>
 
+  <!-- Overdue training alert -->
+  @if (trainingStats().overdue > 0) {
+    <sk-alert variant="warning">
+      <strong>{{ trainingStats().overdue }} overdue training assignment{{ trainingStats().overdue > 1 ? 's' : '' }}</strong>
+      require attention.
+      <a routerLink="/training" class="underline font-semibold ml-1">Review now →</a>
+    </sk-alert>
+  }
+
   <!-- KPI cards -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
     @for (card of kpiCards(); track card.label) {

@@ -7,6 +7,18 @@
       { label: emp.name }
     ]" />
 
+    <!-- Status alerts -->
+    @if (emp.status === 'on-leave') {
+      <sk-alert variant="warning">
+        {{ emp.name }} is currently <strong>on leave</strong>. Some features may be restricted.
+      </sk-alert>
+    }
+    @if (emp.status === 'terminated') {
+      <sk-alert variant="error">
+        This employee record is <strong>archived</strong>. The employee is no longer active.
+      </sk-alert>
+    }
+
     <!-- Hero card -->
     <sk-card>
       <div class="p-6">

@@ -13,6 +13,7 @@ import { BreadcrumbComponent } from '../../../components/layout/breadcrumb/bread
 import { CardComponent } from '../../../components/atoms/card/card';
 import { ButtonComponent } from '../../../components/atoms/button/button';
 import { AvatarComponent } from '../../../components/atoms/avatar/avatar';
+import { AlertComponent } from '../../../components/atoms/alert/alert';
 import { ProgressComponent } from '../../../components/atoms/progress/progress';
 import { TabsComponent, TabComponent } from '../../../components/data/tabs/tabs';
 import { TableComponent } from '../../../components/data/table/table';
@@ -21,7 +22,7 @@ import { TableComponent } from '../../../components/data/table/table';
   selector: 'app-employee-detail',
   imports: [
     TitleCasePipe, RouterLink, BreadcrumbComponent,
-    CardComponent, ButtonComponent, AvatarComponent,
+    CardComponent, ButtonComponent, AvatarComponent, AlertComponent,
     ProgressComponent, TabsComponent, TabComponent, TableComponent,
   ],
   templateUrl: './employee-detail.html',

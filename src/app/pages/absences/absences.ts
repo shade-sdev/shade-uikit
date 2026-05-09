@@ -16,6 +16,7 @@ import { SelectComponent } from '../../components/forms/select/select';
 import { ModalComponent } from '../../components/feedback/modal/modal';
 import { TextareaComponent } from '../../components/forms/textarea/textarea';
 import { ToastService } from '../../components/feedback/toast/toast.service';
+import { TooltipDirective } from '../../components/feedback/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-absences',
@@ -23,7 +24,7 @@ import { ToastService } from '../../components/feedback/toast/toast.service';
     FormsModule,
     BreadcrumbComponent, PageHeaderComponent, CardComponent,
     ButtonComponent, TableComponent,
-    SelectComponent, ModalComponent, TextareaComponent,
+    SelectComponent, ModalComponent, TextareaComponent, TooltipDirective,
   ],
   templateUrl: './absences.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
