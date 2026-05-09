@@ -121,14 +121,18 @@ export class AbsencesComponent {
     },
     { key: 'submittedDate', header: 'Submitted', sortable: true },
     {
-      key: 'id', header: 'Actions',
+      key: 'id', header: 'Actions', width: '96px',
       cell: r => r.status === 'pending'
-        ? `<div class="flex gap-1">
-            <button data-action="approve" data-id="${r.id}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
-              <span class="material-symbols-outlined text-[14px]">check</span>Approve
+        ? `<div class="flex items-center gap-1.5">
+            <button data-action="approve" data-id="${r.id}"
+              title="Approve"
+              class="inline-flex items-center justify-center size-8 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/40 transition-colors cursor-pointer">
+              <span class="material-symbols-outlined text-[18px]">check</span>
             </button>
-            <button data-action="reject" data-id="${r.id}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-rose-500 text-white hover:bg-rose-600 transition-colors">
-              <span class="material-symbols-outlined text-[14px]">close</span>Reject
+            <button data-action="reject" data-id="${r.id}"
+              title="Reject"
+              class="inline-flex items-center justify-center size-8 rounded-lg border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-900/20 dark:text-rose-400 dark:hover:bg-rose-900/40 transition-colors cursor-pointer">
+              <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
            </div>`
         : `<span class="text-xs text-slate-400">—</span>`,
