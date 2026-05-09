@@ -1,7 +1,27 @@
 <div class="flex flex-col gap-0 rounded-xl border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark overflow-hidden">
+
+  <!-- Quick-filter toolbar (opt-in via [quickFilter]="true") -->
+  @if (quickFilter()) {
+    <div class="px-4 py-2.5 border-b border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-background-dark flex items-center gap-3">
+      <div class="relative flex-1 max-w-xs">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none">search</span>
+        <input
+          type="text"
+          placeholder="Search all columns…"
+          (input)="onSearch($any($event.target).value)"
+          class="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
+        />
+      </div>
+      @if (displayTotal() > 0) {
+        <span class="text-xs text-slate-400 shrink-0">{{ displayTotal() }} result{{ displayTotal() === 1 ? '' : 's' }}</span>
+      }
+    </div>
+  }
+
   <!-- Table wrapper -->
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
+
       <!-- Header -->
       <thead class="border-b border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-background-dark">
         <tr>
@@ -36,7 +56,7 @@
                 @if (col.filterable) {
                   <input
                     type="text"
-                    [placeholder]="'Filter ' + col.header + '...'"
+                    [placeholder]="'Filter ' + col.header + '…'"
                     (input)="onFilter(col.key, $any($event.target).value)"
                     (click)="$event.stopPropagation()"
                     class="w-full px-2 py-1 text-xs font-normal normal-case tracking-normal rounded-md border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/40"
@@ -50,7 +70,9 @@
 
       <!-- Body -->
       <tbody class="divide-y divide-slate-100 dark:divide-border-dark">
-        @if (loading()) {
+
+        <!-- Loading skeleton (server mode only) -->
+        @if (!isClientMode() && loading()) {
           @for (row of skeletonRows(); track $index) {
             <tr>
               @if (selectable()) {
@@ -63,7 +85,9 @@
               }
             </tr>
           }
-        } @else if (rows().length === 0) {
+
+        <!-- Empty state -->
+        } @else if (displayRows().length === 0) {
           <tr>
             <td
               [attr.colspan]="columns().length + (selectable() ? 1 : 0)"
@@ -75,8 +99,10 @@
               </div>
             </td>
           </tr>
+
+        <!-- Rows -->
         } @else {
-          @for (row of rows(); track $index) {
+          @for (row of displayRows(); track $index) {
             <tr
               [class]="
                 'transition-colors ' +
@@ -93,6 +119,7 @@
                     type="checkbox"
                     [checked]="isRowSelected(row)"
                     (change)="toggleRow(row)"
+                    (click)="$event.stopPropagation()"
                     class="h-4 w-4 rounded border-slate-300 text-primary accent-primary cursor-pointer"
                     [attr.aria-label]="'Select row ' + ($index + 1)"
                   />
@@ -119,13 +146,12 @@
   </div>
 
   <!-- Pagination -->
-  <div
-    class="flex items-center justify-between gap-4 px-4 py-3 border-t border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-background-dark flex-wrap"
-  >
-    <!-- Info + page size -->
+  <div class="flex items-center justify-between gap-4 px-4 py-3 border-t border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-background-dark flex-wrap">
+
+    <!-- Row count + page size selector -->
     <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-      @if (total() > 0) {
-        <span>{{ startIndex() }}–{{ endIndex() }} of {{ total() }}</span>
+      @if (displayTotal() > 0) {
+        <span>{{ startIndex() }}–{{ endIndex() }} of {{ displayTotal() }}</span>
       }
       <select
         [value]="currentPageSize()"

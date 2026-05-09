@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable, delay, of } from 'rxjs';
 import {
-  employeesStore, Employee, STATUS_COLORS, DEPT_COLORS,
-  calcTenure, Department, EmployeeStatus,
+  employeesStore, Employee, STATUS_COLORS,
+  Department, EmployeeStatus,
 } from '../../core/mock-data';
-import { PagedResult, TableParams, ColumnDef } from '../../components/data/table/table';
+import { ColumnDef } from '../../components/data/table/table';
 import { BreadcrumbComponent } from '../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../components/layout/page-header/page-header';
 import { TableComponent } from '../../components/data/table/table';
@@ -15,6 +14,7 @@ import { CardComponent } from '../../components/atoms/card/card';
 import { SelectComponent } from '../../components/forms/select/select';
 import { InputComponent } from '../../components/forms/input/input';
 import { ModalComponent } from '../../components/feedback/modal/modal';
+import { calcTenure } from '../../core/mock-data';
 
 @Component({
   selector: 'app-employees',
@@ -29,21 +29,22 @@ import { ModalComponent } from '../../components/feedback/modal/modal';
 export class EmployeesComponent {
   private readonly router = inject(Router);
 
-  protected readonly search      = signal('');
-  protected readonly deptFilter  = signal('');
+  // ── Filters (applied before passing data to table) ──────────────
+  protected readonly deptFilter   = signal('');
   protected readonly statusFilter = signal('');
 
-  // Add Employee modal
-  protected readonly showModal  = signal(false);
-  protected readonly newName    = signal('');
-  protected readonly newEmail   = signal('');
-  protected readonly newRole    = signal('');
-  protected readonly newDept    = signal('');
-  protected readonly newStatus  = signal('active');
-  protected readonly newPhone   = signal('');
-  protected readonly newLocation = signal('');
-  protected readonly newSalary  = signal('');
+  // ── Add Employee modal ───────────────────────────────────────────
+  protected readonly showModal    = signal(false);
+  protected readonly newName      = signal('');
+  protected readonly newEmail     = signal('');
+  protected readonly newRole      = signal('');
+  protected readonly newDept      = signal('');
+  protected readonly newStatus    = signal('active');
+  protected readonly newPhone     = signal('');
+  protected readonly newLocation  = signal('');
+  protected readonly newSalary    = signal('');
 
+  // ── Filter options ───────────────────────────────────────────────
   protected readonly deptOptions = [
     { value: '', label: 'All Departments' },
     ...(['Engineering','Design','Product','Sales','HR','Finance','Operations'] as Department[])
@@ -58,16 +59,43 @@ export class EmployeesComponent {
     { value: 'terminated', label: 'Terminated' },
   ];
 
+  protected readonly newDeptOptions = [
+    ...(['Engineering','Design','Product','Sales','HR','Finance','Operations'] as Department[])
+      .map(d => ({ value: d, label: d })),
+  ];
+
+  protected readonly newStatusOptions = [
+    { value: 'active',    label: 'Active' },
+    { value: 'remote',    label: 'Remote' },
+    { value: 'on-leave',  label: 'On Leave' },
+    { value: 'terminated',label: 'Terminated' },
+  ];
+
+  // ── Headcount stats ──────────────────────────────────────────────
   protected readonly headcountStats = computed(() => {
     const e = employeesStore();
     return [
-      { label: 'Total',      value: e.length,                                         color: 'text-slate-900 dark:text-white' },
-      { label: 'Active',     value: e.filter(x => x.status === 'active').length,      color: 'text-emerald-600' },
-      { label: 'Remote',     value: e.filter(x => x.status === 'remote').length,      color: 'text-blue-600' },
-      { label: 'On Leave',   value: e.filter(x => x.status === 'on-leave').length,    color: 'text-amber-600' },
+      { label: 'Total',    value: e.length,                                      color: 'text-slate-900 dark:text-white' },
+      { label: 'Active',   value: e.filter(x => x.status === 'active').length,   color: 'text-emerald-600' },
+      { label: 'Remote',   value: e.filter(x => x.status === 'remote').length,   color: 'text-blue-600' },
+      { label: 'On Leave', value: e.filter(x => x.status === 'on-leave').length, color: 'text-amber-600' },
     ];
   });
 
+  /**
+   * CLIENT-SIDE DATA — pre-filter by dept/status dropdowns,
+   * then hand the array to [data] so the table handles search/sort/paginate.
+   */
+  protected readonly tableData = computed(() => {
+    let data = employeesStore();
+    const dept   = this.deptFilter();
+    const status = this.statusFilter();
+    if (dept)   data = data.filter(e => e.department === dept);
+    if (status) data = data.filter(e => e.status     === status);
+    return data;
+  });
+
+  // ── Column definitions ───────────────────────────────────────────
   protected readonly columns: ColumnDef<Employee>[] = [
     {
       key: 'name', header: 'Employee', sortable: true,
@@ -83,25 +111,25 @@ export class EmployeesComponent {
         </div>`,
     },
     {
-      key: 'department', header: 'Department', sortable: true, filterable: false,
+      key: 'department', header: 'Department', sortable: true,
       cell: row => {
         const colors: Record<string, string> = {
           Engineering: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-          Design: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
-          Product: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-          Sales: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-          HR: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
-          Finance: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
-          Operations: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+          Design:      'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
+          Product:     'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+          Sales:       'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+          HR:          'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+          Finance:     'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
+          Operations:  'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
         };
         return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[row.department] ?? ''}">${row.department}</span>`;
       },
     },
-    { key: 'role', header: 'Role', sortable: true },
+    { key: 'role', header: 'Role', sortable: true, filterable: true },
     {
       key: 'status', header: 'Status', sortable: true,
       cell: row => {
-        const c = STATUS_COLORS[row.status as keyof typeof STATUS_COLORS] ?? '';
+        const c     = STATUS_COLORS[row.status as keyof typeof STATUS_COLORS] ?? '';
         const label = row.status.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
         return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${c}">${label}</span>`;
       },
@@ -110,58 +138,12 @@ export class EmployeesComponent {
       key: 'joinDate', header: 'Tenure', sortable: true,
       cell: row => `<span class="text-sm text-slate-600 dark:text-slate-400">${calcTenure(row.joinDate)}</span>`,
     },
-    { key: 'location', header: 'Location' },
+    { key: 'location', header: 'Location', sortable: true, filterable: true },
   ];
 
-  protected readonly loadFn = (params: TableParams): Observable<PagedResult<Employee>> => {
-    let data = employeesStore();
-
-    const search = this.search().toLowerCase();
-    const dept   = this.deptFilter();
-    const status = this.statusFilter();
-
-    if (search) data = data.filter(e =>
-      e.name.toLowerCase().includes(search) ||
-      e.email.toLowerCase().includes(search) ||
-      e.role.toLowerCase().includes(search)
-    );
-    if (dept)   data = data.filter(e => e.department === dept);
-    if (status) data = data.filter(e => e.status === status);
-
-    if (params.sort) {
-      const { key, dir } = params.sort;
-      data = [...data].sort((a, b) => {
-        const av = String((a as any)[key]);
-        const bv = String((b as any)[key]);
-        return dir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
-      });
-    }
-
-    const total = data.length;
-    const start = (params.page - 1) * params.pageSize;
-    return of({ data: data.slice(start, start + params.pageSize), total }).pipe(delay(300));
-  };
-
-  protected readonly newDeptOptions = [
-    ...(['Engineering','Design','Product','Sales','HR','Finance','Operations'] as Department[])
-      .map(d => ({ value: d, label: d })),
-  ];
-
-  protected readonly newStatusOptions = [
-    { value: 'active',     label: 'Active' },
-    { value: 'remote',     label: 'Remote' },
-    { value: 'on-leave',   label: 'On Leave' },
-    { value: 'terminated', label: 'Terminated' },
-  ];
-
-  protected onRowSelected(rows: Employee[]): void {}
-
+  // ── Actions ──────────────────────────────────────────────────────
   protected viewEmployee(emp: Employee): void {
     this.router.navigate(['/employees', emp.id]);
-  }
-
-  protected onSearch(e: Event): void {
-    this.search.set((e.target as HTMLInputElement).value);
   }
 
   protected addEmployee(): void {
