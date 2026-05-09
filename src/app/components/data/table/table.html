@@ -80,10 +80,12 @@
             <tr
               [class]="
                 'transition-colors ' +
+                (clickable() ? 'cursor-pointer ' : '') +
                 (selectable() && isRowSelected(row)
                   ? 'bg-primary/5'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800/40')
               "
+              (click)="clickable() && rowClick.emit(row)"
             >
               @if (selectable()) {
                 <td class="px-4 py-3">

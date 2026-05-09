@@ -53,8 +53,10 @@ export class TableComponent<T extends Record<string, any> = Record<string, any>>
   readonly pageSize = input(10);
   readonly pageSizeOptions = input([10, 25, 50]);
   readonly selectable = input(false);
+  readonly clickable  = input(false);
   readonly emptyMessage = input('No data found');
   readonly rowSelected = output<T[]>();
+  readonly rowClick    = output<T>();
 
   protected readonly rows = signal<T[]>([]);
   protected readonly total = signal(0);

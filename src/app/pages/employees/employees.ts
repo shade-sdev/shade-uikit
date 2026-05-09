@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, delay, of } from 'rxjs';
 import {
   employeesStore, Employee, STATUS_COLORS, DEPT_COLORS,
-  calcTenure, Department,
+  calcTenure, Department, EmployeeStatus,
 } from '../../core/mock-data';
 import { PagedResult, TableParams, ColumnDef } from '../../components/data/table/table';
 import { BreadcrumbComponent } from '../../components/layout/breadcrumb/breadcrumb';
@@ -13,13 +13,15 @@ import { TableComponent } from '../../components/data/table/table';
 import { ButtonComponent } from '../../components/atoms/button/button';
 import { CardComponent } from '../../components/atoms/card/card';
 import { SelectComponent } from '../../components/forms/select/select';
+import { InputComponent } from '../../components/forms/input/input';
+import { ModalComponent } from '../../components/feedback/modal/modal';
 
 @Component({
   selector: 'app-employees',
   imports: [
     FormsModule,
     BreadcrumbComponent, PageHeaderComponent, TableComponent,
-    ButtonComponent, CardComponent, SelectComponent,
+    ButtonComponent, CardComponent, SelectComponent, InputComponent, ModalComponent,
   ],
   templateUrl: './employees.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,9 +29,20 @@ import { SelectComponent } from '../../components/forms/select/select';
 export class EmployeesComponent {
   private readonly router = inject(Router);
 
-  protected readonly search   = signal('');
-  protected readonly deptFilter = signal('');
+  protected readonly search      = signal('');
+  protected readonly deptFilter  = signal('');
   protected readonly statusFilter = signal('');
+
+  // Add Employee modal
+  protected readonly showModal  = signal(false);
+  protected readonly newName    = signal('');
+  protected readonly newEmail   = signal('');
+  protected readonly newRole    = signal('');
+  protected readonly newDept    = signal('');
+  protected readonly newStatus  = signal('active');
+  protected readonly newPhone   = signal('');
+  protected readonly newLocation = signal('');
+  protected readonly newSalary  = signal('');
 
   protected readonly deptOptions = [
     { value: '', label: 'All Departments' },
@@ -129,6 +142,18 @@ export class EmployeesComponent {
     return of({ data: data.slice(start, start + params.pageSize), total }).pipe(delay(300));
   };
 
+  protected readonly newDeptOptions = [
+    ...(['Engineering','Design','Product','Sales','HR','Finance','Operations'] as Department[])
+      .map(d => ({ value: d, label: d })),
+  ];
+
+  protected readonly newStatusOptions = [
+    { value: 'active',     label: 'Active' },
+    { value: 'remote',     label: 'Remote' },
+    { value: 'on-leave',   label: 'On Leave' },
+    { value: 'terminated', label: 'Terminated' },
+  ];
+
   protected onRowSelected(rows: Employee[]): void {}
 
   protected viewEmployee(emp: Employee): void {
@@ -139,6 +164,24 @@ export class EmployeesComponent {
     this.search.set((e.target as HTMLInputElement).value);
   }
 
-  protected reload = signal(0);
-  protected triggerReload(): void { this.reload.update(v => v + 1); }
+  protected addEmployee(): void {
+    if (!this.newName() || !this.newEmail() || !this.newRole() || !this.newDept()) return;
+    const emp: Employee = {
+      id:         'e' + Date.now(),
+      name:       this.newName(),
+      email:      this.newEmail(),
+      role:       this.newRole(),
+      department: this.newDept() as Department,
+      status:     this.newStatus() as EmployeeStatus,
+      joinDate:   new Date().toISOString().slice(0, 10),
+      salary:     Number(this.newSalary()) || 0,
+      phone:      this.newPhone(),
+      location:   this.newLocation(),
+    };
+    employeesStore.update(list => [emp, ...list]);
+    this.newName.set(''); this.newEmail.set(''); this.newRole.set('');
+    this.newDept.set(''); this.newStatus.set('active'); this.newPhone.set('');
+    this.newLocation.set(''); this.newSalary.set('');
+    this.showModal.set(false);
+  }
 }
