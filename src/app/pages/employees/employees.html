@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-6 max-w-7xl mx-auto">
+<sk-page-container>
 
   <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Employees' }]" />
 
@@ -10,7 +10,7 @@
   </sk-page-header>
 
   <!-- Headcount stats -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+  <sk-grid [cols]="2" [colsSm]="4" gap="sm">
     @for (s of headcountStats(); track s.label) {
       <sk-card>
         <div class="px-4 py-3 flex items-center gap-3">
@@ -21,11 +21,11 @@
         </div>
       </sk-card>
     }
-  </div>
+  </sk-grid>
 
-  <!-- Filters — dept & status pre-filter the dataset; search is inside the table -->
+  <!-- Filters -->
   <sk-card>
-    <div class="p-4 flex flex-wrap gap-3">
+    <sk-stack direction="horizontal" [wrap]="true" gap="sm" class="p-4">
       <sk-select
         [options]="deptOptions"
         placeholder="All Departments"
@@ -40,7 +40,6 @@
         (ngModelChange)="statusFilter.set($event)"
         class="w-40"
       />
-      <!-- Active filter chips -->
       @if (deptFilter()) {
         <sk-chip [removable]="true" (removed)="deptFilter.set('')">{{ deptFilter() }}</sk-chip>
       }
@@ -49,16 +48,9 @@
           {{ statusOptions.find(o => o.value === statusFilter())?.label ?? statusFilter() }}
         </sk-chip>
       }
-    </div>
+    </sk-stack>
   </sk-card>
 
-  <!--
-    CLIENT-SIDE TABLE
-    [data]          → reactive computed array; table handles search / sort / paginate
-    [quickFilter]   → built-in search bar searches across every column
-    [clickable]     → rows emit (rowClick) for navigation
-    Role & Location columns have [filterable]="true" → per-column header filters
-  -->
   <sk-table
     [data]="tableData()"
     [columns]="columns"
@@ -81,74 +73,21 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Fill in the details to add a new team member.</p>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <sk-input
-          label="Full Name"
-          placeholder="e.g. Jane Smith"
-          [ngModel]="newName()"
-          (ngModelChange)="newName.set($event)"
-        />
-        <sk-input
-          label="Email"
-          type="email"
-          placeholder="jane@corp.io"
-          [ngModel]="newEmail()"
-          (ngModelChange)="newEmail.set($event)"
-        />
-        <sk-input
-          label="Role / Job Title"
-          placeholder="e.g. Frontend Developer"
-          [ngModel]="newRole()"
-          (ngModelChange)="newRole.set($event)"
-        />
-        <sk-select
-          [options]="newDeptOptions"
-          label="Department"
-          placeholder="Select department"
-          [ngModel]="newDept()"
-          (ngModelChange)="newDept.set($event)"
-        />
-        <sk-select
-          [options]="newStatusOptions"
-          label="Status"
-          [ngModel]="newStatus()"
-          (ngModelChange)="newStatus.set($event)"
-        />
-        <sk-input
-          label="Salary (USD / yr)"
-          type="number"
-          placeholder="e.g. 85000"
-          [ngModel]="newSalary()"
-          (ngModelChange)="newSalary.set($event)"
-        />
-        <sk-input
-          label="Phone"
-          placeholder="+1 555-0100"
-          [ngModel]="newPhone()"
-          (ngModelChange)="newPhone.set($event)"
-        />
-        <sk-input
-          label="Location"
-          placeholder="e.g. New York"
-          [ngModel]="newLocation()"
-          (ngModelChange)="newLocation.set($event)"
-        />
-        <sk-async-select
-          [loadFn]="managerLoadFn"
-          label="Reports To (optional)"
-          placeholder="Search manager…"
-          [ngModel]="newManager()"
-          (ngModelChange)="newManager.set($event)"
-        />
-      </div>
+      <sk-grid [cols]="2">
+        <sk-input label="Full Name" placeholder="e.g. Jane Smith" [ngModel]="newName()" (ngModelChange)="newName.set($event)" />
+        <sk-input label="Email" type="email" placeholder="jane@corp.io" [ngModel]="newEmail()" (ngModelChange)="newEmail.set($event)" />
+        <sk-input label="Role / Job Title" placeholder="e.g. Frontend Developer" [ngModel]="newRole()" (ngModelChange)="newRole.set($event)" />
+        <sk-select [options]="newDeptOptions" label="Department" placeholder="Select department" [ngModel]="newDept()" (ngModelChange)="newDept.set($event)" />
+        <sk-select [options]="newStatusOptions" label="Status" [ngModel]="newStatus()" (ngModelChange)="newStatus.set($event)" />
+        <sk-input label="Salary (USD / yr)" type="number" placeholder="e.g. 85000" [ngModel]="newSalary()" (ngModelChange)="newSalary.set($event)" />
+        <sk-input label="Phone" placeholder="+1 555-0100" [ngModel]="newPhone()" (ngModelChange)="newPhone.set($event)" />
+        <sk-input label="Location" placeholder="e.g. New York" [ngModel]="newLocation()" (ngModelChange)="newLocation.set($event)" />
+        <sk-async-select [loadFn]="managerLoadFn" label="Reports To (optional)" placeholder="Search manager…" [ngModel]="newManager()" (ngModelChange)="newManager.set($event)" />
+      </sk-grid>
 
       <div class="flex justify-end gap-3 pt-2 border-t border-slate-100 dark:border-border-dark">
         <sk-button variant="ghost" (click)="showModal.set(false)">Cancel</sk-button>
-        <sk-button
-          variant="primary"
-          [disabled]="!newName() || !newEmail() || !newRole() || !newDept()"
-          (click)="addEmployee()"
-        >
+        <sk-button variant="primary" [disabled]="!newName() || !newEmail() || !newRole() || !newDept()" (click)="addEmployee()">
           <span class="material-symbols-outlined text-[16px]">person_add</span>
           Add Employee
         </sk-button>
@@ -156,4 +95,4 @@
     </div>
   </sk-modal>
 
-</div>
+</sk-page-container>

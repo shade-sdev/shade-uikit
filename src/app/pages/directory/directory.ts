@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { employeesStore, Department } from '../../core/mock-data';
 import { BreadcrumbComponent } from '../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../components/layout/page-header/page-header';
+import { PageContainerComponent } from '../../components/layout/page-container/page-container';
+import { StackComponent } from '../../components/layout/stack/stack';
 import { CardComponent } from '../../components/atoms/card/card';
 import { AvatarComponent } from '../../components/atoms/avatar/avatar';
 import { BadgeComponent, BadgeVariant } from '../../components/atoms/badge/badge';
@@ -20,6 +22,7 @@ import { TooltipDirective } from '../../components/feedback/tooltip/tooltip.dire
   imports: [
     FormsModule, RouterLink,
     BreadcrumbComponent, PageHeaderComponent,
+    PageContainerComponent, StackComponent,
     CardComponent, AvatarComponent, BadgeComponent, ChipComponent, EmptyStateComponent,
     MasonryComponent, MultiSelectComponent, ButtonGroupComponent,
     PopoverComponent, TooltipDirective,

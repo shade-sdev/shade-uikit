@@ -10,6 +10,8 @@ import {
 } from '../../../core/mock-data';
 import { PagedResult, TableParams, ColumnDef } from '../../../components/data/table/table';
 import { BreadcrumbComponent } from '../../../components/layout/breadcrumb/breadcrumb';
+import { PageContainerComponent } from '../../../components/layout/page-container/page-container';
+import { GridComponent } from '../../../components/layout/grid/grid';
 import { CardComponent } from '../../../components/atoms/card/card';
 import { ButtonComponent } from '../../../components/atoms/button/button';
 import { AvatarComponent } from '../../../components/atoms/avatar/avatar';
@@ -22,6 +24,7 @@ import { TableComponent } from '../../../components/data/table/table';
   selector: 'app-employee-detail',
   imports: [
     TitleCasePipe, RouterLink, BreadcrumbComponent,
+    PageContainerComponent, GridComponent,
     CardComponent, ButtonComponent, AvatarComponent, AlertComponent,
     ProgressComponent, TabsComponent, TabComponent, TableComponent,
   ],

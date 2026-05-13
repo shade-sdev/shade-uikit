@@ -37,12 +37,12 @@ export class InputComponent extends FormFieldBase<string> {
 
   protected readonly inputClass = computed(() => {
     const base =
-      'w-full rounded-lg border bg-slate-100 dark:bg-background-dark text-sm text-slate-900 dark:text-white ' +
-      'placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-shadow ' +
+      'w-full rounded-lg border bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white ' +
+      'placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-all ' +
       'disabled:opacity-50 disabled:cursor-not-allowed';
     const border = this.error()
-      ? 'border-rose-400 dark:border-rose-600 focus:ring-rose-400/30'
-      : 'border-transparent focus:ring-primary/30 focus:border-primary/60 dark:focus:border-primary/40';
+      ? 'border-rose-400 dark:border-rose-500 focus:ring-rose-400/20'
+      : 'border-slate-200 dark:border-border-dark focus:border-primary focus:ring-primary/20 dark:focus:border-primary';
     const padding =
       (this.prefixIcon() ? 'pl-10 ' : 'pl-3 ') +
       (this.type() === 'password' || this.suffixIcon() ? 'pr-10 ' : 'pr-3 ') +

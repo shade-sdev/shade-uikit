@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-6 max-w-7xl mx-auto">
+<sk-page-container>
 
   <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Training' }]" />
 
@@ -10,7 +10,7 @@
   </sk-page-header>
 
   <!-- Stats -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+  <sk-grid [cols]="2" [colsLg]="4">
     @for (s of stats(); track s.label) {
       <sk-card>
         <div class="p-4 flex items-center gap-4">
@@ -24,18 +24,17 @@
         </div>
       </sk-card>
     }
-  </div>
+  </sk-grid>
 
   <!-- Filters -->
   <sk-card>
-    <div class="p-4 flex flex-wrap gap-3">
+    <sk-stack direction="horizontal" [wrap]="true" gap="sm" class="p-4">
       <sk-select [options]="statusOptions"   placeholder="All Statuses"    [(ngModel)]="statusFilter"   class="w-44" />
       <sk-select [options]="categoryOptions" placeholder="All Categories"  [(ngModel)]="categoryFilter" class="w-44" />
       <sk-select [options]="deptOptions"     placeholder="All Departments" [(ngModel)]="deptFilter"     class="w-44" />
-    </div>
+    </sk-stack>
   </sk-card>
 
-  <!-- Table -->
   <sk-table
     [columns]="columns"
     [loadFn]="loadFn"
@@ -52,40 +51,16 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Assign a new course to an employee.</p>
       </div>
 
-      <sk-select
-        [options]="employeeOptions()"
-        label="Employee"
-        placeholder="Select an employee"
-        [ngModel]="newEmployee()"
-        (ngModelChange)="newEmployee.set($event)"
-      />
-      <sk-combo-box
-        label="Course Name"
-        placeholder="Type or choose a course…"
-        [options]="courseSuggestions"
-        [ngModel]="newCourse()"
-        (ngModelChange)="newCourse.set($event)"
-      />
-      <sk-select
-        [options]="categoryOptions.slice(1)"
-        label="Category"
-        placeholder="Select a category"
-        [ngModel]="newCategory()"
-        (ngModelChange)="newCategory.set($event)"
-      />
-      <sk-date-picker
-        label="Due Date"
-        [ngModel]="newDueDate()"
-        (ngModelChange)="newDueDate.set($event)"
-      />
+      <sk-select [options]="employeeOptions()" label="Employee" placeholder="Select an employee" [ngModel]="newEmployee()" (ngModelChange)="newEmployee.set($event)" />
+      <sk-combo-box label="Course Name" placeholder="Type or choose a course…" [options]="courseSuggestions" [ngModel]="newCourse()" (ngModelChange)="newCourse.set($event)" />
+      <sk-select [options]="categoryOptions.slice(1)" label="Category" placeholder="Select a category" [ngModel]="newCategory()" (ngModelChange)="newCategory.set($event)" />
+      <sk-date-picker label="Due Date" [ngModel]="newDueDate()" (ngModelChange)="newDueDate.set($event)" />
 
       <div class="flex justify-end gap-3 pt-2 border-t border-slate-100 dark:border-border-dark">
         <sk-button variant="ghost" (click)="showModal.set(false)">Cancel</sk-button>
-        <sk-button variant="primary" [disabled]="!newCourse() || !newEmployee()" (click)="addTraining()">
-          Assign Course
-        </sk-button>
+        <sk-button variant="primary" [disabled]="!newCourse() || !newEmployee()" (click)="addTraining()">Assign Course</sk-button>
       </div>
     </div>
   </sk-modal>
 
-</div>
+</sk-page-container>

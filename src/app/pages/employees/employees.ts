@@ -9,6 +9,9 @@ import { Observable, delay, of } from 'rxjs';
 import { ColumnDef, BulkAction } from '../../components/data/table/table';
 import { BreadcrumbComponent } from '../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../components/layout/page-header/page-header';
+import { PageContainerComponent } from '../../components/layout/page-container/page-container';
+import { GridComponent } from '../../components/layout/grid/grid';
+import { StackComponent } from '../../components/layout/stack/stack';
 import { TableComponent } from '../../components/data/table/table';
 import { ButtonComponent } from '../../components/atoms/button/button';
 import { CardComponent } from '../../components/atoms/card/card';
@@ -23,7 +26,9 @@ import { calcTenure } from '../../core/mock-data';
   selector: 'app-employees',
   imports: [
     FormsModule,
-    BreadcrumbComponent, PageHeaderComponent, TableComponent,
+    BreadcrumbComponent, PageHeaderComponent,
+    PageContainerComponent, GridComponent, StackComponent,
+    TableComponent,
     ButtonComponent, CardComponent, ChipComponent, SelectComponent, InputComponent,
     AsyncSelectComponent, ModalComponent,
   ],

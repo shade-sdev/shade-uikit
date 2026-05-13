@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { HeaderComponent } from '../header/header';
 import { SidebarComponent } from '../sidebar/sidebar';
 import { LogoConfig, NavGroup, NavItem, UserProfile } from '../layout.types';
@@ -17,6 +17,7 @@ export class AppShellComponent {
   readonly notificationCount = input(0);
   readonly searchPlaceholder = input('Search...');
   readonly showSearch = input(true);
+  readonly logoutClick = output();
 
   protected readonly mobileMenuOpen = signal(false);
 }

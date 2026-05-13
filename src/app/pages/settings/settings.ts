@@ -3,6 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
 import { BreadcrumbComponent } from '../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../components/layout/page-header/page-header';
+import { PageContainerComponent } from '../../components/layout/page-container/page-container';
+import { GridComponent } from '../../components/layout/grid/grid';
+import { StackComponent } from '../../components/layout/stack/stack';
 import { CardComponent } from '../../components/atoms/card/card';
 import { AvatarComponent } from '../../components/atoms/avatar/avatar';
 import { AlertComponent } from '../../components/atoms/alert/alert';
@@ -24,6 +27,7 @@ import { LoadingOverlayComponent } from '../../components/feedback/loading-overl
   imports: [
     FormsModule,
     BreadcrumbComponent, PageHeaderComponent,
+    PageContainerComponent, GridComponent, StackComponent,
     CardComponent, AvatarComponent, AlertComponent, DividerComponent, ButtonComponent,
     InputComponent, TextareaComponent, SelectComponent,
     ToggleComponent, CheckboxComponent, RadioGroupComponent, ButtonGroupComponent,

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AvatarComponent } from '../../atoms/avatar/avatar';
 import { LogoConfig, NavGroup, NavItem, UserProfile } from '../layout.types';
@@ -17,6 +17,7 @@ export class SidebarComponent {
   readonly items = input<NavItem[]>([]);
   readonly logo = input<LogoConfig>({ icon: 'grid_view', name: 'App' });
   readonly user = input<UserProfile | null>(null);
+  readonly logoutClick = output();
 
   private readonly expandedKeys = signal<Set<string>>(new Set());
 

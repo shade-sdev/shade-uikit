@@ -1,5 +1,5 @@
 @if (employee(); as emp) {
-  <div class="flex flex-col gap-6 max-w-5xl mx-auto">
+  <sk-page-container maxWidth="lg">
 
     <sk-breadcrumb [items]="[
       { label: 'Dashboard', route: '/dashboard' },
@@ -7,24 +7,17 @@
       { label: emp.name }
     ]" />
 
-    <!-- Status alerts -->
     @if (emp.status === 'on-leave') {
-      <sk-alert variant="warning">
-        {{ emp.name }} is currently <strong>on leave</strong>. Some features may be restricted.
-      </sk-alert>
+      <sk-alert variant="warning">{{ emp.name }} is currently <strong>on leave</strong>. Some features may be restricted.</sk-alert>
     }
     @if (emp.status === 'terminated') {
-      <sk-alert variant="error">
-        This employee record is <strong>archived</strong>. The employee is no longer active.
-      </sk-alert>
+      <sk-alert variant="error">This employee record is <strong>archived</strong>. The employee is no longer active.</sk-alert>
     }
 
     <!-- Hero card -->
     <sk-card>
       <div class="p-6">
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-
-          <!-- Avatar + identity -->
           <sk-avatar [name]="emp.name" size="lg" />
           <div class="flex-1 min-w-0">
             <div class="flex flex-wrap items-center gap-2 mb-1">
@@ -40,22 +33,18 @@
               <span class="material-symbols-outlined text-[14px] align-middle mr-1">schedule</span>{{ calcTenure(emp.joinDate) }} tenure
             </p>
           </div>
-
-          <!-- Actions -->
           <div class="flex gap-2 shrink-0">
             <sk-button variant="outline" size="sm">
-              <span class="material-symbols-outlined text-[16px]">mail</span>
-              Message
+              <span class="material-symbols-outlined text-[16px]">mail</span>Message
             </sk-button>
             <sk-button variant="primary" size="sm">
-              <span class="material-symbols-outlined text-[16px]">edit</span>
-              Edit
+              <span class="material-symbols-outlined text-[16px]">edit</span>Edit
             </sk-button>
           </div>
         </div>
 
         <!-- Mini stats -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-100 dark:border-border-dark">
+        <sk-grid [cols]="2" [colsSm]="4" gap="sm" class="mt-6 pt-5 border-t border-slate-100 dark:border-border-dark">
           <div class="text-center">
             <p class="text-lg font-bold text-slate-900 dark:text-white">{{ trainingCompletion() }}%</p>
             <p class="text-xs text-slate-500">Training Complete</p>
@@ -72,25 +61,22 @@
             <p class="text-lg font-bold text-slate-900 dark:text-white">{{ pendingAbsences() }}</p>
             <p class="text-xs text-slate-500">Pending Absences</p>
           </div>
-        </div>
+        </sk-grid>
       </div>
     </sk-card>
 
-    <!-- Tabs -->
     <sk-tabs>
 
-      <!-- Overview -->
       <sk-tab label="Overview" icon="person">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <sk-grid [cols]="1" [colsMd]="2">
 
-          <!-- Contact info -->
           <sk-card>
             <div class="p-5 flex flex-col gap-4">
               <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Contact Information</h3>
               <div class="space-y-3">
                 @for (field of [
-                  { icon: 'mail',      label: 'Email',    value: emp.email },
-                  { icon: 'call',      label: 'Phone',    value: emp.phone },
+                  { icon: 'mail',        label: 'Email',    value: emp.email },
+                  { icon: 'call',        label: 'Phone',    value: emp.phone },
                   { icon: 'location_on', label: 'Location', value: emp.location }
                 ]; track field.label) {
                   <div class="flex items-center gap-3">
@@ -107,16 +93,15 @@
             </div>
           </sk-card>
 
-          <!-- Work info -->
           <sk-card>
             <div class="p-5 flex flex-col gap-4">
               <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Work Details</h3>
               <div class="space-y-3">
                 @for (field of [
-                  { icon: 'badge',       label: 'Employee ID',   value: emp.id.toUpperCase() },
-                  { icon: 'work',        label: 'Department',    value: emp.department },
-                  { icon: 'calendar_today', label: 'Join Date',  value: emp.joinDate },
-                  { icon: 'payments',    label: 'Salary',        value: '$' + emp.salary.toLocaleString() + ' / yr' }
+                  { icon: 'badge',          label: 'Employee ID', value: emp.id.toUpperCase() },
+                  { icon: 'work',           label: 'Department',  value: emp.department },
+                  { icon: 'calendar_today', label: 'Join Date',   value: emp.joinDate },
+                  { icon: 'payments',       label: 'Salary',      value: '$' + emp.salary.toLocaleString() + ' / yr' }
                 ]; track field.label) {
                   <div class="flex items-center gap-3">
                     <div class="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
@@ -132,7 +117,6 @@
             </div>
           </sk-card>
 
-          <!-- Manager -->
           @if (manager(); as mgr) {
             <sk-card>
               <div class="p-5 flex flex-col gap-4">
@@ -149,7 +133,6 @@
             </sk-card>
           }
 
-          <!-- Training snapshot -->
           <sk-card>
             <div class="p-5 flex flex-col gap-3">
               <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Training Progress</h3>
@@ -158,43 +141,31 @@
                 <span class="text-sm font-bold text-slate-900 dark:text-white">{{ trainingCompletion() }}%</span>
               </div>
               <sk-progress [value]="trainingCompletion()" color="primary" />
-              <div class="grid grid-cols-2 gap-2 mt-1">
+              <sk-grid [cols]="2" gap="xs" class="mt-1">
                 @for (t of trainingRecords().slice(0,4); track t.id) {
                   <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
                     <div [class]="'size-2 rounded-full shrink-0 ' + (t.status === 'completed' ? 'bg-emerald-500' : t.status === 'overdue' ? 'bg-rose-500' : t.status === 'in-progress' ? 'bg-blue-500' : 'bg-slate-300')"></div>
                     <span class="text-xs text-slate-600 dark:text-slate-400 truncate">{{ t.course }}</span>
                   </div>
                 }
-              </div>
+              </sk-grid>
             </div>
           </sk-card>
 
-        </div>
+        </sk-grid>
       </sk-tab>
 
-      <!-- Training -->
       <sk-tab label="Training" icon="school">
-        <sk-table
-          [columns]="trainingColumns"
-          [loadFn]="loadTraining"
-          [pageSize]="10"
-          emptyMessage="No training records found."
-        />
+        <sk-table [columns]="trainingColumns" [loadFn]="loadTraining" [pageSize]="10" emptyMessage="No training records found." />
       </sk-tab>
 
-      <!-- Absences -->
       <sk-tab label="Absences" icon="event_busy">
-        <sk-table
-          [columns]="absenceColumns"
-          [loadFn]="loadAbsences"
-          [pageSize]="10"
-          emptyMessage="No absence records found."
-        />
+        <sk-table [columns]="absenceColumns" [loadFn]="loadAbsences" [pageSize]="10" emptyMessage="No absence records found." />
       </sk-tab>
 
     </sk-tabs>
 
-  </div>
+  </sk-page-container>
 } @else {
   <div class="flex flex-col items-center justify-center py-20 gap-4">
     <span class="material-symbols-outlined text-[48px] text-slate-300">person_off</span>

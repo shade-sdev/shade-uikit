@@ -7,6 +7,9 @@ import {
 import { CalendarEvent } from '../../components/data/calendar/calendar';
 import { BreadcrumbComponent } from '../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../components/layout/page-header/page-header';
+import { PageContainerComponent } from '../../components/layout/page-container/page-container';
+import { GridComponent } from '../../components/layout/grid/grid';
+import { StackComponent } from '../../components/layout/stack/stack';
 import { CardComponent } from '../../components/atoms/card/card';
 import { AvatarComponent } from '../../components/atoms/avatar/avatar';
 import { BadgeComponent } from '../../components/atoms/badge/badge';
@@ -22,6 +25,7 @@ type AbsenceColor = 'primary' | 'success' | 'warning' | 'danger';
   imports: [
     DatePipe,
     BreadcrumbComponent, PageHeaderComponent,
+    PageContainerComponent, GridComponent, StackComponent,
     CardComponent, AvatarComponent, BadgeComponent, ChipComponent, EmptyStateComponent,
     CalendarComponent, AccordionComponent, AccordionItemComponent,
   ],

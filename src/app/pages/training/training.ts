@@ -8,6 +8,9 @@ import {
 import { PagedResult, TableParams, ColumnDef } from '../../components/data/table/table';
 import { BreadcrumbComponent } from '../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../components/layout/page-header/page-header';
+import { PageContainerComponent } from '../../components/layout/page-container/page-container';
+import { GridComponent } from '../../components/layout/grid/grid';
+import { StackComponent } from '../../components/layout/stack/stack';
 import { CardComponent } from '../../components/atoms/card/card';
 import { ButtonComponent } from '../../components/atoms/button/button';
 import { TableComponent } from '../../components/data/table/table';
@@ -20,8 +23,9 @@ import { DatePickerComponent } from '../../components/forms/date-picker/date-pic
   selector: 'app-training',
   imports: [
     FormsModule,
-    BreadcrumbComponent, PageHeaderComponent, CardComponent,
-    ButtonComponent, TableComponent,
+    BreadcrumbComponent, PageHeaderComponent,
+    PageContainerComponent, GridComponent, StackComponent,
+    CardComponent, ButtonComponent, TableComponent,
     SelectComponent, ModalComponent, ComboBoxComponent, DatePickerComponent,
   ],
   templateUrl: './training.html',

@@ -16,6 +16,9 @@ export { SidebarComponent } from './layout/sidebar/sidebar';
 export { HeaderComponent } from './layout/header/header';
 export { BreadcrumbComponent } from './layout/breadcrumb/breadcrumb';
 export { PageHeaderComponent } from './layout/page-header/page-header';
+export { PageContainerComponent } from './layout/page-container/page-container';
+export { GridComponent } from './layout/grid/grid';
+export { StackComponent } from './layout/stack/stack';
 export { ThemeService } from './layout/theme.service';
 export type { NavItem, NavGroup, UserProfile, LogoConfig } from './layout/layout.types';
 

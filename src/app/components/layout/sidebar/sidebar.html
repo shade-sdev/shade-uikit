@@ -93,13 +93,10 @@
     }
   </nav>
 
-  <!-- User profile -->
+  <!-- User profile + logout -->
   @if (user()) {
-    <div class="shrink-0 px-3 py-3 border-t border-slate-200 dark:border-border-dark">
-      <button
-        type="button"
-        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors group"
-      >
+    <div class="shrink-0 px-3 py-3 border-t border-slate-200 dark:border-border-dark flex items-center gap-2">
+      <div class="flex items-center gap-3 flex-1 min-w-0 px-2 py-1.5">
         <sk-avatar [src]="user()!.avatarUrl ?? null" [name]="user()!.name" size="sm" />
         <div class="flex-1 min-w-0">
           <p class="text-sm font-semibold truncate text-slate-900 dark:text-white leading-tight">
@@ -109,9 +106,14 @@
             <p class="text-xs text-slate-400 dark:text-slate-500 truncate leading-tight">{{ user()!.role }}</p>
           }
         </div>
-        <span class="material-symbols-outlined text-[18px] text-slate-400 dark:text-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-400 transition-colors shrink-0">
-          more_horiz
-        </span>
+      </div>
+      <button
+        type="button"
+        title="Sign out"
+        (click)="logoutClick.emit()"
+        class="shrink-0 flex items-center justify-center size-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:text-rose-400 dark:hover:bg-rose-500/10 transition-colors"
+      >
+        <span class="material-symbols-outlined text-[18px]">logout</span>
       </button>
     </div>
   }

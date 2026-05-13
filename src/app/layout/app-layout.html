@@ -1,8 +1,9 @@
 <sk-app-shell
   [navGroups]="navGroups"
   [logo]="logo"
-  [user]="user"
+  [user]="user()"
   [notificationCount]="3"
+  (logoutClick)="logout()"
 >
   <sk-toast-container />
   <router-outlet />

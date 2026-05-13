@@ -1,11 +1,11 @@
-<div class="flex flex-col gap-6 max-w-7xl mx-auto">
+<sk-page-container>
 
   <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Leave Calendar' }]" />
 
   <sk-page-header title="Leave Calendar" subtitle="See who's out and plan around your team's schedule." />
 
-  <!-- Type filter chips -->
-  <div class="flex flex-wrap gap-2">
+  <!-- Type filter pills -->
+  <sk-stack direction="horizontal" [wrap]="true" gap="xs">
     @for (f of typeFilters; track f.value) {
       <button
         type="button"
@@ -18,65 +18,54 @@
         "
       >{{ f.label }}</button>
     }
-  </div>
+  </sk-stack>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Main: Calendar (2/3) + Side panel (1/3) -->
+  <sk-grid [cols]="1" [colsLg]="3" gap="lg">
 
-    <!-- ── Calendar ───────────────────────────────────────────────────────── -->
+    <!-- Calendar column -->
     <div class="lg:col-span-2 flex flex-col gap-4">
       <sk-card>
         <div class="p-4">
-          <sk-calendar
-            [events]="calendarEvents()"
-            [selected]="selectedDate()"
-            (dateSelected)="selectedDate.set($event)"
-          />
+          <sk-calendar [events]="calendarEvents()" [selected]="selectedDate()" (dateSelected)="selectedDate.set($event)" />
         </div>
       </sk-card>
 
       <!-- Legend -->
-      <div class="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400 px-1">
+      <sk-stack direction="horizontal" [wrap]="true" gap="md" class="px-1 text-xs text-slate-500 dark:text-slate-400">
         @for (item of [
-          { color: 'bg-primary',      label: 'Vacation'  },
-          { color: 'bg-rose-500',     label: 'Sick Leave'},
-          { color: 'bg-amber-500',    label: 'Personal'  },
-          { color: 'bg-emerald-500',  label: 'Maternity / Paternity' }
+          { color: 'bg-primary',     label: 'Vacation' },
+          { color: 'bg-rose-500',    label: 'Sick Leave' },
+          { color: 'bg-amber-500',   label: 'Personal' },
+          { color: 'bg-emerald-500', label: 'Maternity / Paternity' }
         ]; track item.label) {
           <div class="flex items-center gap-1.5">
             <span [class]="'inline-block size-2.5 rounded-full ' + item.color"></span>
             {{ item.label }}
           </div>
         }
-      </div>
+      </sk-stack>
     </div>
 
-    <!-- ── Selected day panel ─────────────────────────────────────────────── -->
-    <div class="flex flex-col gap-4">
+    <!-- Side panel -->
+    <sk-stack>
+
       <sk-card>
         <div class="p-4 flex flex-col gap-4">
           @if (selectedDate()) {
             <h3 class="text-sm font-semibold text-slate-800 dark:text-white">
               {{ selectedDate() | date : 'EEEE, MMM d' }}
             </h3>
-
             @if (selectedDayAbsences().length === 0) {
-              <sk-empty-state
-                icon="event_available"
-                title="Everyone's in!"
-                message="No approved absences on this day."
-              />
+              <sk-empty-state icon="event_available" title="Everyone's in!" message="No approved absences on this day." />
             } @else {
               <div class="space-y-3">
                 @for (a of selectedDayAbsences(); track a.id) {
                   <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                     <sk-avatar [name]="getEmployeeName(a.employeeId)" size="sm" />
                     <div class="flex-1 min-w-0">
-                      <p class="text-sm font-medium text-slate-900 dark:text-white truncate">
-                        {{ getEmployeeName(a.employeeId) }}
-                      </p>
-                      <p class="text-xs text-slate-500">
-                        {{ absenceTypeLabels[a.type] }} · {{ a.days }}d
-                      </p>
+                      <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ getEmployeeName(a.employeeId) }}</p>
+                      <p class="text-xs text-slate-500">{{ absenceTypeLabels[a.type] }} · {{ a.days }}d</p>
                     </div>
                     <sk-badge [variant]="statusVariant(a.type)">{{ absenceTypeLabels[a.type] }}</sk-badge>
                   </div>
@@ -92,11 +81,11 @@
         </div>
       </sk-card>
 
-      <!-- Stats -->
+      <!-- Mini stats -->
       <sk-card>
-        <div class="p-4 grid grid-cols-2 gap-3">
+        <sk-grid [cols]="2" gap="sm" class="p-4">
           @for (stat of [
-            { label: 'On Leave Today', value: selectedDayAbsences().length, icon: 'event_busy',     color: 'text-amber-500',   bg: 'bg-amber-50 dark:bg-amber-900/20' },
+            { label: 'On Leave Today',   value: selectedDayAbsences().length, icon: 'event_busy',    color: 'text-amber-500',   bg: 'bg-amber-50 dark:bg-amber-900/20' },
             { label: 'Approved (Total)', value: calendarEvents().length / 1,  icon: 'check_circle',  color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' }
           ]; track stat.label) {
             <div [class]="'rounded-xl p-3 flex flex-col gap-1 ' + stat.bg">
@@ -105,24 +94,20 @@
               <p class="text-xs text-slate-500 dark:text-slate-400">{{ stat.label }}</p>
             </div>
           }
-        </div>
+        </sk-grid>
       </sk-card>
-    </div>
 
-  </div>
+    </sk-stack>
 
-  <!-- ── Upcoming absences accordion ────────────────────────────────────── -->
-  <div class="flex flex-col gap-3">
+  </sk-grid>
+
+  <!-- Upcoming absences -->
+  <sk-stack gap="sm">
     <h2 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide px-1">
       Upcoming (next 60 days)
     </h2>
-
     @if (upcomingGroups().length === 0) {
-      <sk-empty-state
-        icon="calendar_month"
-        title="No upcoming absences"
-        message="No approved leave requests in the next 60 days."
-      />
+      <sk-empty-state icon="calendar_month" title="No upcoming absences" message="No approved leave requests in the next 60 days." />
     } @else {
       <sk-accordion>
         @for (group of upcomingGroups(); track group.label) {
@@ -132,12 +117,8 @@
                 <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                   <sk-avatar [name]="getEmployeeName(a.employeeId)" size="sm" />
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-slate-900 dark:text-white">
-                      {{ getEmployeeName(a.employeeId) }}
-                    </p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">
-                      {{ a.startDate }} → {{ a.endDate }} · {{ a.days }}d
-                    </p>
+                    <p class="text-sm font-medium text-slate-900 dark:text-white">{{ getEmployeeName(a.employeeId) }}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ a.startDate }} → {{ a.endDate }} · {{ a.days }}d</p>
                   </div>
                   <div class="flex items-center gap-2 shrink-0">
                     @if (getEmployee(a.employeeId); as emp) {
@@ -152,6 +133,6 @@
         }
       </sk-accordion>
     }
-  </div>
+  </sk-stack>
 
-</div>
+</sk-page-container>

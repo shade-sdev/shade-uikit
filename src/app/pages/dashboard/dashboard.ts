@@ -6,6 +6,8 @@ import {
   Department, calcTenure,
 } from '../../core/mock-data';
 import { PageHeaderComponent } from '../../components/layout/page-header/page-header';
+import { PageContainerComponent } from '../../components/layout/page-container/page-container';
+import { GridComponent } from '../../components/layout/grid/grid';
 import { CardComponent } from '../../components/atoms/card/card';
 import { ButtonComponent } from '../../components/atoms/button/button';
 import { AvatarComponent } from '../../components/atoms/avatar/avatar';
@@ -18,6 +20,7 @@ import { AuthService } from '../../core/auth.service';
   selector: 'app-dashboard',
   imports: [
     RouterLink, PageHeaderComponent,
+    PageContainerComponent, GridComponent,
     CardComponent, ButtonComponent, AvatarComponent, AlertComponent,
     ProgressComponent, DividerComponent,
   ],

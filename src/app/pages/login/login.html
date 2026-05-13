@@ -42,18 +42,14 @@
       </div>
     </div>
 
-    <!-- Demo credentials hint -->
-    <div class="relative bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
-      <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Demo Credentials</p>
-      <div class="grid grid-cols-2 gap-3">
-        @for (cred of demoCredentials; track cred.email) {
-          <div class="space-y-0.5">
-            <p class="text-white text-xs font-medium">{{ cred.label }}</p>
-            <p class="text-slate-400 text-xs font-mono">{{ cred.email }}</p>
-            <p class="text-slate-400 text-xs font-mono">{{ cred.password }}</p>
-          </div>
-        }
+    <!-- Live backend badge -->
+    <div class="relative bg-white/5 border border-white/10 rounded-xl p-4 space-y-1.5">
+      <div class="flex items-center gap-2">
+        <span class="size-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Live Backend</p>
       </div>
+      <p class="text-slate-300 text-xs font-mono break-all">fitness-gym-management-be.onrender.com</p>
+      <p class="text-slate-500 text-xs">JWT · httpOnly refresh cookie · auto-rotation</p>
     </div>
   </div>
 
@@ -76,27 +72,34 @@
       </div>
 
       <!-- Form -->
-      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-8">
+        <!-- Error alert -->
         @if (error()) {
           <sk-alert variant="error">{{ error() }}</sk-alert>
         }
 
-        <sk-input
-          formControlName="email"
-          label="Email address"
-          type="email"
-          placeholder="you@company.com"
-          prefixIcon="mail"
-        />
+        <!-- Fields grouped tightly -->
+        <div class="flex flex-col gap-4">
+          <sk-input
+            formControlName="username"
+            label="Username"
+            type="text"
+            placeholder="your_username"
+            prefixIcon="person"
+            autocomplete="username"
+          />
 
-        <sk-input
-          formControlName="password"
-          label="Password"
-          type="password"
-          placeholder="••••••••"
-          prefixIcon="lock"
-        />
+          <sk-input
+            formControlName="password"
+            label="Password"
+            type="password"
+            placeholder="••••••••"
+            prefixIcon="lock"
+            autocomplete="current-password"
+          />
+        </div>
 
+        <!-- Submit — separated from fields -->
         <sk-button
           type="submit"
           variant="primary"
@@ -109,21 +112,15 @@
         </sk-button>
       </form>
 
-      <!-- Mobile demo credentials -->
+      <!-- Mobile: demo fill -->
       <div class="lg:hidden bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl p-4 space-y-2">
-        <p class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Demo Credentials</p>
-        @for (cred of demoCredentials; track cred.email) {
-          <div class="flex items-center justify-between">
-            <span class="text-slate-600 dark:text-slate-400 text-xs">{{ cred.label }}</span>
-            <button
-              type="button"
-              class="text-primary text-xs font-medium hover:underline"
-              (click)="form.patchValue({ email: cred.email, password: cred.password })"
-            >
-              Use these →
-            </button>
-          </div>
-        }
+        <p class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Demo Account</p>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600 dark:text-slate-400 text-xs font-mono">zyfit_admin</span>
+          <button type="button" class="text-primary text-xs font-medium hover:underline" (click)="fillDemo()">
+            Fill username →
+          </button>
+        </div>
       </div>
 
       <p class="text-center text-xs text-slate-400">

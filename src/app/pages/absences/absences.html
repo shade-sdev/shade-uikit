@@ -1,12 +1,11 @@
-<div class="flex flex-col gap-6 max-w-7xl mx-auto">
+<sk-page-container>
 
   <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Absences' }]" />
 
-  <sk-page-header title="Absence Management" subtitle="Review and manage employee absence requests across the organization.">
-  </sk-page-header>
+  <sk-page-header title="Absence Management" subtitle="Review and manage employee absence requests across the organization." />
 
   <!-- Stats -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+  <sk-grid [cols]="2" [colsLg]="4">
     @for (s of stats(); track s.label) {
       <sk-card>
         <div class="p-4 flex items-center gap-4">
@@ -24,15 +23,15 @@
         </div>
       </sk-card>
     }
-  </div>
+  </sk-grid>
 
   <!-- Filters -->
   <sk-card>
-    <div class="p-4 flex flex-wrap gap-3">
+    <sk-stack direction="horizontal" [wrap]="true" gap="sm" class="p-4">
       <sk-select [options]="statusOptions" placeholder="All Statuses"    [(ngModel)]="statusFilter" class="w-44" />
       <sk-select [options]="typeOptions"   placeholder="All Types"       [(ngModel)]="typeFilter"   class="w-44" />
       <sk-select [options]="deptOptions"   placeholder="All Departments" [(ngModel)]="deptFilter"   class="w-44" />
-    </div>
+    </sk-stack>
   </sk-card>
 
   <!-- Table — click delegated to action buttons inside cells -->
@@ -51,9 +50,7 @@
     <div class="flex flex-col gap-5 min-w-[380px]">
       <div>
         <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Reject Request</h2>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Provide a reason for rejecting this absence request.
-        </p>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Provide a reason for rejecting this absence request.</p>
       </div>
 
       @if (selectedRecord(); as rec) {
@@ -68,13 +65,7 @@
         </div>
       }
 
-      <sk-textarea
-        label="Reason for Rejection"
-        placeholder="e.g. Conflict with project deadline..."
-        [rows]="3"
-        [ngModel]="rejectReason()"
-        (ngModelChange)="rejectReason.set($event)"
-      />
+      <sk-textarea label="Reason for Rejection" placeholder="e.g. Conflict with project deadline..." [rows]="3" [ngModel]="rejectReason()" (ngModelChange)="rejectReason.set($event)" />
 
       <div class="flex justify-end gap-3 pt-2 border-t border-slate-100 dark:border-border-dark">
         <sk-button variant="ghost" (click)="showDetailModal.set(false)">Cancel</sk-button>
@@ -83,4 +74,4 @@
     </div>
   </sk-modal>
 
-</div>
+</sk-page-container>

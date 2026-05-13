@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../core/auth.service';
+import { JwtService } from '../../core/jwt';
 import { InputComponent } from '../../components/forms/input/input';
 import { ButtonComponent } from '../../components/atoms/button/button';
 import { AlertComponent } from '../../components/atoms/alert/alert';
@@ -13,12 +13,12 @@ import { AlertComponent } from '../../components/atoms/alert/alert';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
-  private readonly auth = inject(AuthService);
+  private readonly jwt    = inject(JwtService);
   private readonly router = inject(Router);
-  private readonly fb = inject(FormBuilder);
+  private readonly fb     = inject(FormBuilder);
 
   protected readonly loading = signal(false);
-  protected readonly error = signal('');
+  protected readonly error   = signal('');
 
   protected readonly features = [
     { icon: 'people',      label: 'Centralized employee directory & profiles' },
@@ -27,30 +27,35 @@ export class LoginComponent {
     { icon: 'insights',    label: 'Real-time workforce analytics' },
   ];
 
-  protected readonly demoCredentials = [
-    { label: 'HR Admin',   email: 'admin@corp.io',   password: 'admin123' },
-    { label: 'Manager',    email: 'manager@corp.io', password: 'manager123' },
-  ];
-
   protected readonly form = this.fb.group({
-    email:    ['admin@corp.io', [Validators.required, Validators.email]],
-    password: ['admin123',      [Validators.required]],
+    username: ['', [Validators.required]],
+    password: ['', [Validators.required]],
   });
+
+  protected fillDemo(): void {
+    this.form.patchValue({ username: 'zyfit_admin', password: '' });
+  }
 
   protected submit(): void {
     if (this.form.invalid || this.loading()) return;
     this.error.set('');
     this.loading.set(true);
 
-    setTimeout(() => {
-      const { email, password } = this.form.value;
-      const ok = this.auth.login(email!, password!);
-      if (ok) {
-        this.router.navigate(['/dashboard']);
-      } else {
-        this.error.set('Invalid email or password. Please try again.');
+    const { username, password } = this.form.value;
+
+    this.jwt.login({ username: username!, password: password! }).subscribe({
+      next: () => this.router.navigate(['/dashboard']),
+      error: (err) => {
+        const status = err?.status;
+        if (status === 401 || status === 403) {
+          this.error.set('Invalid username or password. Please try again.');
+        } else if (status === 0) {
+          this.error.set('Cannot reach the server. Check your connection and try again.');
+        } else {
+          this.error.set(`Login failed (${status ?? 'unknown error'}). Please try again.`);
+        }
         this.loading.set(false);
-      }
-    }, 800);
+      },
+    });
   }
 }
