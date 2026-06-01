@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { API_BASE_URL } from '../../../core/api.config';
-import { ToastService } from '../../../services/toast.service';
+import { ToastService } from '../../../components/feedback/toast/toast.service';
 import { PageContainerComponent } from '../../../components/layout/page-container/page-container';
 import { BreadcrumbComponent } from '../../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../../components/layout/page-header/page-header';

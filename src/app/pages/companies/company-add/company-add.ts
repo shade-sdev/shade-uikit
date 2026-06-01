@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators, FormGroup, FormArray } fr
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { API_BASE_URL } from '../../../core/api.config';
-import { ToastService } from '../../../services/toast.service';
+import { ToastService } from '../../../components/feedback/toast/toast.service';
 import { PageContainerComponent } from '../../../components/layout/page-container/page-container';
 import { BreadcrumbComponent } from '../../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../../components/layout/page-header/page-header';
@@ -92,7 +92,7 @@ export class CompanyAddComponent {
 
   protected onSubmit(): void {
     if (this.form.invalid) {
-      this.toast.warning('Please fill in all required fields', 'Form Incomplete');
+      this.toast.warning('Please fill in all required fields', { title: 'Form Incomplete' });
       return;
     }
 
