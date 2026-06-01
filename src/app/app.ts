@@ -5,10 +5,7 @@ import { ToastContainerComponent } from './components/feedback/toast/toast-conta
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, ToastContainerComponent],
-  template: `
-    <router-outlet />
-    <sk-toast-container />
-  `,
+  templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {}
