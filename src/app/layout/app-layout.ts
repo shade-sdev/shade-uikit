@@ -23,25 +23,22 @@ export class AppLayoutComponent {
   protected readonly navGroups: NavGroup[] = [
     {
       label: 'Overview',
-      items: [
-        { label: 'Dashboard',      icon: 'dashboard',      route: '/dashboard' },
-      ],
+      items: [{ label: 'Dashboard', icon: 'dashboard', route: '/dashboard' }],
     },
     {
       label: 'Workforce',
       items: [
-        { label: 'Employees',      icon: 'people',         route: '/employees' },
-        { label: 'Directory',      icon: 'contacts',       route: '/directory' },
-        { label: 'Training',       icon: 'school',         route: '/training',       badge: 4 },
-        { label: 'Absences',       icon: 'event_busy',     route: '/absences',       badge: 4 },
+        { label: 'Companies', icon: 'corporate_fare', route: '/companies' },
+        { label: 'Employees', icon: 'people', route: '/employees' },
+        { label: 'Directory', icon: 'contacts', route: '/directory' },
+        { label: 'Training', icon: 'school', route: '/training', badge: 4 },
+        { label: 'Absences', icon: 'event_busy', route: '/absences', badge: 4 },
         { label: 'Leave Calendar', icon: 'calendar_month', route: '/leave-calendar' },
       ],
     },
     {
       label: 'Account',
-      items: [
-        { label: 'Settings',       icon: 'settings',       route: '/settings' },
-      ],
+      items: [{ label: 'Settings', icon: 'settings', route: '/settings' }],
     },
   ];
 
@@ -60,7 +57,7 @@ export class AppLayoutComponent {
     if (!decoded) return { name: '' };
 
     // Token claims: sub (username), email, roles (string[]), contextType, businessId
-    const sub   = decoded['sub']   as string | undefined;
+    const sub = decoded['sub'] as string | undefined;
     const email = decoded['email'] as string | undefined;
 
     const rolesClaim = decoded['roles'];
@@ -69,9 +66,9 @@ export class AppLayoutComponent {
       : (decoded['role'] as string | undefined);
 
     return {
-      name:  sub ?? email ?? 'User',
+      name: sub ?? email ?? 'User',
       email: email,
-      role:  role,
+      role: role,
     };
   });
 

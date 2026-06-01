@@ -88,8 +88,8 @@ export class TableComponent<T extends Record<string, any> = Record<string, any>>
    */
   readonly loadFn          = input<(params: TableParams) => Observable<PagedResult<T>>>();
 
-  readonly pageSize        = input(10);
-  readonly pageSizeOptions = input([10, 25, 50]);
+  readonly pageSize        = input(5);
+  readonly pageSizeOptions = input([5, 10, 25, 50]);
   readonly selectable      = input(false);
   /** Clicking a row emits (rowClick). Adds cursor-pointer styling. */
   readonly clickable       = input(false);

@@ -1,0 +1,22 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Companies' }]" />
+
+  <sk-page-header title="Companies" subtitle="Manage your entire company network.">
+    <sk-button variant="primary" size="sm" (click)="onAddCompany()">
+      <span class="material-symbols-outlined text-[16px]">add_business</span>
+      Add Company
+    </sk-button>
+  </sk-page-header>
+
+  <sk-table
+    [columns]="columns"
+    [loadFn]="loadFn"
+    [pageSize]="5"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    [clickable]="true"
+    (rowClick)="onCompanyClick($event)"
+    emptyMessage="No companies found matching your filters."
+  />
+
+</sk-page-container>

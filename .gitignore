@@ -14,10 +14,7 @@ yarn-error.log
 # IDEs and editors
 .idea/
 .project
-.classpath!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/mcp.json
+.classpath
 .history/*
 
 # Miscellaneous
@@ -33,5 +30,10 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Local configuration and editor settings
 /.claude/
+.claude/
+/.vscode/
+.vscode/
 /ui/

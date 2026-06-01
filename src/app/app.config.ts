@@ -2,14 +2,18 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideJwt } from './core/jwt';
+import { API_BASE_URL } from './core/api.config';
 
-// In production point this to your deployed API host.
+// Base URL for all API calls — in production point this to your deployed API host.
 const API_BASE = 'https://fitness-gym-management-be.onrender.com';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
+
+    // ── API Configuration ───────────────────────────────────────────────────
+    { provide: API_BASE_URL, useValue: API_BASE },
 
     // ── JWT authentication ──────────────────────────────────────────────────
     // This also registers HttpClient + the Bearer-token interceptor internally.
