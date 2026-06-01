@@ -162,22 +162,27 @@ protected readonly loadFn = (params: TableParams) => {
 
 **Toast Notifications:**
 ```typescript
-constructor(private toast: ToastService) {}
+private readonly toast = inject(ToastService);
 
 onSuccess() {
   this.toast.success('Operation completed!');
 }
 
 onError() {
-  this.toast.error('An error occurred', 'Error');
+  this.toast.error('An error occurred', { title: 'Error' });
 }
 
 onWarning() {
-  this.toast.warning('Please review', 'Warning');
+  this.toast.warning('Please review', { title: 'Warning' });
 }
 
 onInfo() {
   this.toast.info('For your information');
+}
+
+// With custom duration (ms):
+onPersistent() {
+  this.toast.error('Critical failure', { title: 'Error', duration: 0 }); // 0 = never auto-dismiss
 }
 ```
 
@@ -318,17 +323,21 @@ All components automatically adapt to dark mode!
 
 ## Error Handling
 
-The kit includes **global HTTP error handling**:
+The kit includes **global HTTP error handling** via a functional interceptor wired into the HTTP client:
 
 ```typescript
-// Errors automatically show as toasts with:
-// ✅ Clear error messages
-// ✅ Field-specific violations (for validation)
-// ✅ Support reference IDs (for internal errors)
-// ✅ Proper formatting and icons
+// app.config.ts
+provideJwt({ ... }, [httpErrorInterceptor])
 ```
 
-No need to handle errors manually - the `HttpErrorInterceptor` catches everything!
+Errors automatically show as toasts with:
+- ✅ Clear error messages from RFC 7807 `problem+json` responses
+- ✅ Field-specific violations (e.g. `Email: must not be blank`)
+- ✅ Support reference IDs for internal server errors
+- ✅ Trace IDs for debugging
+- ✅ Duration scaled by severity (500s show longer than 400s)
+
+No need to handle errors per-component — `httpErrorInterceptor` catches everything!
 
 ## Reactive Forms with Validation
 
