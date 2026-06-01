@@ -54,6 +54,11 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
+        console.log('🚨 HttpErrorInterceptor caught error:', {
+          status: error.status,
+          message: error.message,
+          error: error.error,
+        });
         this.handleError(error);
         return throwError(() => error);
       })
@@ -62,9 +67,11 @@ export class HttpErrorInterceptor implements HttpInterceptor {
 
   private handleError(error: HttpErrorResponse): void {
     const problem = error.error as GlobalProblemDetail | undefined;
+    console.log('📋 Handling error with problem detail:', problem);
 
     // Determine title
     const title = problem?.title || this.getStatusTitle(error.status);
+    console.log('📝 Error title:', title);
 
     // Build message with violations if present
     let message = problem?.detail || error.message || 'An unexpected error occurred';
@@ -87,7 +94,9 @@ export class HttpErrorInterceptor implements HttpInterceptor {
 
     // Show appropriate toast based on status
     const duration = this.getDurationForStatus(error.status);
+    console.log('🔔 Calling toast.error with:', { message, title, duration });
     this.toast.error(message, { title, duration });
+    console.log('✅ Toast service toasts after error:', this.toast.toasts());
 
     // Log details for debugging
     if (error.status >= 500) {

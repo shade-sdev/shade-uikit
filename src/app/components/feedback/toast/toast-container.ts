@@ -11,6 +11,10 @@ export class ToastContainerComponent {
 
   protected readonly toast = inject(ToastService);
 
+  constructor() {
+    console.log('🎨 ToastContainerComponent initialized, watching toasts:', this.toast.toasts());
+  }
+
   protected readonly containerClass = computed(() => {
     const base = 'fixed z-[9999] flex flex-col gap-2 pointer-events-none w-80 max-w-[calc(100vw-2rem)]';
     const positions: Record<ToastPosition, string> = {
