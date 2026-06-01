@@ -17,10 +17,6 @@ export const appConfig: ApplicationConfig = {
     // ── API Configuration ───────────────────────────────────────────────────
     { provide: API_BASE_URL, useValue: API_BASE },
 
-    // ── HTTP Error Handling ─────────────────────────────────────────────────
-    // Global interceptor for handling all HTTP errors
-    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
-
     // ── JWT authentication ──────────────────────────────────────────────────
     // This also registers HttpClient + the Bearer-token interceptor internally.
     // Do NOT add a separate provideHttpClient() call.
@@ -48,5 +44,10 @@ export const appConfig: ApplicationConfig = {
 
       loginRoute: '/login',
     }),
+
+    // ── HTTP Error Handling ─────────────────────────────────────────────────
+    // Global interceptor for handling all HTTP errors.
+    // Registered AFTER provideJwt() so it's added to the JWT-provided HttpClient chain.
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
   ],
 };
