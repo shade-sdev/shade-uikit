@@ -1,165 +1,89 @@
-import { Injectable, inject } from '@angular/core';
+import { inject } from '@angular/core';
 import {
-  HttpInterceptor,
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
   HttpErrorResponse,
+  HttpInterceptorFn,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, throwError } from 'rxjs';
 import { ToastService } from '../components/feedback/toast/toast.service';
 
 /**
  * GlobalProblemDetail
  * Backend error response structure (RFC 7807 Problem Details for HTTP APIs)
- * Example: https://fitnessgym.eyelinkfreelance.com/errors/conflict
  */
 interface GlobalProblemDetail {
-  /** Error type URI (e.g., "https://fitnessgym.eyelinkfreelance.com/errors/conflict") */
   type?: string;
-
-  /** Error title/code (e.g., "DUPLICATE_ENTRY", "VALIDATION_ERROR") */
   title?: string;
-
-  /** HTTP status code (400, 409, 500, etc.) */
   status?: number;
-
-  /** Human-readable error description */
   detail?: string;
-
-  /** Request URI that caused the error */
   instance?: string;
-
-  /** ISO timestamp when error occurred (format: "yyyy-MM-dd HH:mm:ss:SSS") */
   timestamp?: string;
-
-  /** Trace ID from MDC logging context (for tech support tracking) */
   traceId?: string;
-
-  /** List of validation errors for specific fields */
-  violations?: Array<{
-    field: string;
-    message: string;
-  }>;
-
-  /** Support reference ID for internal server errors (e.g., "a1b2c3d4") */
+  violations?: Array<{ field: string; message: string }>;
   supportReference?: string;
 }
 
-@Injectable()
-export class HttpErrorInterceptor implements HttpInterceptor {
-  private readonly toast = inject(ToastService);
+export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
+  const toast = inject(ToastService);
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(req).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.log('🚨 HttpErrorInterceptor caught error:', {
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      const problem = error.error as GlobalProblemDetail | undefined;
+
+      const title = problem?.title || getStatusTitle(error.status);
+      let message = problem?.detail || error.message || 'An unexpected error occurred';
+
+      if (problem?.violations && problem.violations.length > 0) {
+        const violations = problem.violations
+          .map((v) => `${formatFieldName(v.field)}: ${v.message}`)
+          .join(', ');
+        message = `${message} (${violations})`;
+      }
+
+      if (problem?.supportReference) {
+        message += ` [Support Ref: ${problem.supportReference}]`;
+      } else if (problem?.traceId) {
+        message += ` [Trace ID: ${problem.traceId}]`;
+      }
+
+      const duration = getDurationForStatus(error.status);
+      toast.error(message, { title, duration });
+
+      if (error.status >= 500) {
+        console.error('Server Error:', {
           status: error.status,
-          message: error.message,
-          error: error.error,
+          title: problem?.title,
+          detail: problem?.detail,
+          supportReference: problem?.supportReference,
+          traceId: problem?.traceId,
         });
-        this.handleError(error);
-        return throwError(() => error);
-      })
-    );
+      }
+
+      return throwError(() => error);
+    }),
+  );
+};
+
+function getStatusTitle(status: number): string {
+  switch (status) {
+    case 400: return 'Bad Request';
+    case 401: return 'Unauthorized';
+    case 403: return 'Forbidden';
+    case 404: return 'Not Found';
+    case 409: return 'Conflict';
+    case 422: return 'Validation Error';
+    case 500: return 'Server Error';
+    case 502: return 'Bad Gateway';
+    case 503: return 'Service Unavailable';
+    default:  return `Error ${status}`;
   }
+}
 
-  private handleError(error: HttpErrorResponse): void {
-    const problem = error.error as GlobalProblemDetail | undefined;
-    console.log('📋 Handling error with problem detail:', problem);
+function formatFieldName(fieldName: string): string {
+  return fieldName.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
-    // Determine title
-    const title = problem?.title || this.getStatusTitle(error.status);
-    console.log('📝 Error title:', title);
-
-    // Build message with violations if present
-    let message = problem?.detail || error.message || 'An unexpected error occurred';
-
-    // Append field violations
-    if (problem?.violations && problem.violations.length > 0) {
-      const violations = problem.violations
-        .map((v) => `${this.formatFieldName(v.field)}: ${v.message}`)
-        .join(', ');
-      message = `${message} (${violations})`;
-    }
-
-    // Append support reference for internal errors (highest priority)
-    if (problem?.supportReference) {
-      message += ` [Support Ref: ${problem.supportReference}]`;
-    } else if (problem?.traceId) {
-      // For other server errors, include trace ID for support
-      message += ` [Trace ID: ${problem.traceId}]`;
-    }
-
-    // Show appropriate toast based on status
-    const duration = this.getDurationForStatus(error.status);
-    console.log('🔔 Calling toast.error with:', { message, title, duration });
-    this.toast.error(message, { title, duration });
-    console.log('✅ Toast service toasts after error:', this.toast.toasts());
-
-    // Log details for debugging
-    if (error.status >= 500) {
-      console.error('Server Error Details:', {
-        status: error.status,
-        title: problem?.title,
-        detail: problem?.detail,
-        type: problem?.type,
-        timestamp: problem?.timestamp,
-        supportReference: problem?.supportReference,
-        traceId: problem?.traceId,
-        instance: problem?.instance,
-      });
-    }
-
-    // Log other errors at warn level
-    if (error.status >= 400 && error.status < 500) {
-      console.warn('Client Error Details:', {
-        status: error.status,
-        title: problem?.title,
-        detail: problem?.detail,
-        violations: problem?.violations,
-        instance: problem?.instance,
-      });
-    }
-  }
-
-  private getStatusTitle(status: number): string {
-    switch (status) {
-      case 400:
-        return 'Bad Request';
-      case 401:
-        return 'Unauthorized';
-      case 403:
-        return 'Forbidden';
-      case 404:
-        return 'Not Found';
-      case 409:
-        return 'Conflict';
-      case 422:
-        return 'Validation Error';
-      case 500:
-        return 'Server Error';
-      case 502:
-        return 'Bad Gateway';
-      case 503:
-        return 'Service Unavailable';
-      default:
-        return `Error ${status}`;
-    }
-  }
-
-  private formatFieldName(fieldName: string): string {
-    // Convert contact_number to Contact Number
-    return fieldName
-      .replace(/_/g, ' ')
-      .replace(/\b\w/g, (char) => char.toUpperCase());
-  }
-
-  private getDurationForStatus(status: number): number {
-    // Longer duration for serious errors
-    if (status >= 500) return 8000;
-    if (status === 409 || status === 422) return 6000;
-    return 5000;
-  }
+function getDurationForStatus(status: number): number {
+  if (status >= 500) return 8000;
+  if (status === 409 || status === 422) return 6000;
+  return 5000;
 }

@@ -4,7 +4,7 @@ import {
   makeEnvironmentProviders,
   provideAppInitializer,
 } from '@angular/core';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, HttpInterceptorFn } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { JWT_CONFIG, JwtConfig } from './jwt.config';
 import { jwtInterceptor } from './jwt.interceptor';
@@ -36,13 +36,13 @@ import { JwtService } from './jwt.service';
  * };
  * ```
  */
-export function provideJwt(config: JwtConfig): EnvironmentProviders {
+export function provideJwt(config: JwtConfig, extraInterceptors: HttpInterceptorFn[] = []): EnvironmentProviders {
   return makeEnvironmentProviders([
     { provide: JWT_CONFIG, useValue: config },
 
-    // Register HttpClient with the JWT interceptor.
+    // Register HttpClient with the JWT interceptor and any extra interceptors.
     // Do NOT call provideHttpClient() separately in app.config.ts.
-    provideHttpClient(withInterceptors([jwtInterceptor])),
+    provideHttpClient(withInterceptors([jwtInterceptor, ...extraInterceptors])),
 
     // Restore session BEFORE any route guard runs.
     // - If token is valid       → marks isAuthenticated = true
