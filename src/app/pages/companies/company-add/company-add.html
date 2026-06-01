@@ -168,11 +168,16 @@
 
     <!-- Action Buttons -->
     <div class="flex gap-3 justify-end">
-      <sk-button variant="ghost" type="button" (click)="onCancel()">
+      <sk-button variant="ghost" type="button" (click)="onCancel()" [disabled]="isSubmitting()">
         Cancel
       </sk-button>
-      <sk-button variant="primary" type="submit" [disabled]="form.invalid">
-        Create Company
+      <sk-button variant="primary" type="submit" [disabled]="form.invalid || isSubmitting()">
+        @if (isSubmitting()) {
+          <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+          Creating...
+        } @else {
+          Create Company
+        }
       </sk-button>
     </div>
   </form>

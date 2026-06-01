@@ -3,9 +3,11 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideJwt } from './core/jwt';
 import { API_BASE_URL } from './core/api.config';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpErrorInterceptor } from './core/http-error.interceptor';
 
 // Base URL for all API calls — in production point this to your deployed API host.
-const API_BASE = 'https://fitness-gym-management-be.onrender.com';
+const API_BASE = 'http://localhost:8080';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,6 +16,10 @@ export const appConfig: ApplicationConfig = {
 
     // ── API Configuration ───────────────────────────────────────────────────
     { provide: API_BASE_URL, useValue: API_BASE },
+
+    // ── HTTP Error Handling ─────────────────────────────────────────────────
+    // Global interceptor for handling all HTTP errors
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
 
     // ── JWT authentication ──────────────────────────────────────────────────
     // This also registers HttpClient + the Bearer-token interceptor internally.

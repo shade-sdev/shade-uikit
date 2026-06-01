@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { API_BASE_URL } from '../../../core/api.config';
+import { ToastService } from '../../../services/toast.service';
 import { PageContainerComponent } from '../../../components/layout/page-container/page-container';
 import { BreadcrumbComponent } from '../../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../../components/layout/page-header/page-header';
@@ -59,6 +60,7 @@ export class CompanyDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly apiBaseUrl = inject(API_BASE_URL);
+  private readonly toast = inject(ToastService);
 
   private readonly companyId = this.route.snapshot.paramMap.get('id') || '';
   protected readonly company = signal<CompanyResponse | null>(null);
@@ -85,9 +87,9 @@ export class CompanyDetailComponent {
           this.company.set(data);
           this.isLoading.set(false);
         },
-        error: (error) => {
-          console.error('Error loading company:', error);
+        error: () => {
           this.isLoading.set(false);
+          // Error handling is done by HttpErrorInterceptor
         },
       });
   }

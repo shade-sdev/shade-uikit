@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators, FormGroup, FormArray } fr
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { API_BASE_URL } from '../../../core/api.config';
+import { ToastService } from '../../../services/toast.service';
 import { PageContainerComponent } from '../../../components/layout/page-container/page-container';
 import { BreadcrumbComponent } from '../../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../../components/layout/page-header/page-header';
@@ -90,10 +91,12 @@ export class CompanyEditComponent {
   private readonly router = inject(Router);
   private readonly apiBaseUrl = inject(API_BASE_URL);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly toast = inject(ToastService);
 
   private readonly companyId = this.route.snapshot.paramMap.get('id') || '';
   protected readonly company = signal<CompanyResponse | null>(null);
   protected readonly isLoading = signal(true);
+  protected readonly isSubmitting = signal(false);
 
   protected readonly breadcrumbs = computed(() => {
     const comp = this.company();
@@ -173,9 +176,11 @@ export class CompanyEditComponent {
 
   protected onSubmit(): void {
     if (this.form.invalid) {
+      this.toast.warning('Please fill in all required fields', 'Form Incomplete');
       return;
     }
 
+    this.isSubmitting.set(true);
     const formValue = this.form.value as any;
     const payload: CompanyRequest = {
       ...formValue,
@@ -188,10 +193,13 @@ export class CompanyEditComponent {
       .put(`${this.apiBaseUrl}/api/companies/${this.companyId}`, payload)
       .subscribe({
         next: () => {
+          this.isSubmitting.set(false);
+          this.toast.success(`Company "${formValue.information.companyName}" updated successfully!`);
           this.router.navigate(['/companies', this.companyId]);
         },
-        error: (error) => {
-          console.error('Error updating company:', error);
+        error: () => {
+          this.isSubmitting.set(false);
+          // Error handling is done by HttpErrorInterceptor
         },
       });
   }
