@@ -106,12 +106,19 @@ export class CompanyAddComponent {
     };
 
     this.http
-      .post<CompanyResponse>(`${this.apiBaseUrl}/api/companies`, payload)
+      .post(`${this.apiBaseUrl}/api/companies`, payload, { observe: 'response' })
       .subscribe({
         next: (response) => {
           this.isSubmitting.set(false);
+          // Backend returns 201 with Location: /companies/{id} — extract the ID from that header
+          const location = response.headers.get('Location');
+          const id = location?.split('/').pop();
           this.toast.success(`Company "${formValue.information.companyName}" created successfully!`);
-          this.router.navigate(['/companies', response.id]);
+          if (id) {
+            this.router.navigate(['/companies', id]);
+          } else {
+            this.router.navigate(['/companies']);
+          }
         },
         error: () => {
           this.isSubmitting.set(false);
