@@ -24,17 +24,28 @@ export class JwtService implements OnDestroy {
   readonly decodedToken = signal<Record<string, unknown> | null>(null);
 
   /**
-   * Roles extracted from the decoded token using `JwtConfig.rolesPath`.
-   * Returns an empty array when unauthenticated or the claim is absent.
+   * Merged flat array of roles + permissions extracted from the decoded token.
+   * Uses `JwtConfig.rolesPath` (default: `'roles'`) and `JwtConfig.permissionsPath`
+   * (optional). Duplicates are removed. Returns `[]` when unauthenticated.
    */
   readonly roles = computed((): string[] => {
     const decoded = this.decodedToken();
     if (!decoded) return [];
-    const path = this.cfg.rolesPath ?? 'roles';
-    const raw = getByPath(decoded, path);
-    if (Array.isArray(raw)) return raw as string[];
-    if (typeof raw === 'string') return [raw];
-    return [];
+
+    const extract = (path: string): string[] => {
+      const raw = getByPath(decoded, path);
+      if (Array.isArray(raw)) return raw as string[];
+      if (typeof raw === 'string') return [raw];
+      return [];
+    };
+
+    const roles       = extract(this.cfg.rolesPath       ?? 'roles');
+    const permissions = this.cfg.permissionsPath
+      ? extract(this.cfg.permissionsPath)
+      : [];
+
+    // Merge and deduplicate
+    return [...new Set([...roles, ...permissions])];
   });
 
   // ── Internal ──────────────────────────────────────────────────────────────

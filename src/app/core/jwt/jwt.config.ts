@@ -63,6 +63,17 @@ export interface JwtConfig {
   rolesPath?: string;
 
   /**
+   * Dot-notation path into the decoded JWT payload where the permissions array lives.
+   * Merged with `rolesPath` values into a single flat array on `JwtService.roles`.
+   * Supports both `string[]` and a single `string` value.
+   *
+   * Example: `'permissions'` → `{ permissions: ['READ_USERS', 'WRITE_USERS'] }`
+   *
+   * Omit if your backend does not embed permissions separately.
+   */
+  permissionsPath?: string;
+
+  /**
    * Route to redirect to when a user is authenticated but lacks the required
    * role for a route. Defaults to `'/dashboard'`.
    */
