@@ -22,11 +22,11 @@ export const appConfig: ApplicationConfig = {
     // in the same chain — class-based HTTP_INTERCEPTORS won't work here.
     provideJwt(
       {
-        authUrl:    `${API_BASE}/api/auth/login`,
+        authUrl: `${API_BASE}/api/auth/login`,
         refreshUrl: `${API_BASE}/api/auth/refresh`,
-        logoutUrl:  `${API_BASE}/api/auth/logout`,
+        logoutUrl: `${API_BASE}/api/auth/logout`,
 
-        buildPayload: creds => ({
+        buildPayload: (creds) => ({
           username: creds['username'],
           password: creds['password'],
         }),
@@ -35,7 +35,8 @@ export const appConfig: ApplicationConfig = {
         refreshToken: { kind: 'cookie' },
         refreshBufferSeconds: 30,
         loginRoute: '/login',
-        rolesPath: 'roles',           // JWT claim that holds the roles array
+        rolesPath: 'roles', // JWT claim that holds the roles array
+        permissionsPath: 'permissions',
         forbiddenRoute: '/dashboard', // redirect here when a role check fails
       },
       [httpErrorInterceptor],

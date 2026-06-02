@@ -19,19 +19,40 @@ export const routes: Routes = [
       },
       {
         path: 'companies',
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [
+          roleGuard(
+            'COMPANY_OTHER_MANAGEMENT',
+            'COMPANY_MINE_MANAGEMENT',
+            'COMPANY_MINE_READ',
+            'COMPANY_OTHER_READ',
+          ),
+        ],
         loadComponent: () =>
           import('./pages/companies/companies').then((m) => m.CompaniesComponent),
       },
       {
         path: 'companies/add',
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [
+          roleGuard(
+            'COMPANY_OTHER_MANAGEMENT',
+            'COMPANY_MINE_MANAGEMENT',
+            'COMPANY_MINE_CREATE',
+            'COMPANY_OTHER_CREATE',
+          ),
+        ],
         loadComponent: () =>
           import('./pages/companies/company-add/company-add').then((m) => m.CompanyAddComponent),
       },
       {
         path: 'companies/:id',
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [
+          roleGuard(
+            'COMPANY_OTHER_MANAGEMENT',
+            'COMPANY_MINE_MANAGEMENT',
+            'COMPANY_MINE_READ',
+            'COMPANY_OTHER_READ',
+          ),
+        ],
         loadComponent: () =>
           import('./pages/companies/company-detail/company-detail').then(
             (m) => m.CompanyDetailComponent,
@@ -39,7 +60,14 @@ export const routes: Routes = [
       },
       {
         path: 'companies/:id/edit',
-        canActivate: [roleGuard('ADMIN')],
+        canActivate: [
+          roleGuard(
+            'COMPANY_OTHER_MANAGEMENT',
+            'COMPANY_MINE_MANAGEMENT',
+            'COMPANY_MINE_UPDATE',
+            'COMPANY_OTHER_UPDATE',
+          ),
+        ],
         loadComponent: () =>
           import('./pages/companies/company-edit/company-edit').then((m) => m.CompanyEditComponent),
       },

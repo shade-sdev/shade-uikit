@@ -28,26 +28,32 @@ export class AppLayoutComponent {
   private readonly allNavGroups: NavGroup[] = [
     {
       label: 'Overview',
-      items: [
-        { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
-      ],
+      items: [{ label: 'Dashboard', icon: 'dashboard', route: '/dashboard' }],
     },
     {
       label: 'Workforce',
       items: [
-        { label: 'Companies',      icon: 'corporate_fare',  route: '/companies',      roles: ['ADMIN'] },
-        { label: 'Employees',      icon: 'people',          route: '/employees' },
-        { label: 'Directory',      icon: 'contacts',        route: '/directory' },
-        { label: 'Training',       icon: 'school',          route: '/training',       badge: 4 },
-        { label: 'Absences',       icon: 'event_busy',      route: '/absences',       badge: 4 },
-        { label: 'Leave Calendar', icon: 'calendar_month',  route: '/leave-calendar' },
+        {
+          label: 'Companies',
+          icon: 'corporate_fare',
+          route: '/companies',
+          roles: [
+            'COMPANY_OTHER_MANAGEMENT',
+            'COMPANY_MINE_MANAGEMENT',
+            'COMPANY_MINE_READ',
+            'COMPANY_OTHER_READ',
+          ],
+        },
+        { label: 'Employees', icon: 'people', route: '/employees' },
+        { label: 'Directory', icon: 'contacts', route: '/directory' },
+        { label: 'Training', icon: 'school', route: '/training', badge: 4 },
+        { label: 'Absences', icon: 'event_busy', route: '/absences', badge: 4 },
+        { label: 'Leave Calendar', icon: 'calendar_month', route: '/leave-calendar' },
       ],
     },
     {
       label: 'Account',
-      items: [
-        { label: 'Settings', icon: 'settings', route: '/settings' },
-      ],
+      items: [{ label: 'Settings', icon: 'settings', route: '/settings' }],
     },
   ];
 
@@ -59,28 +65,28 @@ export class AppLayoutComponent {
     const userRoles = this.jwt.roles();
 
     const canSee = (item: NavItem): boolean =>
-      !item.roles || item.roles.some(r => userRoles.includes(r));
+      !item.roles || item.roles.some((r) => userRoles.includes(r));
 
     return this.allNavGroups
-      .map(group => ({ ...group, items: group.items.filter(canSee) }))
-      .filter(group => group.items.length > 0);
+      .map((group) => ({ ...group, items: group.items.filter(canSee) }))
+      .filter((group) => group.items.length > 0);
   });
 
   protected readonly user = computed((): UserProfile => {
     const decoded = this.jwt.decodedToken();
     if (!decoded) return { name: '' };
 
-    const sub   = decoded['sub']   as string | undefined;
+    const sub = decoded['sub'] as string | undefined;
     const email = decoded['email'] as string | undefined;
 
     // Use the roles signal — already resolved via JwtConfig.rolesPath
-    const roles     = this.jwt.roles();
+    const roles = this.jwt.roles();
     const firstRole = roles[0];
 
     return {
-      name:  sub ?? email ?? 'User',
+      name: sub ?? email ?? 'User',
       email: email,
-      role:  firstRole,
+      role: firstRole,
     };
   });
 
