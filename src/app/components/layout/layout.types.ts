@@ -6,6 +6,11 @@ export interface NavItem {
   children?: NavItem[];
   visible?: boolean;
   external?: boolean;
+  /**
+   * If set, the item is only rendered for users who have at least one of
+   * these roles. Omit to show the item to all authenticated users.
+   */
+  roles?: string[];
 }
 
 export interface NavGroup {

@@ -35,6 +35,8 @@ export const appConfig: ApplicationConfig = {
         refreshToken: { kind: 'cookie' },
         refreshBufferSeconds: 30,
         loginRoute: '/login',
+        rolesPath: 'roles',           // JWT claim that holds the roles array
+        forbiddenRoute: '/dashboard', // redirect here when a role check fails
       },
       [httpErrorInterceptor],
     ),

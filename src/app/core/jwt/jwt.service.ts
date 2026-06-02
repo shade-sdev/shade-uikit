@@ -1,4 +1,4 @@
-import { inject, Injectable, OnDestroy, signal } from '@angular/core';
+import { computed, inject, Injectable, OnDestroy, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError, map, Observable, of, tap } from 'rxjs';
@@ -22,6 +22,20 @@ export class JwtService implements OnDestroy {
 
   /** Decoded JWT payload — persisted in localStorage, survives page reload. */
   readonly decodedToken = signal<Record<string, unknown> | null>(null);
+
+  /**
+   * Roles extracted from the decoded token using `JwtConfig.rolesPath`.
+   * Returns an empty array when unauthenticated or the claim is absent.
+   */
+  readonly roles = computed((): string[] => {
+    const decoded = this.decodedToken();
+    if (!decoded) return [];
+    const path = this.cfg.rolesPath ?? 'roles';
+    const raw = getByPath(decoded, path);
+    if (Array.isArray(raw)) return raw as string[];
+    if (typeof raw === 'string') return [raw];
+    return [];
+  });
 
   // ── Internal ──────────────────────────────────────────────────────────────
   private refreshTimer: ReturnType<typeof setTimeout> | null = null;

@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
-import { jwtGuard } from './core/jwt';
-import { CompaniesComponent } from './pages/companies/companies';
+import { jwtGuard, roleGuard } from './core/jwt';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -20,18 +19,19 @@ export const routes: Routes = [
       },
       {
         path: 'companies',
+        canActivate: [roleGuard('ADMIN')],
         loadComponent: () =>
           import('./pages/companies/companies').then((m) => m.CompaniesComponent),
       },
       {
         path: 'companies/add',
+        canActivate: [roleGuard('ADMIN')],
         loadComponent: () =>
-          import('./pages/companies/company-add/company-add').then(
-            (m) => m.CompanyAddComponent,
-          ),
+          import('./pages/companies/company-add/company-add').then((m) => m.CompanyAddComponent),
       },
       {
         path: 'companies/:id',
+        canActivate: [roleGuard('ADMIN')],
         loadComponent: () =>
           import('./pages/companies/company-detail/company-detail').then(
             (m) => m.CompanyDetailComponent,
@@ -39,10 +39,9 @@ export const routes: Routes = [
       },
       {
         path: 'companies/:id/edit',
+        canActivate: [roleGuard('ADMIN')],
         loadComponent: () =>
-          import('./pages/companies/company-edit/company-edit').then(
-            (m) => m.CompanyEditComponent,
-          ),
+          import('./pages/companies/company-edit/company-edit').then((m) => m.CompanyEditComponent),
       },
       {
         path: 'employees',

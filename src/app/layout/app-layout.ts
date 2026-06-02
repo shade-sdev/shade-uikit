@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { AppShellComponent } from '../components/layout/app-shell/app-shell';
 import { ToastContainerComponent } from '../components/feedback/toast/toast-container';
 import { JwtService } from '../core/jwt';
-import { NavGroup, LogoConfig, UserProfile } from '../components/layout/layout.types';
+import { NavGroup, NavItem, LogoConfig, UserProfile } from '../components/layout/layout.types';
 
 @Component({
   selector: 'app-layout',
@@ -20,55 +20,67 @@ export class AppLayoutComponent {
     subtitle: 'HR Management',
   };
 
-  protected readonly navGroups: NavGroup[] = [
+  /**
+   * Full nav definition. Each item may declare `roles: ['ROLE_A', 'ROLE_B']`.
+   * If roles are declared, the item is only shown to users who have at least
+   * one matching role. Items without `roles` are visible to all authenticated users.
+   */
+  private readonly allNavGroups: NavGroup[] = [
     {
       label: 'Overview',
-      items: [{ label: 'Dashboard', icon: 'dashboard', route: '/dashboard' }],
+      items: [
+        { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
+      ],
     },
     {
       label: 'Workforce',
       items: [
-        { label: 'Companies', icon: 'corporate_fare', route: '/companies' },
-        { label: 'Employees', icon: 'people', route: '/employees' },
-        { label: 'Directory', icon: 'contacts', route: '/directory' },
-        { label: 'Training', icon: 'school', route: '/training', badge: 4 },
-        { label: 'Absences', icon: 'event_busy', route: '/absences', badge: 4 },
-        { label: 'Leave Calendar', icon: 'calendar_month', route: '/leave-calendar' },
+        { label: 'Companies',      icon: 'corporate_fare',  route: '/companies',      roles: ['ADMIN'] },
+        { label: 'Employees',      icon: 'people',          route: '/employees' },
+        { label: 'Directory',      icon: 'contacts',        route: '/directory' },
+        { label: 'Training',       icon: 'school',          route: '/training',       badge: 4 },
+        { label: 'Absences',       icon: 'event_busy',      route: '/absences',       badge: 4 },
+        { label: 'Leave Calendar', icon: 'calendar_month',  route: '/leave-calendar' },
       ],
     },
     {
       label: 'Account',
-      items: [{ label: 'Settings', icon: 'settings', route: '/settings' }],
+      items: [
+        { label: 'Settings', icon: 'settings', route: '/settings' },
+      ],
     },
   ];
 
   /**
-   * Build the user profile for the app-shell header from JWT claims.
-   *
-   * Standard JWT claims used:
-   *  - `sub`   → username / display name
-   *  - `email` → email address (if present in token)
-   *  - `role` / `roles` → first role string
-   *
-   * Adjust claim names here to match whatever your backend embeds.
+   * Filtered nav groups — recomputed whenever the user's roles change.
+   * Groups with no visible items are removed entirely.
    */
+  protected readonly navGroups = computed((): NavGroup[] => {
+    const userRoles = this.jwt.roles();
+
+    const canSee = (item: NavItem): boolean =>
+      !item.roles || item.roles.some(r => userRoles.includes(r));
+
+    return this.allNavGroups
+      .map(group => ({ ...group, items: group.items.filter(canSee) }))
+      .filter(group => group.items.length > 0);
+  });
+
   protected readonly user = computed((): UserProfile => {
     const decoded = this.jwt.decodedToken();
     if (!decoded) return { name: '' };
 
-    // Token claims: sub (username), email, roles (string[]), contextType, businessId
-    const sub = decoded['sub'] as string | undefined;
+    const sub   = decoded['sub']   as string | undefined;
     const email = decoded['email'] as string | undefined;
 
-    const rolesClaim = decoded['roles'];
-    const role = Array.isArray(rolesClaim)
-      ? (rolesClaim[0] as string)
-      : (decoded['role'] as string | undefined);
+    // Use the roles signal — already resolved via JwtConfig.rolesPath
+    const roles     = this.jwt.roles();
+    const firstRole = roles[0];
 
     return {
-      name: sub ?? email ?? 'User',
+      name:  sub ?? email ?? 'User',
       email: email,
-      role: role,
+      role:  firstRole,
     };
   });
 

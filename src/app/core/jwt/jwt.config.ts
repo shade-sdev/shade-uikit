@@ -48,6 +48,25 @@ export interface JwtConfig {
    * Defaults to `'/login'`.
    */
   loginRoute?: string;
+
+  /**
+   * Dot-notation path into the decoded JWT payload where the roles array lives.
+   * Supports both `string[]` and a single `string` value.
+   *
+   * Examples:
+   *  - `'roles'`                  → `{ roles: ['ADMIN', 'USER'] }`
+   *  - `'realm_access.roles'`     → `{ realm_access: { roles: ['ADMIN'] } }`
+   *  - `'authorities'`            → Spring Security default
+   *
+   * Defaults to `'roles'` when omitted.
+   */
+  rolesPath?: string;
+
+  /**
+   * Route to redirect to when a user is authenticated but lacks the required
+   * role for a route. Defaults to `'/dashboard'`.
+   */
+  forbiddenRoute?: string;
 }
 
 export const JWT_CONFIG = new InjectionToken<JwtConfig>('JWT_CONFIG');

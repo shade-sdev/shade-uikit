@@ -8,7 +8,7 @@ import { JWT_CONFIG } from './jwt.config';
  *
  * Usage:
  * ```ts
- * { path: 'dashboard', component: DashboardComponent, canActivate: [jwtGuard] }
+ * { path: 'dashboard', canActivate: [jwtGuard], loadComponent: ... }
  * ```
  */
 export const jwtGuard: CanActivateFn = () => {
@@ -19,4 +19,33 @@ export const jwtGuard: CanActivateFn = () => {
   if (jwt.isAuthenticated()) return true;
 
   return router.createUrlTree([cfg.loginRoute ?? '/login']);
+};
+
+/**
+ * Route guard that restricts access to users who have at least one of the
+ * specified roles. Redirects unauthenticated users to the login route and
+ * unauthorised users to `JwtConfig.forbiddenRoute` (defaults to `/dashboard`).
+ *
+ * Usage:
+ * ```ts
+ * { path: 'companies', canActivate: [roleGuard('ADMIN', 'HR_MANAGER')], loadComponent: ... }
+ * ```
+ */
+export const roleGuard = (...requiredRoles: string[]): CanActivateFn => () => {
+  const jwt    = inject(JwtService);
+  const router = inject(Router);
+  const cfg    = inject(JWT_CONFIG);
+
+  if (!jwt.isAuthenticated()) {
+    return router.createUrlTree([cfg.loginRoute ?? '/login']);
+  }
+
+  const userRoles = jwt.roles();
+  const hasRole   = requiredRoles.some(r => userRoles.includes(r));
+
+  if (!hasRole) {
+    return router.createUrlTree([cfg.forbiddenRoute ?? '/dashboard']);
+  }
+
+  return true;
 };
