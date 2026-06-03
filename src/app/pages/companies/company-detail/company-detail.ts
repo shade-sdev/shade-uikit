@@ -8,6 +8,8 @@ import { PageContainerComponent } from '../../../components/layout/page-containe
 import { BreadcrumbComponent } from '../../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../../components/layout/page-header/page-header';
 import { ButtonComponent } from '../../../components/atoms/button/button';
+import { HasRoleDirective } from '../../../core/jwt';
+import { APP_PERMISSIONS } from '../../../core/permissions';
 
 interface CompanyResponse {
   id: string;
@@ -51,6 +53,7 @@ interface CompanyResponse {
     ButtonComponent,
     CurrencyPipe,
     DatePipe,
+    HasRoleDirective,
   ],
   templateUrl: './company-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,7 +63,8 @@ export class CompanyDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly apiBaseUrl = inject(API_BASE_URL);
-  private readonly toast = inject(ToastService);
+
+  protected readonly P = APP_PERMISSIONS;
 
   private readonly companyId = this.route.snapshot.paramMap.get('id') || '';
   protected readonly company = signal<CompanyResponse | null>(null);
@@ -80,18 +84,16 @@ export class CompanyDetailComponent {
   }
 
   private loadCompany(): void {
-    this.http
-      .get<CompanyResponse>(`${this.apiBaseUrl}/api/companies/${this.companyId}`)
-      .subscribe({
-        next: (data) => {
-          this.company.set(data);
-          this.isLoading.set(false);
-        },
-        error: () => {
-          this.isLoading.set(false);
-          // Error handling is done by HttpErrorInterceptor
-        },
-      });
+    this.http.get<CompanyResponse>(`${this.apiBaseUrl}/api/companies/${this.companyId}`).subscribe({
+      next: (data) => {
+        this.company.set(data);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+        // Error handling is done by HttpErrorInterceptor
+      },
+    });
   }
 
   protected onEdit(): void {

@@ -11,6 +11,8 @@ import { BreadcrumbComponent } from '../../components/layout/breadcrumb/breadcru
 import { PageHeaderComponent } from '../../components/layout/page-header/page-header';
 import { TableComponent } from '../../components/data/table/table';
 import { ButtonComponent } from '../../components/atoms/button/button';
+import { APP_PERMISSIONS } from '../../core/permissions';
+import { HasRoleDirective } from '../../core/jwt';
 
 interface CompanyResponse {
   id: string;
@@ -56,8 +58,11 @@ interface SearchCompaniesResponse {
   selector: 'app-companies',
   imports: [
     PageContainerComponent,
-    BreadcrumbComponent, PageHeaderComponent,
-    ButtonComponent, TableComponent,
+    BreadcrumbComponent,
+    PageHeaderComponent,
+    ButtonComponent,
+    TableComponent,
+    HasRoleDirective,
   ],
   templateUrl: './companies.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,6 +72,8 @@ export class CompaniesComponent {
   private readonly router = inject(Router);
   private readonly apiBaseUrl = inject(API_BASE_URL);
 
+  protected readonly P = APP_PERMISSIONS;
+
   protected readonly columns: ColumnDef<CompanyResponse>[] = [
     {
       key: 'companyName',
@@ -74,7 +81,12 @@ export class CompaniesComponent {
       cell: (company) => {
         const name = company.information?.companyName || '—';
         const brn = company.information?.brn || '';
-        const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
+        const initials = name
+          .split(' ')
+          .map((n: string) => n[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase();
         return `
           <div class="flex items-center gap-3">
             <div class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
@@ -194,14 +206,14 @@ export class CompaniesComponent {
       queryParams.append('companyName', params.search);
     }
 
-    return this.http.get<SearchCompaniesResponse>(
-      `${this.apiBaseUrl}/api/companies?${queryParams.toString()}`,
-    ).pipe(
-      delay(300),
-      map((response) => ({
-        data: response.companies,
-        total: response.totalElements,
-      })),
-    );
+    return this.http
+      .get<SearchCompaniesResponse>(`${this.apiBaseUrl}/api/companies?${queryParams.toString()}`)
+      .pipe(
+        delay(300),
+        map((response) => ({
+          data: response.companies,
+          total: response.totalElements,
+        })),
+      );
   };
 }

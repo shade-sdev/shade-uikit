@@ -3,7 +3,7 @@
   <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Companies' }]" />
 
   <sk-page-header title="Companies" subtitle="Manage your entire company network.">
-    <sk-button variant="primary" size="sm" (click)="onAddCompany()">
+    <sk-button *skHasRole="P.companies.create" variant="primary" size="sm" (click)="onAddCompany()">
       <span class="material-symbols-outlined text-[16px]">add_business</span>
       Add Company
     </sk-button>

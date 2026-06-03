@@ -9,7 +9,7 @@
           <span class="material-symbols-outlined text-[16px]">arrow_back</span>
           Back
         </sk-button>
-        <sk-button variant="primary" size="sm" (click)="onEdit()">
+        <sk-button *skHasRole="P.companies.create" variant="primary" size="sm" (click)="onEdit()">
           <span class="material-symbols-outlined text-[16px]">edit</span>
           Edit
         </sk-button>
