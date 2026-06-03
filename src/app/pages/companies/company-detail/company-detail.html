@@ -19,175 +19,160 @@
     <sk-masonry [columns]="[1, 2, 2]" gap="lg">
 
       <!-- Information -->
-      <div class="break-inside-avoid mb-6">
-        <sk-card>
-          <div class="flex items-center gap-2 mb-5">
-            <span class="material-symbols-outlined text-[20px] text-primary">info</span>
-            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Information</h3>
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">info</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Information</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Company Name</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white font-medium">{{ comp.information.companyName }}</p>
           </div>
-          <div class="grid grid-cols-2 gap-x-6 gap-y-4">
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Company Name</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white font-medium">{{ comp.information.companyName }}</p>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">BRN</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white font-mono">{{ comp.information.brn }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Email</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.information.email }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Contact</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.information.contactNumber || '—' }}</p>
+          </div>
+          @if (comp.information.logo && getLogoSrc(comp.information.logo); as logoSrc) {
+            <div class="col-span-2">
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide mb-2">Logo</p>
+              <img [src]="logoSrc" alt="Company logo"
+                class="w-14 h-14 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700"
+                onerror="this.style.display='none'" />
             </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">BRN</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white font-mono">{{ comp.information.brn }}</p>
+          }
+        </div>
+      </sk-card>
+
+      <!-- Address -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">location_on</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Address</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div class="col-span-2">
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Street</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.address.street || '—' }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">City</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.address.city || '—' }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">State</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.address.state || '—' }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Postal Code</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.address.postalCode || '—' }}</p>
+          </div>
+        </div>
+      </sk-card>
+
+      <!-- Pricing -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">payments</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Pricing</h3>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Standard Price</p>
+          <p class="mt-1 text-3xl font-bold text-slate-900 dark:text-white">
+            {{ comp.price.standardPrice | currency: 'USD' }}
+          </p>
+        </div>
+      </sk-card>
+
+      <!-- Branches -->
+      @if (comp.information.branches && comp.information.branches.length > 0) {
+        <sk-card>
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-primary">account_tree</span>
+              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Branches</h3>
             </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Email</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.information.email }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Contact</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.information.contactNumber || '—' }}</p>
-            </div>
-            @if (comp.information.logo && getLogoSrc(comp.information.logo); as logoSrc) {
-              <div class="col-span-2">
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide mb-2">Logo</p>
-                <img
-                  [src]="logoSrc"
-                  alt="Company logo"
-                  class="w-14 h-14 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700"
-                  onerror="this.style.display='none'"
-                />
+            <span class="text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">
+              {{ comp.information.branches.length }}
+            </span>
+          </div>
+          <div class="space-y-2">
+            @for (branch of comp.information.branches; track branch.id) {
+              <div class="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-100 dark:border-slate-700">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">store</span>
+                  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ branch.branchName }}</p>
+                </div>
+                <p class="text-xs text-slate-400 font-mono truncate max-w-[140px]">{{ branch.id }}</p>
               </div>
             }
           </div>
         </sk-card>
-      </div>
-
-      <!-- Address -->
-      <div class="break-inside-avoid mb-6">
-        <sk-card>
-          <div class="flex items-center gap-2 mb-5">
-            <span class="material-symbols-outlined text-[20px] text-primary">location_on</span>
-            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Address</h3>
-          </div>
-          <div class="grid grid-cols-2 gap-x-6 gap-y-4">
-            <div class="col-span-2">
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Street</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.address.street || '—' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">City</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.address.city || '—' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">State</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.address.state || '—' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Postal Code</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.address.postalCode || '—' }}</p>
-            </div>
-          </div>
-        </sk-card>
-      </div>
-
-      <!-- Pricing -->
-      <div class="break-inside-avoid mb-6">
-        <sk-card>
-          <div class="flex items-center gap-2 mb-5">
-            <span class="material-symbols-outlined text-[20px] text-primary">payments</span>
-            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Pricing</h3>
-          </div>
-          <div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Standard Price</p>
-            <p class="mt-1 text-3xl font-bold text-slate-900 dark:text-white">
-              {{ comp.price.standardPrice | currency: 'USD' }}
-            </p>
-          </div>
-        </sk-card>
-      </div>
-
-      <!-- Branches -->
-      @if (comp.information.branches && comp.information.branches.length > 0) {
-        <div class="break-inside-avoid mb-6">
-          <sk-card>
-            <div class="flex items-center justify-between mb-5">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[20px] text-primary">account_tree</span>
-                <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Branches</h3>
-              </div>
-              <span class="text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">
-                {{ comp.information.branches.length }}
-              </span>
-            </div>
-            <div class="space-y-2">
-              @for (branch of comp.information.branches; track branch.id) {
-                <div class="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-100 dark:border-slate-700">
-                  <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[16px] text-slate-400">store</span>
-                    <p class="text-sm font-medium text-slate-900 dark:text-white">{{ branch.branchName }}</p>
-                  </div>
-                  <p class="text-xs text-slate-400 font-mono truncate max-w-[140px]">{{ branch.id }}</p>
-                </div>
-              }
-            </div>
-          </sk-card>
-        </div>
       }
 
       <!-- Miscellaneous -->
       @if (comp.miscellaneous.disclaimer || comp.miscellaneous.agreeTermsOfService !== undefined) {
-        <div class="break-inside-avoid mb-6">
-          <sk-card>
-            <div class="flex items-center gap-2 mb-5">
-              <span class="material-symbols-outlined text-[20px] text-primary">more_horiz</span>
-              <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Miscellaneous</h3>
-            </div>
-            <div class="space-y-4">
-              @if (comp.miscellaneous.disclaimer) {
+        <sk-card>
+          <div class="flex items-center gap-2 mb-5">
+            <span class="material-symbols-outlined text-[20px] text-primary">more_horiz</span>
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Miscellaneous</h3>
+          </div>
+          <div class="space-y-4">
+            @if (comp.miscellaneous.disclaimer) {
+              <div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Disclaimer</p>
+                <p class="mt-1 text-sm text-slate-900 dark:text-white whitespace-pre-wrap">{{ comp.miscellaneous.disclaimer }}</p>
+              </div>
+            }
+            @if (comp.miscellaneous.agreeTermsOfService !== undefined) {
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-[20px]"
+                  [class]="comp.miscellaneous.agreeTermsOfService ? 'text-emerald-500' : 'text-slate-400'">
+                  {{ comp.miscellaneous.agreeTermsOfService ? 'check_circle' : 'cancel' }}
+                </span>
                 <div>
-                  <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Disclaimer</p>
-                  <p class="mt-1 text-sm text-slate-900 dark:text-white whitespace-pre-wrap">{{ comp.miscellaneous.disclaimer }}</p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Terms of Service</p>
+                  <p class="text-sm text-slate-900 dark:text-white">{{ comp.miscellaneous.agreeTermsOfService ? 'Agreed' : 'Not agreed' }}</p>
                 </div>
-              }
-              @if (comp.miscellaneous.agreeTermsOfService !== undefined) {
-                <div class="flex items-center gap-3">
-                  <span class="material-symbols-outlined text-[20px]"
-                    [class]="comp.miscellaneous.agreeTermsOfService ? 'text-emerald-500' : 'text-slate-400'">
-                    {{ comp.miscellaneous.agreeTermsOfService ? 'check_circle' : 'cancel' }}
-                  </span>
-                  <div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Terms of Service</p>
-                    <p class="text-sm text-slate-900 dark:text-white">{{ comp.miscellaneous.agreeTermsOfService ? 'Agreed' : 'Not agreed' }}</p>
-                  </div>
-                </div>
-              }
-            </div>
-          </sk-card>
-        </div>
+              </div>
+            }
+          </div>
+        </sk-card>
       }
 
       <!-- Audit Information -->
-      <div class="break-inside-avoid mb-6">
-        <sk-card>
-          <div class="flex items-center gap-2 mb-5">
-            <span class="material-symbols-outlined text-[20px] text-primary">history</span>
-            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Audit Information</h3>
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">history</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Audit Information</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Created By</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.auditData.createdBy }}</p>
           </div>
-          <div class="grid grid-cols-2 gap-x-6 gap-y-4">
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Created By</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.auditData.createdBy }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Created Date</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.auditData.createdDate | date: 'mediumDate' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Modified By</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.auditData.lastModifiedBy }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Modified Date</p>
-              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.auditData.lastModifiedDate | date: 'mediumDate' }}</p>
-            </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Created Date</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.auditData.createdDate | date: 'mediumDate' }}</p>
           </div>
-        </sk-card>
-      </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Modified By</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.auditData.lastModifiedBy }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Modified Date</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ comp.auditData.lastModifiedDate | date: 'mediumDate' }}</p>
+          </div>
+        </div>
+      </sk-card>
 
     </sk-masonry>
   }
