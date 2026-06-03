@@ -9,18 +9,19 @@
           <span class="material-symbols-outlined text-[16px]">arrow_back</span>
           Back
         </sk-button>
-        <sk-button *skHasRole="P.companies.create" variant="primary" size="sm" (click)="onEdit()">
+        <sk-button *skHasRole="P.companies.edit" variant="primary" size="sm" (click)="onEdit()">
           <span class="material-symbols-outlined text-[16px]">edit</span>
           Edit
         </sk-button>
       </div>
     </sk-page-header>
 
-    <!-- Information Section -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-      <div class="p-6">
+    <sk-masonry [columns]="[1, 1, 2]" gap="lg">
+
+      <!-- Information -->
+      <div class="break-inside-avoid bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
         <h3 class="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Information</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <p class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400 tracking-wide">Company Name</p>
             <p class="mt-1 text-slate-900 dark:text-white">{{ comp.information.companyName }}</p>
@@ -38,7 +39,7 @@
             <p class="mt-1 text-slate-900 dark:text-white">{{ comp.information.contactNumber || '—' }}</p>
           </div>
           @if (comp.information.logo && getLogoSrc(comp.information.logo); as logoSrc) {
-            <div>
+            <div class="sm:col-span-2">
               <p class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400 tracking-wide mb-2">Logo</p>
               <img
                 [src]="logoSrc"
@@ -50,13 +51,11 @@
           }
         </div>
       </div>
-    </div>
 
-    <!-- Address Section -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-      <div class="p-6">
+      <!-- Address -->
+      <div class="break-inside-avoid bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
         <h3 class="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Address</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <p class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400 tracking-wide">Street</p>
             <p class="mt-1 text-slate-900 dark:text-white">{{ comp.address.street || '—' }}</p>
@@ -75,31 +74,39 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Branches Section -->
-    @if (comp.information.branches && comp.information.branches.length > 0) {
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-        <div class="p-6">
-          <h3 class="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Branches</h3>
-          <div class="space-y-3">
+      <!-- Pricing -->
+      <div class="break-inside-avoid bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+        <h3 class="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Pricing</h3>
+        <div>
+          <p class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400 tracking-wide">Standard Price</p>
+          <p class="mt-1 text-2xl font-semibold text-slate-900 dark:text-white">
+            {{ comp.price.standardPrice | currency: 'USD' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Branches -->
+      @if (comp.information.branches && comp.information.branches.length > 0) {
+        <div class="break-inside-avoid bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+          <h3 class="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+            Branches
+            <span class="ml-2 text-xs font-medium text-slate-400 normal-case tracking-normal">{{ comp.information.branches.length }}</span>
+          </h3>
+          <div class="space-y-2">
             @for (branch of comp.information.branches; track branch.id) {
-              <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
-                <div>
-                  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ branch.branchName }}</p>
-                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ID: {{ branch.id }}</p>
-                </div>
+              <div class="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                <p class="text-sm font-medium text-slate-900 dark:text-white">{{ branch.branchName }}</p>
+                <p class="text-xs text-slate-400 font-mono">{{ branch.id }}</p>
               </div>
             }
           </div>
         </div>
-      </div>
-    }
+      }
 
-    <!-- Miscellaneous Section -->
-    @if (comp.miscellaneous.disclaimer || comp.miscellaneous.agreeTermsOfService) {
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-        <div class="p-6">
+      <!-- Miscellaneous -->
+      @if (comp.miscellaneous.disclaimer || comp.miscellaneous.agreeTermsOfService) {
+        <div class="break-inside-avoid bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
           <h3 class="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Miscellaneous</h3>
           <div class="space-y-4">
             @if (comp.miscellaneous.disclaimer) {
@@ -116,27 +123,12 @@
             }
           </div>
         </div>
-      </div>
-    }
+      }
 
-    <!-- Price Section -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-      <div class="p-6">
-        <h3 class="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Pricing</h3>
-        <div>
-          <p class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400 tracking-wide">Standard Price</p>
-          <p class="mt-1 text-lg font-semibold text-slate-900 dark:text-white">
-            {{ comp.price.standardPrice | currency: 'USD' }}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Audit Data Section -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-      <div class="p-6">
+      <!-- Audit Information -->
+      <div class="break-inside-avoid bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
         <h3 class="mb-4 text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Audit Information</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <p class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400 tracking-wide">Created By</p>
             <p class="mt-1 text-slate-900 dark:text-white">{{ comp.auditData.createdBy }}</p>
@@ -155,12 +147,13 @@
           </div>
         </div>
       </div>
-    </div>
+
+    </sk-masonry>
   }
 
   @if (isLoading()) {
     <div class="flex items-center justify-center py-12">
-      <p class="text-slate-500">Loading company details...</p>
+      <sk-spinner size="md" />
     </div>
   }
 

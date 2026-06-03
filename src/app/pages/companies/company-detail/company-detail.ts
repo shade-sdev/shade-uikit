@@ -8,6 +8,8 @@ import { PageContainerComponent } from '../../../components/layout/page-containe
 import { BreadcrumbComponent } from '../../../components/layout/breadcrumb/breadcrumb';
 import { PageHeaderComponent } from '../../../components/layout/page-header/page-header';
 import { ButtonComponent } from '../../../components/atoms/button/button';
+import { MasonryComponent } from '../../../components/data/masonry/masonry';
+import { SpinnerComponent } from '../../../components/atoms/spinner/spinner';
 import { HasRoleDirective } from '../../../core/jwt';
 import { APP_PERMISSIONS } from '../../../core/permissions';
 
@@ -51,6 +53,8 @@ interface CompanyResponse {
     BreadcrumbComponent,
     PageHeaderComponent,
     ButtonComponent,
+    MasonryComponent,
+    SpinnerComponent,
     CurrencyPipe,
     DatePipe,
     HasRoleDirective,
