@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { jwtGuard, roleGuard } from './core/jwt';
+import { APP_PERMISSIONS } from './core/permissions';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -19,40 +20,19 @@ export const routes: Routes = [
       },
       {
         path: 'companies',
-        canActivate: [
-          roleGuard(
-            'COMPANY_OTHER_MANAGEMENT',
-            'COMPANY_MINE_MANAGEMENT',
-            'COMPANY_MINE_READ',
-            'COMPANY_OTHER_READ',
-          ),
-        ],
+        canActivate: [roleGuard(...APP_PERMISSIONS.companies.view)],
         loadComponent: () =>
           import('./pages/companies/companies').then((m) => m.CompaniesComponent),
       },
       {
         path: 'companies/add',
-        canActivate: [
-          roleGuard(
-            'COMPANY_OTHER_MANAGEMENT',
-            'COMPANY_MINE_MANAGEMENT',
-            'COMPANY_MINE_CREATE',
-            'COMPANY_OTHER_CREATE',
-          ),
-        ],
+        canActivate: [roleGuard(...APP_PERMISSIONS.companies.create)],
         loadComponent: () =>
           import('./pages/companies/company-add/company-add').then((m) => m.CompanyAddComponent),
       },
       {
         path: 'companies/:id',
-        canActivate: [
-          roleGuard(
-            'COMPANY_OTHER_MANAGEMENT',
-            'COMPANY_MINE_MANAGEMENT',
-            'COMPANY_MINE_READ',
-            'COMPANY_OTHER_READ',
-          ),
-        ],
+        canActivate: [roleGuard(...APP_PERMISSIONS.companies.view)],
         loadComponent: () =>
           import('./pages/companies/company-detail/company-detail').then(
             (m) => m.CompanyDetailComponent,
@@ -60,24 +40,19 @@ export const routes: Routes = [
       },
       {
         path: 'companies/:id/edit',
-        canActivate: [
-          roleGuard(
-            'COMPANY_OTHER_MANAGEMENT',
-            'COMPANY_MINE_MANAGEMENT',
-            'COMPANY_MINE_UPDATE',
-            'COMPANY_OTHER_UPDATE',
-          ),
-        ],
+        canActivate: [roleGuard(...APP_PERMISSIONS.companies.edit)],
         loadComponent: () =>
           import('./pages/companies/company-edit/company-edit').then((m) => m.CompanyEditComponent),
       },
       {
         path: 'employees',
+        canActivate: [roleGuard(...APP_PERMISSIONS.employees.view)],
         loadComponent: () =>
           import('./pages/employees/employees').then((m) => m.EmployeesComponent),
       },
       {
         path: 'employees/:id',
+        canActivate: [roleGuard(...APP_PERMISSIONS.employees.view)],
         loadComponent: () =>
           import('./pages/employees/employee-detail/employee-detail').then(
             (m) => m.EmployeeDetailComponent,
@@ -85,25 +60,33 @@ export const routes: Routes = [
       },
       {
         path: 'training',
-        loadComponent: () => import('./pages/training/training').then((m) => m.TrainingComponent),
+        canActivate: [roleGuard(...APP_PERMISSIONS.training.view)],
+        loadComponent: () =>
+          import('./pages/training/training').then((m) => m.TrainingComponent),
       },
       {
         path: 'absences',
-        loadComponent: () => import('./pages/absences/absences').then((m) => m.AbsencesComponent),
+        canActivate: [roleGuard(...APP_PERMISSIONS.absences.view)],
+        loadComponent: () =>
+          import('./pages/absences/absences').then((m) => m.AbsencesComponent),
       },
       {
         path: 'directory',
+        canActivate: [roleGuard(...APP_PERMISSIONS.directory.view)],
         loadComponent: () =>
           import('./pages/directory/directory').then((m) => m.DirectoryComponent),
       },
       {
         path: 'leave-calendar',
+        canActivate: [roleGuard(...APP_PERMISSIONS.leaveCalendar.view)],
         loadComponent: () =>
           import('./pages/leave-calendar/leave-calendar').then((m) => m.LeaveCalendarComponent),
       },
       {
         path: 'settings',
-        loadComponent: () => import('./pages/settings/settings').then((m) => m.SettingsComponent),
+        canActivate: [roleGuard(...APP_PERMISSIONS.settings.view)],
+        loadComponent: () =>
+          import('./pages/settings/settings').then((m) => m.SettingsComponent),
       },
       {
         path: 'showcase',

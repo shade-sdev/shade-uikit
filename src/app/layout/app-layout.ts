@@ -4,6 +4,7 @@ import { AppShellComponent } from '../components/layout/app-shell/app-shell';
 import { ToastContainerComponent } from '../components/feedback/toast/toast-container';
 import { JwtService } from '../core/jwt';
 import { NavGroup, NavItem, LogoConfig, UserProfile } from '../components/layout/layout.types';
+import { APP_PERMISSIONS } from '../core/permissions';
 
 @Component({
   selector: 'app-layout',
@@ -33,27 +34,17 @@ export class AppLayoutComponent {
     {
       label: 'Workforce',
       items: [
-        {
-          label: 'Companies',
-          icon: 'corporate_fare',
-          route: '/companies',
-          roles: [
-            'COMPANY_OTHER_MANAGEMENT',
-            'COMPANY_MINE_MANAGEMENT',
-            'COMPANY_MINE_READ',
-            'COMPANY_OTHER_READ',
-          ],
-        },
-        { label: 'Employees', icon: 'people', route: '/employees' },
-        { label: 'Directory', icon: 'contacts', route: '/directory' },
-        { label: 'Training', icon: 'school', route: '/training', badge: 4 },
-        { label: 'Absences', icon: 'event_busy', route: '/absences', badge: 4 },
-        { label: 'Leave Calendar', icon: 'calendar_month', route: '/leave-calendar' },
+        { label: 'Companies',      icon: 'corporate_fare', route: '/companies',      roles: APP_PERMISSIONS.companies.view },
+        { label: 'Employees',      icon: 'people',         route: '/employees',      roles: APP_PERMISSIONS.employees.view },
+        { label: 'Directory',      icon: 'contacts',       route: '/directory',      roles: APP_PERMISSIONS.directory.view },
+        { label: 'Training',       icon: 'school',         route: '/training',       roles: APP_PERMISSIONS.training.view, badge: 4 },
+        { label: 'Absences',       icon: 'event_busy',     route: '/absences',       roles: APP_PERMISSIONS.absences.view, badge: 4 },
+        { label: 'Leave Calendar', icon: 'calendar_month', route: '/leave-calendar', roles: APP_PERMISSIONS.leaveCalendar.view },
       ],
     },
     {
       label: 'Account',
-      items: [{ label: 'Settings', icon: 'settings', route: '/settings' }],
+      items: [{ label: 'Settings', icon: 'settings', route: '/settings', roles: APP_PERMISSIONS.settings.view }],
     },
   ];
 
