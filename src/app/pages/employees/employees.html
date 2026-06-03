@@ -3,7 +3,7 @@
   <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Employees' }]" />
 
   <sk-page-header title="Employees" subtitle="Manage your entire workforce from one place.">
-    <sk-button variant="primary" size="sm" (click)="showModal.set(true)">
+    <sk-button *skHasRole="P.employees.create" variant="primary" size="sm" (click)="showModal.set(true)">
       <span class="material-symbols-outlined text-[16px]">person_add</span>
       Add Employee
     </sk-button>
