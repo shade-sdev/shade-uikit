@@ -36,6 +36,9 @@ export class AppLayoutComponent {
       items: [
         { label: 'Companies',      icon: 'corporate_fare', route: '/companies',      roles: APP_PERMISSIONS.companies.view },
         { label: 'Employees',      icon: 'people',         route: '/employees',      roles: APP_PERMISSIONS.employees.view },
+        { label: 'Clients',        icon: 'group',          route: '/clients',        roles: APP_PERMISSIONS.clients.view },
+        { label: 'Coaches',        icon: 'sports',         route: '/coaches',        roles: APP_PERMISSIONS.coaches.view },
+        { label: 'Payments',       icon: 'payments',       route: '/payments',       roles: APP_PERMISSIONS.payments.view },
         { label: 'Directory',      icon: 'contacts',       route: '/directory',      roles: APP_PERMISSIONS.directory.view },
         { label: 'Training',       icon: 'school',         route: '/training',       roles: APP_PERMISSIONS.training.view, badge: 4 },
         { label: 'Absences',       icon: 'event_busy',     route: '/absences',       roles: APP_PERMISSIONS.absences.view, badge: 4 },

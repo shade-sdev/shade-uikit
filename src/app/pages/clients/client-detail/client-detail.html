@@ -1,0 +1,310 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="breadcrumbs()" />
+
+  @if (client(); as c) {
+    <sk-page-header
+      [title]="c.information.firstName + ' ' + c.information.lastName"
+      subtitle="View client profile"
+    >
+      <div class="flex gap-2">
+        <sk-button variant="ghost" size="sm" (click)="onBack()">
+          <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+          Back
+        </sk-button>
+        <sk-button *skHasRole="P.clients.edit" variant="outline" size="sm" (click)="onPayClick()">
+          <span class="material-symbols-outlined text-[16px]">payments</span>
+          Pay
+        </sk-button>
+        <sk-button *skHasRole="P.clients.edit" variant="primary" size="sm" (click)="onEdit()">
+          <span class="material-symbols-outlined text-[16px]">edit</span>
+          Edit
+        </sk-button>
+      </div>
+    </sk-page-header>
+
+    <sk-masonry [columns]="[1, 2, 2]" gap="lg">
+
+      <!-- Personal Information -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">person</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Personal Information</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">First Name</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white font-medium">{{ c.information.firstName }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Last Name</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white font-medium">{{ c.information.lastName }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Date of Birth</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">
+              {{ c.information.dateOfBirth ? (c.information.dateOfBirth | date: 'mediumDate') : '—' }}
+            </p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Gender</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ formatGender(c.information.gender) }}</p>
+          </div>
+        </div>
+      </sk-card>
+
+      <!-- Contact Information -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">contact_phone</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Contact</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div class="col-span-2">
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Email</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.contact.email }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Phone</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.contact.phoneNumber || '—' }}</p>
+          </div>
+          @if (c.contact.emergencyContactName || c.contact.emergencyContactPhone) {
+            <div class="col-span-2 pt-3 mt-1 border-t border-slate-100 dark:border-slate-700">
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide mb-2">Emergency Contact</p>
+              <p class="text-sm text-slate-900 dark:text-white">{{ c.contact.emergencyContactName || '—' }}</p>
+              <p class="text-sm text-slate-500 dark:text-slate-400">{{ c.contact.emergencyContactPhone || '' }}</p>
+            </div>
+          }
+        </div>
+      </sk-card>
+
+      <!-- Membership Plan -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">card_membership</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Membership Plan</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Plan</p>
+            <p class="mt-1 text-lg font-bold text-slate-900 dark:text-white">{{ formatPlan(c.plan.membershipPlan) }}</p>
+          </div>
+          @if (c.plan.additionalFees !== undefined && c.plan.additionalFees !== null) {
+            <div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Additional Fees</p>
+              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.plan.additionalFees | number: '1.2-2' }}</p>
+            </div>
+          }
+          @if (c.plan.startDate) {
+            <div class="col-span-2">
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Start Date</p>
+              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.plan.startDate | date: 'mediumDate' }}</p>
+            </div>
+          }
+        </div>
+      </sk-card>
+
+      <!-- Medical & Terms -->
+      @if (c.medicalConditions || c.agreeTermsOfService !== undefined) {
+        <sk-card>
+          <div class="flex items-center gap-2 mb-5">
+            <span class="material-symbols-outlined text-[20px] text-primary">health_and_safety</span>
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Medical & Terms</h3>
+          </div>
+          <div class="space-y-4">
+            @if (c.medicalConditions) {
+              <div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Medical Conditions</p>
+                <p class="mt-1 text-sm text-slate-900 dark:text-white whitespace-pre-wrap">{{ c.medicalConditions }}</p>
+              </div>
+            }
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-[20px]"
+                [class]="c.agreeTermsOfService ? 'text-emerald-500' : 'text-slate-400'">
+                {{ c.agreeTermsOfService ? 'check_circle' : 'cancel' }}
+              </span>
+              <div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Terms of Service</p>
+                <p class="text-sm text-slate-900 dark:text-white">{{ c.agreeTermsOfService ? 'Agreed' : 'Not agreed' }}</p>
+              </div>
+            </div>
+          </div>
+        </sk-card>
+      }
+
+      <!-- Coach -->
+      @if (c.coachId || c.coachName) {
+        <sk-card>
+          <div class="flex items-center gap-2 mb-5">
+            <span class="material-symbols-outlined text-[20px] text-primary">sports</span>
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Coach</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[18px] text-primary">person</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-slate-900 dark:text-white">{{ c.coachName || '—' }}</p>
+              @if (c.coachId) {
+                <p class="text-xs text-slate-400 font-mono mt-0.5 break-all">{{ c.coachId }}</p>
+              }
+            </div>
+          </div>
+        </sk-card>
+      }
+
+      <!-- Audit Information -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">history</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Audit Information</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Created By</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.auditData.createdBy }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Created Date</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.auditData.createdDate | date: 'mediumDate' }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Modified By</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.auditData.lastModifiedBy }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Modified Date</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.auditData.lastModifiedDate | date: 'mediumDate' }}</p>
+          </div>
+        </div>
+      </sk-card>
+
+    </sk-masonry>
+
+    <!-- Recent Payments — full-width section below the masonry cards -->
+    <sk-card>
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-primary">payments</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Recent Payments</h3>
+        </div>
+        @if (!isLoadingPayments()) {
+          <span class="text-xs text-slate-400">
+            {{ payments().length === 0 ? 'No payments yet' : 'Last ' + payments().length + ' payment' + (payments().length === 1 ? '' : 's') }}
+          </span>
+        }
+      </div>
+
+      @if (isLoadingPayments()) {
+        <div class="space-y-3">
+          @for (_ of [1, 2, 3, 4, 5]; track $index) {
+            <sk-skeleton height="1.75rem" [width]="$index % 2 === 0 ? '100%' : '90%'" />
+          }
+        </div>
+
+      } @else if (payments().length === 0) {
+        <div class="flex flex-col items-center gap-2 py-8 text-center">
+          <span class="material-symbols-outlined text-[36px] text-slate-300">receipt_long</span>
+          <p class="text-sm text-slate-400">No payment history for this client.</p>
+        </div>
+
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-slate-100 dark:border-slate-700">
+                <th class="pb-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Billing Month</th>
+                <th class="pb-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Standard</th>
+                <th class="pb-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Additional</th>
+                <th class="pb-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total</th>
+                <th class="pb-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden sm:table-cell">Paid On</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50 dark:divide-slate-800/60">
+              @for (payment of payments(); track payment.id) {
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                  <td class="py-3 font-medium text-slate-900 dark:text-white">
+                    {{ formatBillingMonth(payment.billingMonth) }}
+                  </td>
+                  <td class="py-3 text-right text-slate-600 dark:text-slate-300 tabular-nums">
+                    {{ payment.standardPrice | currency }}
+                  </td>
+                  <td class="py-3 text-right text-slate-600 dark:text-slate-300 tabular-nums">
+                    @if (payment.additionalPrice) {
+                      {{ payment.additionalPrice | currency }}
+                    } @else {
+                      <span class="text-slate-400">—</span>
+                    }
+                  </td>
+                  <td class="py-3 text-right font-semibold text-slate-900 dark:text-white tabular-nums">
+                    {{ paymentTotal(payment) | currency }}
+                  </td>
+                  <td class="py-3 text-right text-xs text-slate-400 hidden sm:table-cell">
+                    {{ payment.auditData.createdDate | date: 'mediumDate' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </sk-card>
+
+  }
+
+  @if (isLoading()) {
+    <div class="flex items-center justify-center py-16">
+      <sk-spinner size="md" />
+    </div>
+  }
+
+</sk-page-container>
+
+<!-- Payment modal — lives outside sk-page-container so it renders in the document overlay layer -->
+<sk-modal
+  [isOpen]="isPayModalOpen()"
+  title="Record Payment"
+  size="sm"
+  (closed)="onPayModalClosed()"
+>
+  <div class="space-y-5">
+    <p class="text-sm text-slate-600 dark:text-slate-400">
+      Select the billing month for
+      <span class="font-semibold text-slate-900 dark:text-white">{{ currentYear }}</span>.
+      The current year is used automatically.
+    </p>
+
+    <sk-select
+      label="Billing Month"
+      placeholder="Select a month…"
+      [options]="monthOptions"
+      [formControl]="monthControl"
+    />
+  </div>
+
+  <!-- Footer -->
+  <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+    <sk-button
+      variant="ghost"
+      type="button"
+      (click)="onPayModalClosed()"
+      [disabled]="isSubmittingPayment()"
+    >
+      Cancel
+    </sk-button>
+    <sk-button
+      variant="primary"
+      type="button"
+      [disabled]="monthControl.value == null || isSubmittingPayment()"
+      (click)="onSubmitPayment()"
+    >
+      @if (isSubmittingPayment()) {
+        <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+        Processing…
+      } @else {
+        <span class="material-symbols-outlined text-[16px]">payments</span>
+        Confirm Payment
+      }
+    </sk-button>
+  </div>
+</sk-modal>

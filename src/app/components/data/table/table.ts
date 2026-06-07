@@ -3,10 +3,12 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   input,
   output,
   signal,
+  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, Subject, catchError, debounceTime, of, switchMap } from 'rxjs';
@@ -241,6 +243,26 @@ export class TableComponent<T extends Record<string, any> = Record<string, any>>
 
     // Trigger initial load; no-op in client mode (computed handles it)
     this.triggerLoad();
+
+    // Re-trigger from page 1 whenever the loadFn reference changes.
+    // This handles parent components that swap loadFn when their own state
+    // changes (e.g. admin selects a different company on the clients page).
+    let firstRun = true;
+    effect(() => {
+      this.loadFn(); // establish reactive dependency on the input signal ONLY
+      if (firstRun) { firstRun = false; return; } // skip initial — handled above
+      // Reset interaction state then reload.
+      // triggerLoad() is wrapped in untracked() so that the signals it reads
+      // (page, sort, filters, globalSearch) are NOT added as effect dependencies.
+      // Without untracked(), those signals would become dependencies and the
+      // effect would re-fire on every sort/filter interaction, immediately
+      // resetting them back to null and breaking server-side sort & filter.
+      this.page.set(1);
+      this.sort.set(null);
+      this.filters.set({});
+      this.globalSearch.set('');
+      untracked(() => this.triggerLoad());
+    }, { allowSignalWrites: true });
   }
 
   // ── Actions ─────────────────────────────────────────────────────────────────

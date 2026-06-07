@@ -1,0 +1,172 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="breadcrumbs()" />
+
+  @if (coach(); as c) {
+    <sk-page-header
+      [title]="c.information.firstName + ' ' + c.information.lastName"
+      subtitle="View coach profile"
+    >
+      <div class="flex gap-2">
+        <sk-button variant="ghost" size="sm" (click)="onBack()">
+          <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+          Back
+        </sk-button>
+        <sk-button *skHasRole="P.coaches.edit" variant="primary" size="sm" (click)="onEdit()">
+          <span class="material-symbols-outlined text-[16px]">edit</span>
+          Edit
+        </sk-button>
+      </div>
+    </sk-page-header>
+
+    <sk-masonry [columns]="[1, 2, 2]" gap="lg">
+
+      <!-- Personal Information -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">person</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Personal Information</h3>
+        </div>
+        <div class="flex items-start gap-4">
+          @if (getPictureSrc(c.information.picture); as src) {
+            <img [src]="src" alt="Profile" class="size-16 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700 shrink-0" />
+          } @else {
+            <div class="size-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <span class="text-xl font-bold text-primary">
+                {{ (c.information.firstName[0] || '') + (c.information.lastName[0] || '') }}
+              </span>
+            </div>
+          }
+          <div class="grid grid-cols-1 gap-y-3 flex-1">
+            <div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Full Name</p>
+              <p class="mt-0.5 text-sm font-medium text-slate-900 dark:text-white">
+                {{ c.information.firstName }} {{ c.information.lastName }}
+              </p>
+            </div>
+            @if (c.information.location) {
+              <div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Location</p>
+                <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.information.location }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      </sk-card>
+
+      <!-- Contact -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">contact_phone</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Contact</h3>
+        </div>
+        <div class="grid grid-cols-1 gap-y-4">
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Email</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.contact.email }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Contact Number</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.contact.contactNumber || '—' }}</p>
+          </div>
+        </div>
+      </sk-card>
+
+      <!-- Coaching Details -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">sports</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Coaching Details</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Mode</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white font-medium">{{ formatMode(c.details.coachingMode) }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Availability</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ formatAvailability(c.details.availability) }}</p>
+          </div>
+          @if (c.details.yearsOfExperience !== undefined && c.details.yearsOfExperience !== null) {
+            <div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Experience</p>
+              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.details.yearsOfExperience }} yr{{ c.details.yearsOfExperience !== 1 ? 's' : '' }}</p>
+            </div>
+          }
+          @if (c.details.hourlyRate !== undefined && c.details.hourlyRate !== null) {
+            <div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Hourly Rate</p>
+              <p class="mt-1 text-lg font-bold text-slate-900 dark:text-white">
+                {{ c.details.hourlyRate | currency: 'USD' }}
+              </p>
+            </div>
+          }
+          @if (c.details.spokenLanguages) {
+            <div class="col-span-2">
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Languages</p>
+              <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.details.spokenLanguages }}</p>
+            </div>
+          }
+        </div>
+      </sk-card>
+
+      <!-- Professional Profile -->
+      @if (c.details.biography || c.details.certifications) {
+        <sk-card>
+          <div class="flex items-center gap-2 mb-5">
+            <span class="material-symbols-outlined text-[20px] text-primary">workspace_premium</span>
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Professional Profile</h3>
+          </div>
+          <div class="space-y-4">
+            @if (c.details.biography) {
+              <div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Biography</p>
+                <p class="mt-1 text-sm text-slate-900 dark:text-white whitespace-pre-wrap leading-relaxed">{{ c.details.biography }}</p>
+              </div>
+            }
+            @if (c.details.certifications) {
+              <div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Certifications</p>
+                <p class="mt-1 text-sm text-slate-900 dark:text-white whitespace-pre-wrap">{{ c.details.certifications }}</p>
+              </div>
+            }
+          </div>
+        </sk-card>
+      }
+
+      <!-- Audit Information -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-5">
+          <span class="material-symbols-outlined text-[20px] text-primary">history</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Audit Information</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Created By</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.auditData.createdBy }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Created Date</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.auditData.createdDate | date: 'mediumDate' }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Modified By</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.auditData.lastModifiedBy }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">Modified Date</p>
+            <p class="mt-0.5 text-sm text-slate-900 dark:text-white">{{ c.auditData.lastModifiedDate | date: 'mediumDate' }}</p>
+          </div>
+        </div>
+      </sk-card>
+
+    </sk-masonry>
+  }
+
+  @if (isLoading()) {
+    <div class="flex items-center justify-center py-16">
+      <sk-spinner size="md" />
+    </div>
+  }
+
+</sk-page-container>

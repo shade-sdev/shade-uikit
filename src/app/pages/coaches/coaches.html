@@ -1,0 +1,36 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Coaches' }]" />
+
+  <sk-page-header title="Coaches" subtitle="Manage coaches across your gym network.">
+    <sk-button *skHasRole="P.coaches.create" variant="primary" size="sm" (click)="onAddCoach()">
+      <span class="material-symbols-outlined text-[16px]">person_add</span>
+      Add Coach
+    </sk-button>
+  </sk-page-header>
+
+  @if (isAdmin()) {
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+      <div class="max-w-sm">
+        <sk-async-select
+          label="Company"
+          placeholder="Search for a company…"
+          [loadFn]="companyLoadFn"
+          [formControl]="companySelectorControl"
+        />
+        <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Select a company to view its coaches.</p>
+      </div>
+    </div>
+  }
+
+  <sk-table
+    [columns]="columns"
+    [loadFn]="loadFn()"
+    [pageSize]="5"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    [clickable]="true"
+    (rowClick)="onCoachClick($event)"
+    [emptyMessage]="isAdmin() && !companyId() ? 'Select a company above to view its coaches.' : 'No coaches found matching your filters.'"
+  />
+
+</sk-page-container>

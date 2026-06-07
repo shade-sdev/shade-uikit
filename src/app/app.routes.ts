@@ -19,6 +19,60 @@ export const routes: Routes = [
           import('./pages/dashboard/dashboard').then((m) => m.DashboardComponent),
       },
       {
+        path: 'payments',
+        canActivate: [roleGuard(...APP_PERMISSIONS.payments.view)],
+        loadComponent: () =>
+          import('./pages/payments/payments').then((m) => m.PaymentsComponent),
+      },
+      {
+        path: 'coaches',
+        canActivate: [roleGuard(...APP_PERMISSIONS.coaches.view)],
+        loadComponent: () =>
+          import('./pages/coaches/coaches').then((m) => m.CoachesComponent),
+      },
+      {
+        path: 'coaches/add',
+        canActivate: [roleGuard(...APP_PERMISSIONS.coaches.create)],
+        loadComponent: () =>
+          import('./pages/coaches/coach-add/coach-add').then((m) => m.CoachAddComponent),
+      },
+      {
+        path: 'coaches/:id',
+        canActivate: [roleGuard(...APP_PERMISSIONS.coaches.view)],
+        loadComponent: () =>
+          import('./pages/coaches/coach-detail/coach-detail').then((m) => m.CoachDetailComponent),
+      },
+      {
+        path: 'coaches/:id/edit',
+        canActivate: [roleGuard(...APP_PERMISSIONS.coaches.edit)],
+        loadComponent: () =>
+          import('./pages/coaches/coach-edit/coach-edit').then((m) => m.CoachEditComponent),
+      },
+      {
+        path: 'clients',
+        canActivate: [roleGuard(...APP_PERMISSIONS.clients.view)],
+        loadComponent: () =>
+          import('./pages/clients/clients').then((m) => m.ClientsComponent),
+      },
+      {
+        path: 'clients/add',
+        canActivate: [roleGuard(...APP_PERMISSIONS.clients.create)],
+        loadComponent: () =>
+          import('./pages/clients/client-add/client-add').then((m) => m.ClientAddComponent),
+      },
+      {
+        path: 'clients/:id',
+        canActivate: [roleGuard(...APP_PERMISSIONS.clients.view)],
+        loadComponent: () =>
+          import('./pages/clients/client-detail/client-detail').then((m) => m.ClientDetailComponent),
+      },
+      {
+        path: 'clients/:id/edit',
+        canActivate: [roleGuard(...APP_PERMISSIONS.clients.edit)],
+        loadComponent: () =>
+          import('./pages/clients/client-edit/client-edit').then((m) => m.ClientEditComponent),
+      },
+      {
         path: 'companies',
         canActivate: [roleGuard(...APP_PERMISSIONS.companies.view)],
         loadComponent: () =>

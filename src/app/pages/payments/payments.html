@@ -1,0 +1,39 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Payments' }]" />
+
+  <sk-page-header title="Payments" subtitle="View payment history across clients." />
+
+  <!-- Selector panel: 2-col grid for admin (company + client), single col for regular user (client only) -->
+  <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+    <div [class]="isAdmin() ? 'grid grid-cols-1 sm:grid-cols-2 gap-4' : 'max-w-sm'">
+
+      @if (isAdmin()) {
+        <sk-async-select
+          label="Company"
+          placeholder="Search for a company…"
+          [loadFn]="companyLoadFn"
+          [formControl]="companySelectorControl"
+        />
+      }
+
+      <sk-async-select
+        label="Client"
+        [placeholder]="isAdmin() && !companyId() ? 'Select a company first…' : 'Search for a client…'"
+        [loadFn]="clientLoadFn()"
+        [formControl]="clientSelectorControl"
+      />
+
+    </div>
+  </div>
+
+  <!-- Payments table -->
+  <sk-table
+    [columns]="columns"
+    [loadFn]="loadFn()"
+    [pageSize]="10"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    [emptyMessage]="emptyMessage()"
+  />
+
+</sk-page-container>

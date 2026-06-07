@@ -30,7 +30,11 @@
 
     @if (isOpen()) {
       <div
-        class="absolute z-40 top-full left-0 right-0 mt-1 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-xl overflow-auto max-h-60"
+        class="fixed bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-xl overflow-auto max-h-60"
+        style="z-index: 9999"
+        [style.top]="dropdownPos().top"
+        [style.left]="dropdownPos().left"
+        [style.width]="dropdownPos().width"
         role="listbox"
         (click)="$event.stopPropagation()"
       >

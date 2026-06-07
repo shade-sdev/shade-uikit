@@ -1,0 +1,109 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Coaches', route: '/coaches' }, { label: 'Add Coach' }]" />
+
+  <sk-page-header title="Add Coach" subtitle="Register a new coach for this company." />
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+
+    <!-- Personal Information -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="p-6 flex flex-col gap-4">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Personal Information</h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="getInformationGroup()">
+          <sk-input label="First Name" placeholder="Enter first name…" formControlName="firstName" />
+          <sk-input label="Last Name" placeholder="Enter last name…" formControlName="lastName" />
+          <sk-input label="Location" placeholder="City, Country…" formControlName="location" />
+
+          <div class="col-span-1 sm:col-span-2">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">Profile Picture</label>
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onPictureSelected($event)"
+              class="block w-full text-sm text-slate-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-medium
+                file:bg-primary file:text-white
+                hover:file:bg-primary/90
+                cursor-pointer"
+            />
+          </div>
+
+          @if (getPicturePreview(); as preview) {
+            <div class="col-span-1 sm:col-span-2">
+              <p class="text-xs font-medium uppercase text-slate-500 dark:text-slate-400 tracking-wide mb-3">Preview</p>
+              <img
+                [src]="preview"
+                alt="Profile preview"
+                class="size-20 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700 shadow-sm"
+              />
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="p-6 flex flex-col gap-4">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Contact</h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="getContactGroup()">
+          <sk-input label="Email" type="email" placeholder="coach@example.com…" formControlName="email" />
+          <sk-input label="Contact Number" type="tel" placeholder="Phone number…" formControlName="contactNumber" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Coaching Details -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="p-6 flex flex-col gap-4">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Coaching Details</h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="getDetailsGroup()">
+          <sk-select
+            label="Coaching Mode"
+            placeholder="Select mode…"
+            [options]="coachingModeOptions"
+            formControlName="coachingMode"
+          />
+          <sk-select
+            label="Availability"
+            placeholder="Select availability…"
+            [options]="availabilityOptions"
+            formControlName="availability"
+          />
+          <sk-input label="Years of Experience" type="number" placeholder="0" formControlName="yearsOfExperience" />
+          <sk-input label="Hourly Rate" type="number" placeholder="0.00" formControlName="hourlyRate" />
+          <sk-input label="Spoken Languages" placeholder="e.g. English, French…" formControlName="spokenLanguages" />
+          <div class="col-span-1 sm:col-span-2">
+            <sk-textarea label="Biography" placeholder="Describe the coach's background and experience…" [rows]="4" formControlName="biography" />
+          </div>
+          <div class="col-span-1 sm:col-span-2">
+            <sk-textarea label="Certifications" placeholder="List certifications, one per line…" [rows]="3" formControlName="certifications" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-3 justify-end">
+      <sk-button variant="ghost" type="button" (click)="onCancel()" [disabled]="isSubmitting()">
+        Cancel
+      </sk-button>
+      <sk-button variant="primary" type="submit" [disabled]="form.invalid || isSubmitting()">
+        @if (isSubmitting()) {
+          <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+          Creating...
+        } @else {
+          Create Coach
+        }
+      </sk-button>
+    </div>
+
+  </form>
+
+</sk-page-container>

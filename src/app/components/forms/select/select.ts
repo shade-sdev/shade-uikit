@@ -28,6 +28,8 @@ export class SelectComponent extends FormFieldBase<unknown> {
   readonly id = input(`sk-select-${Math.random().toString(36).slice(2)}`);
 
   protected readonly isOpen = signal(false);
+  /** Viewport-relative position for the fixed dropdown panel. */
+  protected readonly dropdownPos = signal({ top: '0px', left: '0px', width: '0px' });
 
   protected readonly selectedLabel = computed(() => {
     const val = this._value();
@@ -49,9 +51,19 @@ export class SelectComponent extends FormFieldBase<unknown> {
     return `${base} ${border} ${text}`;
   });
 
-  toggle(e: Event): void {
+  toggle(e: MouseEvent): void {
     e.stopPropagation();
-    if (!this._disabled()) this.isOpen.update((v) => !v);
+    if (this._disabled()) return;
+    if (!this.isOpen()) {
+      // Snapshot trigger position so the fixed panel aligns with it.
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      this.dropdownPos.set({
+        top:   `${rect.bottom + 4}px`,
+        left:  `${rect.left}px`,
+        width: `${rect.width}px`,
+      });
+    }
+    this.isOpen.update((v) => !v);
   }
 
   select(option: SelectOption, e: Event): void {

@@ -1,0 +1,155 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="[{ label: 'Dashboard', route: '/dashboard' }, { label: 'Clients', route: '/clients' }, { label: 'Add Client' }]" />
+
+  <sk-page-header title="Add Client" subtitle="Register a new client for this company." />
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+
+    <!-- Personal Information -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="p-6 flex flex-col gap-4">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Personal Information</h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="getInformationGroup()">
+          <sk-input
+            label="First Name"
+            placeholder="Enter first name…"
+            formControlName="firstName"
+          />
+          <sk-input
+            label="Last Name"
+            placeholder="Enter last name…"
+            formControlName="lastName"
+          />
+          <sk-date-picker
+            label="Date of Birth"
+            placeholder="Select date of birth…"
+            formControlName="dateOfBirth"
+          />
+          <sk-select
+            label="Gender"
+            placeholder="Select gender…"
+            [options]="genderOptions"
+            formControlName="gender"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="p-6 flex flex-col gap-4">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Contact Information</h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="getContactGroup()">
+          <sk-input
+            label="Email"
+            type="email"
+            placeholder="client@example.com…"
+            formControlName="email"
+          />
+          <sk-input
+            label="Phone Number"
+            type="tel"
+            placeholder="Phone number…"
+            formControlName="phoneNumber"
+          />
+          <sk-input
+            label="Emergency Contact Name"
+            placeholder="Emergency contact name…"
+            formControlName="emergencyContactName"
+          />
+          <sk-input
+            label="Emergency Contact Phone"
+            type="tel"
+            placeholder="Emergency contact phone…"
+            formControlName="emergencyContactPhone"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Coach Assignment -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="p-6 flex flex-col gap-4">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Coach Assignment</h3>
+
+        <div class="max-w-sm">
+          <sk-async-select
+            label="Assign Coach"
+            placeholder="Search for a coach…"
+            [loadFn]="coachLoadFn"
+            formControlName="coachId"
+          />
+          <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Optional — assign a personal coach to this client.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Membership Plan -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="p-6 flex flex-col gap-4">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Membership Plan</h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" [formGroup]="getPlanGroup()">
+          <sk-select
+            label="Plan"
+            placeholder="Select membership plan…"
+            [options]="membershipPlanOptions"
+            formControlName="membershipPlan"
+          />
+          <sk-input
+            label="Additional Fees"
+            type="number"
+            placeholder="0.00"
+            formControlName="additionalFees"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Medical Information -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="p-6 flex flex-col gap-4">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Medical Information</h3>
+
+        <sk-textarea
+          label="Medical Conditions"
+          placeholder="Describe any relevant medical conditions or notes…"
+          [rows]="4"
+          formControlName="medicalConditions"
+        />
+      </div>
+    </div>
+
+    <!-- Terms & Conditions -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="p-6 flex flex-col gap-4">
+        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Terms & Conditions</h3>
+
+        <sk-checkbox
+          label="Client agrees to the Terms of Service"
+          formControlName="agreeTermsOfService"
+        />
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-3 justify-end">
+      <sk-button variant="ghost" type="button" (click)="onCancel()" [disabled]="isSubmitting()">
+        Cancel
+      </sk-button>
+      <sk-button variant="primary" type="submit" [disabled]="form.invalid || isSubmitting()">
+        @if (isSubmitting()) {
+          <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+          Creating...
+        } @else {
+          Create Client
+        }
+      </sk-button>
+    </div>
+
+  </form>
+
+</sk-page-container>
