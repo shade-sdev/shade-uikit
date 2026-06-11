@@ -39,6 +39,33 @@ export const APP_PERMISSIONS = {
     ],
   },
 
+  trainingPlans: {
+    view: [
+      'TRAINING_PLAN_MINE_READ',
+      'TRAINING_PLAN_OTHER_READ',
+      'TRAINING_PLAN_MINE_MANAGEMENT',
+      'TRAINING_PLAN_OTHER_MANAGEMENT',
+    ],
+    create: [
+      'TRAINING_PLAN_MINE_CREATE',
+      'TRAINING_PLAN_OTHER_CREATE',
+      'TRAINING_PLAN_MINE_MANAGEMENT',
+      'TRAINING_PLAN_OTHER_MANAGEMENT',
+    ],
+    edit: [
+      'TRAINING_PLAN_MINE_UPDATE',
+      'TRAINING_PLAN_OTHER_UPDATE',
+      'TRAINING_PLAN_MINE_MANAGEMENT',
+      'TRAINING_PLAN_OTHER_MANAGEMENT',
+    ],
+    delete: [
+      'TRAINING_PLAN_OTHER_MANAGEMENT',
+      'TRAINING_PLAN_MINE_MANAGEMENT',
+      'TRAINING_PLAN_MINE_DELETE',
+      'TRAINING_PLAN_OTHER_DELETE',
+    ],
+  },
+
   diets: {
     view: ['DIET_MINE_READ', 'DIET_OTHER_READ', 'DIET_MINE_MANAGEMENT', 'DIET_OTHER_MANAGEMENT'],
     create: [
@@ -174,5 +201,9 @@ export const APP_PERMISSIONS = {
   settings: {
     view: ['SETTINGS_READ', 'SETTINGS_MANAGEMENT'],
     edit: ['SETTINGS_UPDATE', 'SETTINGS_MANAGEMENT'],
+  },
+
+  selfProfile: {
+    view: ['CLIENT'],
   },
 } satisfies Record<string, Record<string, string[]>>;

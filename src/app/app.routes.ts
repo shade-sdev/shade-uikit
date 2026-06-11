@@ -143,6 +143,12 @@ export const routes: Routes = [
           import('./pages/settings/settings').then((m) => m.SettingsComponent),
       },
       {
+        path: 'my-profile',
+        canActivate: [roleGuard(...APP_PERMISSIONS.selfProfile.view)],
+        loadComponent: () =>
+          import('./pages/my-profile/my-profile').then((m) => m.MyProfileComponent),
+      },
+      {
         path: 'showcase',
         loadComponent: () => import('./showcase/showcase').then((m) => m.ShowcaseComponent),
       },

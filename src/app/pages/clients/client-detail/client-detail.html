@@ -153,6 +153,66 @@
         </sk-card>
       }
 
+      <!-- Training Plan -->
+      <sk-card>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px] text-primary">fitness_center</span>
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Training Plan</h3>
+          </div>
+          <div class="flex items-center">
+            @if (trainingPlan()) {
+              <sk-button *skHasRole="P.trainingPlans.edit" variant="ghost" size="sm" (click)="onEditTrainingPlanClick(trainingPlan()!)">
+                <span class="material-symbols-outlined text-[18px]">edit</span>
+              </sk-button>
+              <sk-button *skHasRole="P.trainingPlans.delete" variant="ghost" size="sm" (click)="onDeleteTrainingPlanClick(trainingPlan()!)">
+                <span class="material-symbols-outlined text-[18px] text-rose-500">delete</span>
+              </sk-button>
+            } @else if (!isLoadingTrainingPlan()) {
+              <sk-button *skHasRole="P.trainingPlans.create" variant="ghost" size="sm" (click)="onAddTrainingPlanClick()">
+                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+              </sk-button>
+            }
+          </div>
+        </div>
+
+        @if (isLoadingTrainingPlan()) {
+          <div class="space-y-2">
+            @for (_ of [1, 2, 3]; track $index) {
+              <sk-skeleton height="2rem" width="100%" />
+            }
+          </div>
+
+        } @else if (!trainingPlan()) {
+          <div class="flex flex-col items-center gap-2 py-5 text-center">
+            <span class="material-symbols-outlined text-[28px] text-slate-300">fitness_center</span>
+            <p class="text-xs text-slate-400">No training plan yet.</p>
+          </div>
+
+        } @else {
+          <div class="space-y-0.5">
+            @for (day of [
+              { label: 'Mon', value: trainingPlan()!.trainingMonday    },
+              { label: 'Tue', value: trainingPlan()!.trainingTuesday   },
+              { label: 'Wed', value: trainingPlan()!.trainingWednesday },
+              { label: 'Thu', value: trainingPlan()!.trainingThursday  },
+              { label: 'Fri', value: trainingPlan()!.trainingFriday    },
+              { label: 'Sat', value: trainingPlan()!.trainingSaturday  },
+              { label: 'Sun', value: trainingPlan()!.trainingSunday    }
+            ]; track day.label) {
+              <div class="flex items-start gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-colors">
+                <span class="shrink-0 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase w-7 pt-0.5 select-none">{{ day.label }}</span>
+                <p class="flex-1 text-xs min-w-0 truncate"
+                   [class]="day.value ? 'text-slate-700 dark:text-slate-300' : 'text-slate-300 dark:text-slate-600'"
+                   [title]="day.value || ''">
+                  {{ day.value || '—' }}
+                </p>
+              </div>
+            }
+          </div>
+        }
+      </sk-card>
+
       <!-- Diet Plan -->
       <sk-card>
         <div class="flex items-center justify-between mb-4">
@@ -320,6 +380,7 @@
         </div>
       }
     </sk-card>
+
 
   }
 
@@ -498,6 +559,105 @@
     </sk-button>
     <sk-button variant="danger" type="button" [disabled]="isDeletingDiet()" (click)="onConfirmDeleteDiet()">
       @if (isDeletingDiet()) {
+        <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+        Deleting…
+      } @else {
+        <span class="material-symbols-outlined text-[16px]">delete</span>
+        Delete
+      }
+    </sk-button>
+  </div>
+</sk-modal>
+
+<!-- ── Add Training Plan modal ──────────────────────────────────────────────────────────────────── -->
+<sk-modal
+  [isOpen]="isAddTrainingPlanModalOpen()"
+  title="Add Training Plan"
+  size="lg"
+  (closed)="onAddTrainingPlanModalClosed()"
+>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <sk-input label="Monday"    placeholder="Monday training…"    [formControl]="$any(tpMondayCtrl)" />
+    <sk-input label="Tuesday"   placeholder="Tuesday training…"   [formControl]="$any(tpTuesdayCtrl)" />
+    <sk-input label="Wednesday" placeholder="Wednesday training…" [formControl]="$any(tpWednesdayCtrl)" />
+    <sk-input label="Thursday"  placeholder="Thursday training…"  [formControl]="$any(tpThursdayCtrl)" />
+    <sk-input label="Friday"    placeholder="Friday training…"    [formControl]="$any(tpFridayCtrl)" />
+    <sk-input label="Saturday"  placeholder="Saturday training…"  [formControl]="$any(tpSaturdayCtrl)" />
+    <sk-input label="Sunday"    placeholder="Sunday training…"    [formControl]="$any(tpSundayCtrl)" />
+  </div>
+
+  <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+    <sk-button variant="ghost" type="button" (click)="onAddTrainingPlanModalClosed()" [disabled]="isSubmittingTrainingPlan()">
+      Cancel
+    </sk-button>
+    <sk-button variant="primary" type="button" [disabled]="isSubmittingTrainingPlan()" (click)="onSubmitTrainingPlan()">
+      @if (isSubmittingTrainingPlan()) {
+        <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+        Saving…
+      } @else {
+        <span class="material-symbols-outlined text-[16px]">save</span>
+        Save Plan
+      }
+    </sk-button>
+  </div>
+</sk-modal>
+
+<!-- ── Edit Training Plan modal ────────────────────────────────────────────────────────────────── -->
+<sk-modal
+  [isOpen]="isEditTrainingPlanModalOpen()"
+  title="Edit Training Plan"
+  size="lg"
+  (closed)="onEditTrainingPlanModalClosed()"
+>
+  @if (editingTrainingPlan()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <sk-input label="Monday"    placeholder="Monday training…"    [formControl]="$any(tpMondayCtrl)" />
+      <sk-input label="Tuesday"   placeholder="Tuesday training…"   [formControl]="$any(tpTuesdayCtrl)" />
+      <sk-input label="Wednesday" placeholder="Wednesday training…" [formControl]="$any(tpWednesdayCtrl)" />
+      <sk-input label="Thursday"  placeholder="Thursday training…"  [formControl]="$any(tpThursdayCtrl)" />
+      <sk-input label="Friday"    placeholder="Friday training…"    [formControl]="$any(tpFridayCtrl)" />
+      <sk-input label="Saturday"  placeholder="Saturday training…"  [formControl]="$any(tpSaturdayCtrl)" />
+      <sk-input label="Sunday"    placeholder="Sunday training…"    [formControl]="$any(tpSundayCtrl)" />
+    </div>
+  }
+
+  <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+    <sk-button variant="ghost" type="button" (click)="onEditTrainingPlanModalClosed()" [disabled]="isUpdatingTrainingPlan()">
+      Cancel
+    </sk-button>
+    <sk-button variant="primary" type="button" [disabled]="isUpdatingTrainingPlan()" (click)="onUpdateTrainingPlan()">
+      @if (isUpdatingTrainingPlan()) {
+        <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+        Updating…
+      } @else {
+        <span class="material-symbols-outlined text-[16px]">save</span>
+        Update Plan
+      }
+    </sk-button>
+  </div>
+</sk-modal>
+
+<!-- ── Delete Training Plan confirmation modal ──────────────────────────────────────────────────── -->
+<sk-modal
+  [isOpen]="isDeleteTrainingPlanModalOpen()"
+  title="Delete Training Plan"
+  size="sm"
+  (closed)="onDeleteTrainingPlanModalClosed()"
+>
+  <div class="flex items-start gap-3 p-3 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800">
+    <span class="material-symbols-outlined text-[22px] text-rose-500 shrink-0 mt-0.5">warning</span>
+    <p class="text-sm text-rose-700 dark:text-rose-300 leading-relaxed">
+      Delete this training plan?
+      <span class="block mt-1 text-xs font-normal opacity-75">This action cannot be undone.</span>
+    </p>
+  </div>
+
+  <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+    <sk-button variant="ghost" type="button" (click)="onDeleteTrainingPlanModalClosed()" [disabled]="isDeletingTrainingPlan()">
+      Cancel
+    </sk-button>
+    <sk-button variant="danger" type="button" [disabled]="isDeletingTrainingPlan()" (click)="onConfirmDeleteTrainingPlan()">
+      @if (isDeletingTrainingPlan()) {
         <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
         Deleting…
       } @else {

@@ -46,6 +46,12 @@ export class AppLayoutComponent {
       ],
     },
     {
+      label: 'My Account',
+      items: [
+        { label: 'My Profile', icon: 'person', route: '/my-profile', roles: APP_PERMISSIONS.selfProfile.view },
+      ],
+    },
+    {
       label: 'Account',
       items: [{ label: 'Settings', icon: 'settings', route: '/settings', roles: APP_PERMISSIONS.settings.view }],
     },

@@ -1,0 +1,192 @@
+<sk-page-container>
+  <sk-breadcrumb [items]="breadcrumbs()" />
+
+  <sk-page-header
+    [title]="client() ? (client()!.information.firstName + ' ' + client()!.information.lastName) : 'My Profile'"
+    subtitle="Your membership profile"
+  />
+
+  @if (isLoading()) {
+    <div class="flex items-center justify-center min-h-[40vh]">
+      <sk-spinner size="lg" />
+    </div>
+  } @else if (loadError()) {
+    <div class="flex flex-col items-center justify-center min-h-[40vh] gap-3">
+      <span class="material-symbols-outlined text-[40px] text-rose-400">error_outline</span>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Unable to load your profile. Please try again.</p>
+    </div>
+  } @else if (client()) {
+    <sk-masonry [columns]="[1, 2, 2]" gap="lg">
+
+      <!-- Personal Information -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-[20px] text-primary">person</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Personal Information</h3>
+        </div>
+        <dl class="space-y-3">
+          <div>
+            <dt class="text-xs text-slate-400 dark:text-slate-500">First Name</dt>
+            <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ client()!.information.firstName || '—' }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-400 dark:text-slate-500">Last Name</dt>
+            <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ client()!.information.lastName || '—' }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-400 dark:text-slate-500">Date of Birth</dt>
+            <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">
+              {{ client()!.information.dateOfBirth ? (client()!.information.dateOfBirth | date:'mediumDate') : '—' }}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-400 dark:text-slate-500">Gender</dt>
+            <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ formatGender(client()!.information.gender) }}</dd>
+          </div>
+          @if (client()!.medicalConditions) {
+            <div>
+              <dt class="text-xs text-slate-400 dark:text-slate-500">Medical Conditions</dt>
+              <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ client()!.medicalConditions }}</dd>
+            </div>
+          }
+        </dl>
+      </sk-card>
+
+      <!-- Contact -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-[20px] text-primary">contact_phone</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Contact</h3>
+        </div>
+        <dl class="space-y-3">
+          <div>
+            <dt class="text-xs text-slate-400 dark:text-slate-500">Email</dt>
+            <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ client()!.contact.email || '—' }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-400 dark:text-slate-500">Phone Number</dt>
+            <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ client()!.contact.phoneNumber || '—' }}</dd>
+          </div>
+          @if (client()!.contact.emergencyContactName) {
+            <div>
+              <dt class="text-xs text-slate-400 dark:text-slate-500">Emergency Contact</dt>
+              <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ client()!.contact.emergencyContactName }}</dd>
+            </div>
+          }
+          @if (client()!.contact.emergencyContactPhone) {
+            <div>
+              <dt class="text-xs text-slate-400 dark:text-slate-500">Emergency Phone</dt>
+              <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ client()!.contact.emergencyContactPhone }}</dd>
+            </div>
+          }
+        </dl>
+      </sk-card>
+
+      <!-- Membership Plan -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-[20px] text-primary">card_membership</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Membership Plan</h3>
+        </div>
+        <dl class="space-y-3">
+          <div>
+            <dt class="text-xs text-slate-400 dark:text-slate-500">Plan</dt>
+            <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ formatPlan(client()!.plan.membershipPlan) }}</dd>
+          </div>
+          @if (client()!.plan.additionalFees != null) {
+            <div>
+              <dt class="text-xs text-slate-400 dark:text-slate-500">Additional Fees</dt>
+              <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ client()!.plan.additionalFees | number:'1.2-2' }}</dd>
+            </div>
+          }
+          @if (client()!.plan.startDate) {
+            <div>
+              <dt class="text-xs text-slate-400 dark:text-slate-500">Start Date</dt>
+              <dd class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ client()!.plan.startDate | date:'mediumDate' }}</dd>
+            </div>
+          }
+        </dl>
+      </sk-card>
+
+      <!-- Training Plan -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-[20px] text-primary">fitness_center</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Training Plan</h3>
+        </div>
+        @if (isLoadingTrainingPlan()) {
+          <div class="space-y-2">
+            @for (i of [1,2,3,4,5,6,7]; track i) {
+              <sk-skeleton height="28px" />
+            }
+          </div>
+        } @else if (!trainingPlan()) {
+          <div class="flex flex-col items-center justify-center py-6 gap-2 text-slate-400 dark:text-slate-600">
+            <span class="material-symbols-outlined text-[32px]">fitness_center</span>
+            <p class="text-xs">No training plan assigned yet</p>
+          </div>
+        } @else {
+          <div class="space-y-0.5">
+            @for (day of [
+              { label: 'Mon', value: trainingPlan()!.trainingMonday },
+              { label: 'Tue', value: trainingPlan()!.trainingTuesday },
+              { label: 'Wed', value: trainingPlan()!.trainingWednesday },
+              { label: 'Thu', value: trainingPlan()!.trainingThursday },
+              { label: 'Fri', value: trainingPlan()!.trainingFriday },
+              { label: 'Sat', value: trainingPlan()!.trainingSaturday },
+              { label: 'Sun', value: trainingPlan()!.trainingSunday }
+            ]; track day.label) {
+              <div class="flex items-start gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-colors">
+                <span class="shrink-0 text-[11px] font-bold text-slate-400 uppercase w-7 pt-0.5">{{ day.label }}</span>
+                <p class="flex-1 text-xs min-w-0 truncate"
+                   [class]="day.value ? 'text-slate-700 dark:text-slate-300' : 'text-slate-300 dark:text-slate-600'"
+                   [title]="day.value || ''">
+                  {{ day.value || '—' }}
+                </p>
+              </div>
+            }
+          </div>
+        }
+      </sk-card>
+
+      <!-- Diet -->
+      <sk-card>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-[20px] text-primary">restaurant</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Diet Plan</h3>
+        </div>
+        @if (isLoadingDiets()) {
+          <div class="space-y-2">
+            @for (i of [1,2,3]; track i) {
+              <sk-skeleton height="48px" />
+            }
+          </div>
+        } @else if (!diets().length) {
+          <div class="flex flex-col items-center justify-center py-6 gap-2 text-slate-400 dark:text-slate-600">
+            <span class="material-symbols-outlined text-[32px]">restaurant</span>
+            <p class="text-xs">No diet plan assigned yet</p>
+          </div>
+        } @else {
+          <div class="space-y-2">
+            @for (diet of diets(); track diet.id) {
+              <div class="flex items-start gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-colors">
+                <span class="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-md mt-0.5 {{ mealIntervalBadgeClass(diet.mealInterval) }}">
+                  {{ formatMealInterval(diet.mealInterval) }}
+                </span>
+                <div class="flex-1 min-w-0">
+                  @if (diet.mealInterval === 'SPECIFIC' && diet.mealTime) {
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 mb-0.5">{{ formatMealTime(diet.mealTime) }}</p>
+                  }
+                  <p class="text-xs text-slate-700 dark:text-slate-300 leading-snug">
+                    {{ diet.mealDescription || '—' }}
+                  </p>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </sk-card>
+
+    </sk-masonry>
+  }
+</sk-page-container>

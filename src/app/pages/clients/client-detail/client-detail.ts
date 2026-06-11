@@ -80,6 +80,36 @@ interface DietFormEntry {
   mealDescription: FormControl<string | null>;
 }
 
+// ─── Training Plan interfaces ──────────────────────────────────────────────────
+
+interface ClientTrainingPlan {
+  id: string;
+  clientId: string;
+  companyId: string;
+  trainingMonday?: string;
+  trainingTuesday?: string;
+  trainingWednesday?: string;
+  trainingThursday?: string;
+  trainingFriday?: string;
+  trainingSaturday?: string;
+  trainingSunday?: string;
+  auditData: {
+    createdDate: string;
+    createdBy: string;
+    lastModifiedDate: string;
+    lastModifiedBy: string;
+  };
+  version: number;
+}
+
+interface SearchClientTrainingPlansResponse {
+  trainingPlans: ClientTrainingPlan[];
+  pageSize: number;
+  pageNumber: number;
+  totalElements: number;
+  totalPages: number;
+}
+
 interface ClientResponse {
   id: string;
   companyId: string;
@@ -187,6 +217,33 @@ export class ClientDetailComponent {
   protected readonly dietToDelete = signal<ClientDiet | null>(null);
   protected readonly isDeletingDiet = signal(false);
 
+  // ── Training Plan ─────────────────────────────────────────────────────────────
+  protected readonly trainingPlan = signal<ClientTrainingPlan | null>(null);
+  protected readonly isLoadingTrainingPlan = signal(true);
+
+  // ── Add Training Plan modal ───────────────────────────────────────────────────
+  protected readonly isAddTrainingPlanModalOpen = signal(false);
+  protected readonly isSubmittingTrainingPlan = signal(false);
+
+  // ── Edit Training Plan modal ──────────────────────────────────────────────────
+  protected readonly isEditTrainingPlanModalOpen = signal(false);
+  protected readonly editingTrainingPlan = signal<ClientTrainingPlan | null>(null);
+  protected readonly isUpdatingTrainingPlan = signal(false);
+
+  // ── Delete Training Plan modal ────────────────────────────────────────────────
+  protected readonly isDeleteTrainingPlanModalOpen = signal(false);
+  protected readonly trainingPlanToDelete = signal<ClientTrainingPlan | null>(null);
+  protected readonly isDeletingTrainingPlan = signal(false);
+
+  // 7-day form controls (shared between add & edit — reset on modal close)
+  protected readonly tpMondayCtrl    = new FormControl<string | null>(null);
+  protected readonly tpTuesdayCtrl   = new FormControl<string | null>(null);
+  protected readonly tpWednesdayCtrl = new FormControl<string | null>(null);
+  protected readonly tpThursdayCtrl  = new FormControl<string | null>(null);
+  protected readonly tpFridayCtrl    = new FormControl<string | null>(null);
+  protected readonly tpSaturdayCtrl  = new FormControl<string | null>(null);
+  protected readonly tpSundayCtrl    = new FormControl<string | null>(null);
+
   // ── Payment modal ────────────────────────────────────────────────────────────
   protected readonly currentYear = new Date().getFullYear();
   protected readonly isPayModalOpen = signal(false);
@@ -224,6 +281,7 @@ export class ClientDetailComponent {
     this.loadClient();
     this.loadPayments();
     this.loadDiets();
+    this.loadTrainingPlans();
   }
 
   protected onPayClick(): void {
@@ -532,6 +590,165 @@ export class ClientDetailComponent {
         },
         error: () => {
           this.isDeletingDiet.set(false);
+        },
+      });
+  }
+
+  // ─── Training Plan ───────────────────────────────────────────────────────────
+
+  private loadTrainingPlans(): void {
+    this.isLoadingTrainingPlan.set(true);
+    const qp = new URLSearchParams({
+      pageNumber:     '0',
+      pageSize:       '1',
+      sort:           'CREATION_DATE',
+      descendingSort: 'true',
+    });
+    this.http
+      .get<SearchClientTrainingPlansResponse>(
+        `${this.apiBaseUrl}/api/companies/${this.companyId}/client/${this.clientId}/training-plans?${qp}`,
+      )
+      .subscribe({
+        next: (data) => {
+          this.trainingPlan.set(data.trainingPlans[0] ?? null);
+          this.isLoadingTrainingPlan.set(false);
+        },
+        error: () => {
+          this.isLoadingTrainingPlan.set(false);
+        },
+      });
+  }
+
+  private resetTpControls(): void {
+    this.tpMondayCtrl.setValue(null);
+    this.tpTuesdayCtrl.setValue(null);
+    this.tpWednesdayCtrl.setValue(null);
+    this.tpThursdayCtrl.setValue(null);
+    this.tpFridayCtrl.setValue(null);
+    this.tpSaturdayCtrl.setValue(null);
+    this.tpSundayCtrl.setValue(null);
+  }
+
+  // ─── Add Training Plan ─────────────────────────────────────────────────────
+
+  protected onAddTrainingPlanClick(): void {
+    this.resetTpControls();
+    this.isAddTrainingPlanModalOpen.set(true);
+  }
+
+  protected onAddTrainingPlanModalClosed(): void {
+    this.isAddTrainingPlanModalOpen.set(false);
+    this.isSubmittingTrainingPlan.set(false);
+  }
+
+  protected onSubmitTrainingPlan(): void {
+    this.isSubmittingTrainingPlan.set(true);
+    this.http
+      .post(
+        `${this.apiBaseUrl}/api/companies/${this.companyId}/client/${this.clientId}/training-plans`,
+        {
+          trainingMonday:    this.tpMondayCtrl.value    || undefined,
+          trainingTuesday:   this.tpTuesdayCtrl.value   || undefined,
+          trainingWednesday: this.tpWednesdayCtrl.value || undefined,
+          trainingThursday:  this.tpThursdayCtrl.value  || undefined,
+          trainingFriday:    this.tpFridayCtrl.value    || undefined,
+          trainingSaturday:  this.tpSaturdayCtrl.value  || undefined,
+          trainingSunday:    this.tpSundayCtrl.value    || undefined,
+        },
+      )
+      .subscribe({
+        next: () => {
+          this.isSubmittingTrainingPlan.set(false);
+          this.toast.success('Training plan saved');
+          this.onAddTrainingPlanModalClosed();
+          this.loadTrainingPlans();
+        },
+        error: () => {
+          this.isSubmittingTrainingPlan.set(false);
+        },
+      });
+  }
+
+  // ─── Edit Training Plan ────────────────────────────────────────────────────
+
+  protected onEditTrainingPlanClick(plan: ClientTrainingPlan): void {
+    this.editingTrainingPlan.set(plan);
+    this.tpMondayCtrl.setValue(plan.trainingMonday    ?? null);
+    this.tpTuesdayCtrl.setValue(plan.trainingTuesday  ?? null);
+    this.tpWednesdayCtrl.setValue(plan.trainingWednesday ?? null);
+    this.tpThursdayCtrl.setValue(plan.trainingThursday  ?? null);
+    this.tpFridayCtrl.setValue(plan.trainingFriday    ?? null);
+    this.tpSaturdayCtrl.setValue(plan.trainingSaturday  ?? null);
+    this.tpSundayCtrl.setValue(plan.trainingSunday    ?? null);
+    this.isEditTrainingPlanModalOpen.set(true);
+  }
+
+  protected onEditTrainingPlanModalClosed(): void {
+    this.isEditTrainingPlanModalOpen.set(false);
+    this.isUpdatingTrainingPlan.set(false);
+    this.editingTrainingPlan.set(null);
+  }
+
+  protected onUpdateTrainingPlan(): void {
+    const plan = this.editingTrainingPlan();
+    if (!plan) return;
+    this.isUpdatingTrainingPlan.set(true);
+    this.http
+      .put(
+        `${this.apiBaseUrl}/api/companies/${this.companyId}/client/${this.clientId}/training-plans/${plan.id}`,
+        {
+          trainingMonday:    this.tpMondayCtrl.value    || undefined,
+          trainingTuesday:   this.tpTuesdayCtrl.value   || undefined,
+          trainingWednesday: this.tpWednesdayCtrl.value || undefined,
+          trainingThursday:  this.tpThursdayCtrl.value  || undefined,
+          trainingFriday:    this.tpFridayCtrl.value    || undefined,
+          trainingSaturday:  this.tpSaturdayCtrl.value  || undefined,
+          trainingSunday:    this.tpSundayCtrl.value    || undefined,
+        },
+      )
+      .subscribe({
+        next: () => {
+          this.isUpdatingTrainingPlan.set(false);
+          this.toast.success('Training plan updated');
+          this.onEditTrainingPlanModalClosed();
+          this.loadTrainingPlans();
+        },
+        error: () => {
+          this.isUpdatingTrainingPlan.set(false);
+        },
+      });
+  }
+
+  // ─── Delete Training Plan ──────────────────────────────────────────────────
+
+  protected onDeleteTrainingPlanClick(plan: ClientTrainingPlan): void {
+    this.trainingPlanToDelete.set(plan);
+    this.isDeleteTrainingPlanModalOpen.set(true);
+  }
+
+  protected onDeleteTrainingPlanModalClosed(): void {
+    this.isDeleteTrainingPlanModalOpen.set(false);
+    this.isDeletingTrainingPlan.set(false);
+    this.trainingPlanToDelete.set(null);
+  }
+
+  protected onConfirmDeleteTrainingPlan(): void {
+    const plan = this.trainingPlanToDelete();
+    if (!plan) return;
+    this.isDeletingTrainingPlan.set(true);
+    this.http
+      .delete(
+        `${this.apiBaseUrl}/api/companies/${this.companyId}/client/${this.clientId}/training-plans/${plan.id}`,
+      )
+      .subscribe({
+        next: () => {
+          this.isDeletingTrainingPlan.set(false);
+          this.toast.success('Training plan deleted');
+          this.onDeleteTrainingPlanModalClosed();
+          this.loadTrainingPlans();
+        },
+        error: () => {
+          this.isDeletingTrainingPlan.set(false);
         },
       });
   }
