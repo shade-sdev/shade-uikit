@@ -12,9 +12,13 @@
           <span class="material-symbols-outlined text-[16px]">arrow_back</span>
           Back
         </sk-button>
-        <sk-button *skHasRole="P.clients.edit" variant="outline" size="sm" (click)="onPayClick()">
+        <sk-button *skHasRole="P.payments.edit" variant="outline" size="sm" (click)="onPayClick()">
           <span class="material-symbols-outlined text-[16px]">payments</span>
           Pay
+        </sk-button>
+        <sk-button *skHasRole="P.diets.edit" variant="outline" size="sm" (click)="onAddDietClick()">
+          <span class="material-symbols-outlined text-[16px]">restaurant</span>
+          Add Diet
         </sk-button>
         <sk-button *skHasRole="P.clients.edit" variant="primary" size="sm" (click)="onEdit()">
           <span class="material-symbols-outlined text-[16px]">edit</span>
@@ -250,6 +254,78 @@
       }
     </sk-card>
 
+    <!-- Diet Plan — full-width section below Recent Payments -->
+    <sk-card>
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-primary">restaurant</span>
+          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Diet Plan</h3>
+        </div>
+        <div class="flex items-center gap-3">
+          @if (!isLoadingDiets()) {
+            <span class="text-xs text-slate-400">
+              {{ diets().length === 0 ? 'No entries' : diets().length + ' entr' + (diets().length === 1 ? 'y' : 'ies') }}
+            </span>
+          }
+          <sk-button *skHasRole="P.payments.create" variant="outline" size="sm" (click)="onAddDietClick()">
+            <span class="material-symbols-outlined text-[16px]">add</span>
+            Add Diet
+          </sk-button>
+        </div>
+      </div>
+
+      @if (isLoadingDiets()) {
+        <div class="space-y-3">
+          @for (_ of [1, 2, 3]; track $index) {
+            <sk-skeleton height="3rem" width="100%" />
+          }
+        </div>
+
+      } @else if (diets().length === 0) {
+        <div class="flex flex-col items-center gap-2 py-8 text-center">
+          <span class="material-symbols-outlined text-[36px] text-slate-300">no_meals</span>
+          <p class="text-sm text-slate-400">No diet entries for this client yet.</p>
+        </div>
+
+      } @else {
+        <div class="space-y-2">
+          @for (diet of diets(); track diet.id) {
+            <div class="flex items-center gap-3 px-3 py-3 rounded-xl border border-slate-100 dark:border-border-dark hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-colors">
+
+              <!-- Meal interval badge -->
+              <span
+                class="inline-flex items-center shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold"
+                [class]="mealIntervalBadgeClass(diet.mealInterval)"
+              >
+                {{ formatMealInterval(diet.mealInterval) }}
+              </span>
+
+              <!-- Description + time -->
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-slate-900 dark:text-white truncate">
+                  {{ diet.mealDescription || '—' }}
+                </p>
+                @if (diet.mealTime) {
+                  <p class="text-xs text-slate-400 mt-0.5">{{ formatMealTime(diet.mealTime) }}</p>
+                }
+              </div>
+
+              <!-- Action buttons -->
+              <div class="flex items-center gap-0.5 shrink-0">
+                <sk-button *skHasRole="P.diets.edit" variant="ghost" size="sm" (click)="onEditDietClick(diet)">
+                  <span class="material-symbols-outlined text-[16px]">edit</span>
+                </sk-button>
+                <sk-button *skHasRole="P.diets.delete" variant="ghost" size="sm" (click)="onDeleteDietClick(diet)">
+                  <span class="material-symbols-outlined text-[16px] text-rose-500">delete</span>
+                </sk-button>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+    </sk-card>
+
   }
 
   @if (isLoading()) {
@@ -259,6 +335,177 @@
   }
 
 </sk-page-container>
+
+<!-- ── Add Diet modal ──────────────────────────────────────────────────────────────────────────── -->
+<sk-modal
+  [isOpen]="isAddDietModalOpen()"
+  title="Add Diet Entries"
+  size="lg"
+  (closed)="onAddDietModalClosed()"
+>
+  <div class="space-y-3">
+    @for (entry of dietEntries(); track $index; let i = $index) {
+      <div class="relative flex gap-3 items-start p-4 rounded-xl border border-slate-100 dark:border-border-dark bg-slate-50/60 dark:bg-background-dark/40">
+
+        <!-- Row counter -->
+        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 mt-3 w-4 shrink-0 select-none">{{ i + 1 }}</span>
+
+        <!-- Fields grid -->
+        <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+          <!-- Meal interval -->
+          <sk-select
+            label="Meal"
+            placeholder="Select meal…"
+            [options]="mealIntervalOptions"
+            [formControl]="$any(entry.mealInterval)"
+          />
+
+          <!-- Meal time (datetime-local — no sk-input equivalent) -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Time</label>
+            <input
+              type="datetime-local"
+              [formControl]="$any(entry.mealTime)"
+              class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]"
+            />
+          </div>
+
+          <!-- Description -->
+          <sk-input
+            label="Description"
+            placeholder="Describe the meal…"
+            [formControl]="$any(entry.mealDescription)"
+          />
+        </div>
+
+        <!-- Remove row button (only when >1 row) -->
+        @if (dietEntries().length > 1) {
+          <button
+            type="button"
+            (click)="removeDietEntry(i)"
+            class="shrink-0 size-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors mt-2"
+          >
+            <span class="material-symbols-outlined text-[16px]">close</span>
+          </button>
+        }
+
+      </div>
+    }
+
+    <!-- Add another row -->
+    <button
+      type="button"
+      (click)="addDietEntry()"
+      [disabled]="isSubmittingDiet()"
+      class="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-slate-300 dark:border-border-dark text-sm text-slate-500 dark:text-slate-400 hover:border-primary hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+    >
+      <span class="material-symbols-outlined text-[18px]">add</span>
+      Add another entry
+    </button>
+  </div>
+
+  <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+    <sk-button variant="ghost" type="button" (click)="onAddDietModalClosed()" [disabled]="isSubmittingDiet()">
+      Cancel
+    </sk-button>
+    <sk-button variant="primary" type="button" [disabled]="isSubmittingDiet()" (click)="onSubmitDiets()">
+      @if (isSubmittingDiet()) {
+        <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+        Saving…
+      } @else {
+        <span class="material-symbols-outlined text-[16px]">save</span>
+        Save Diets
+      }
+    </sk-button>
+  </div>
+</sk-modal>
+
+<!-- ── Edit Diet modal ─────────────────────────────────────────────────────────────────────────── -->
+<sk-modal
+  [isOpen]="isEditDietModalOpen()"
+  title="Edit Diet Entry"
+  size="md"
+  (closed)="onEditDietModalClosed()"
+>
+  @if (editingDiet()) {
+    <div class="space-y-4">
+
+      <sk-select
+        label="Meal"
+        placeholder="Select meal…"
+        [options]="mealIntervalOptions"
+        [formControl]="$any(editIntervalCtrl)"
+      />
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Time</label>
+        <input
+          type="datetime-local"
+          [formControl]="$any(editTimeCtrl)"
+          class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]"
+        />
+      </div>
+
+      <sk-input
+        label="Description"
+        placeholder="Describe the meal…"
+        [formControl]="$any(editDescCtrl)"
+      />
+    </div>
+  }
+
+  <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+    <sk-button variant="ghost" type="button" (click)="onEditDietModalClosed()" [disabled]="isUpdatingDiet()">
+      Cancel
+    </sk-button>
+    <sk-button variant="primary" type="button" [disabled]="isUpdatingDiet()" (click)="onUpdateDiet()">
+      @if (isUpdatingDiet()) {
+        <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+        Updating…
+      } @else {
+        <span class="material-symbols-outlined text-[16px]">save</span>
+        Update Diet
+      }
+    </sk-button>
+  </div>
+</sk-modal>
+
+<!-- ── Delete Diet confirmation modal ─────────────────────────────────────────────────────────── -->
+<sk-modal
+  [isOpen]="isDeleteDietModalOpen()"
+  title="Delete Diet Entry"
+  size="sm"
+  (closed)="onDeleteDietModalClosed()"
+>
+  @if (dietToDelete(); as diet) {
+    <div class="flex items-start gap-3 p-3 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800">
+      <span class="material-symbols-outlined text-[22px] text-rose-500 shrink-0 mt-0.5">warning</span>
+      <p class="text-sm text-rose-700 dark:text-rose-300 leading-relaxed">
+        Delete this <strong>{{ formatMealInterval(diet.mealInterval) }}</strong> entry?
+        @if (diet.mealDescription) {
+          <span class="block mt-1 text-xs text-rose-500 dark:text-rose-400 font-normal truncate">"{{ diet.mealDescription }}"</span>
+        }
+        <span class="block mt-1 text-xs font-normal opacity-75">This action cannot be undone.</span>
+      </p>
+    </div>
+  }
+
+  <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+    <sk-button variant="ghost" type="button" (click)="onDeleteDietModalClosed()" [disabled]="isDeletingDiet()">
+      Cancel
+    </sk-button>
+    <sk-button variant="danger" type="button" [disabled]="isDeletingDiet()" (click)="onConfirmDeleteDiet()">
+      @if (isDeletingDiet()) {
+        <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+        Deleting…
+      } @else {
+        <span class="material-symbols-outlined text-[16px]">delete</span>
+        Delete
+      }
+    </sk-button>
+  </div>
+</sk-modal>
 
 <!-- Payment modal — lives outside sk-page-container so it renders in the document overlay layer -->
 <sk-modal
