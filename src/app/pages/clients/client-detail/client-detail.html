@@ -16,10 +16,6 @@
           <span class="material-symbols-outlined text-[16px]">payments</span>
           Pay
         </sk-button>
-        <sk-button *skHasRole="P.diets.edit" variant="outline" size="sm" (click)="onAddDietClick()">
-          <span class="material-symbols-outlined text-[16px]">restaurant</span>
-          Add Diet
-        </sk-button>
         <sk-button *skHasRole="P.clients.edit" variant="primary" size="sm" (click)="onEdit()">
           <span class="material-symbols-outlined text-[16px]">edit</span>
           Edit
@@ -157,6 +153,77 @@
         </sk-card>
       }
 
+      <!-- Diet Plan -->
+      <sk-card>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px] text-primary">restaurant</span>
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Diet Plan</h3>
+          </div>
+          <div class="flex items-center gap-2">
+            @if (!isLoadingDiets()) {
+              <span class="text-xs text-slate-400">
+                {{ diets().length ? (diets().length + ' entr' + (diets().length === 1 ? 'y' : 'ies')) : '' }}
+              </span>
+            }
+            <sk-button *skHasRole="P.diets.edit" variant="ghost" size="sm" (click)="onAddDietClick()">
+              <span class="material-symbols-outlined text-[18px]">add_circle</span>
+            </sk-button>
+          </div>
+        </div>
+
+        @if (isLoadingDiets()) {
+          <div class="space-y-2">
+            @for (_ of [1, 2, 3]; track $index) {
+              <sk-skeleton height="2.25rem" width="100%" />
+            }
+          </div>
+
+        } @else if (diets().length === 0) {
+          <div class="flex flex-col items-center gap-2 py-5 text-center">
+            <span class="material-symbols-outlined text-[28px] text-slate-300">no_meals</span>
+            <p class="text-xs text-slate-400">No diet entries yet.</p>
+          </div>
+
+        } @else {
+          <div class="space-y-1">
+            @for (diet of diets(); track diet.id) {
+              <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg group hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-colors">
+
+                <!-- Meal interval badge -->
+                <span
+                  class="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold leading-tight"
+                  [class]="mealIntervalBadgeClass(diet.mealInterval)"
+                >
+                  {{ formatMealInterval(diet.mealInterval) }}
+                </span>
+
+                <!-- Description + optional time -->
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs text-slate-700 dark:text-slate-300 truncate">
+                    {{ diet.mealDescription || '—' }}
+                  </p>
+                  @if (diet.mealTime) {
+                    <p class="text-[11px] text-slate-400 leading-tight">{{ formatMealTime(diet.mealTime) }}</p>
+                  }
+                </div>
+
+                <!-- Actions — visible on row hover -->
+                <div class="flex items-center shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <sk-button *skHasRole="P.diets.edit" variant="ghost" size="sm" (click)="onEditDietClick(diet)">
+                    <span class="material-symbols-outlined text-[14px]">edit</span>
+                  </sk-button>
+                  <sk-button *skHasRole="P.diets.delete" variant="ghost" size="sm" (click)="onDeleteDietClick(diet)">
+                    <span class="material-symbols-outlined text-[14px] text-rose-500">delete</span>
+                  </sk-button>
+                </div>
+
+              </div>
+            }
+          </div>
+        }
+      </sk-card>
+
       <!-- Audit Information -->
       <sk-card>
         <div class="flex items-center gap-2 mb-5">
@@ -254,78 +321,6 @@
       }
     </sk-card>
 
-    <!-- Diet Plan — full-width section below Recent Payments -->
-    <sk-card>
-      <div class="flex items-center justify-between mb-5">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[20px] text-primary">restaurant</span>
-          <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Diet Plan</h3>
-        </div>
-        <div class="flex items-center gap-3">
-          @if (!isLoadingDiets()) {
-            <span class="text-xs text-slate-400">
-              {{ diets().length === 0 ? 'No entries' : diets().length + ' entr' + (diets().length === 1 ? 'y' : 'ies') }}
-            </span>
-          }
-          <sk-button *skHasRole="P.payments.create" variant="outline" size="sm" (click)="onAddDietClick()">
-            <span class="material-symbols-outlined text-[16px]">add</span>
-            Add Diet
-          </sk-button>
-        </div>
-      </div>
-
-      @if (isLoadingDiets()) {
-        <div class="space-y-3">
-          @for (_ of [1, 2, 3]; track $index) {
-            <sk-skeleton height="3rem" width="100%" />
-          }
-        </div>
-
-      } @else if (diets().length === 0) {
-        <div class="flex flex-col items-center gap-2 py-8 text-center">
-          <span class="material-symbols-outlined text-[36px] text-slate-300">no_meals</span>
-          <p class="text-sm text-slate-400">No diet entries for this client yet.</p>
-        </div>
-
-      } @else {
-        <div class="space-y-2">
-          @for (diet of diets(); track diet.id) {
-            <div class="flex items-center gap-3 px-3 py-3 rounded-xl border border-slate-100 dark:border-border-dark hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-colors">
-
-              <!-- Meal interval badge -->
-              <span
-                class="inline-flex items-center shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold"
-                [class]="mealIntervalBadgeClass(diet.mealInterval)"
-              >
-                {{ formatMealInterval(diet.mealInterval) }}
-              </span>
-
-              <!-- Description + time -->
-              <div class="flex-1 min-w-0">
-                <p class="text-sm text-slate-900 dark:text-white truncate">
-                  {{ diet.mealDescription || '—' }}
-                </p>
-                @if (diet.mealTime) {
-                  <p class="text-xs text-slate-400 mt-0.5">{{ formatMealTime(diet.mealTime) }}</p>
-                }
-              </div>
-
-              <!-- Action buttons -->
-              <div class="flex items-center gap-0.5 shrink-0">
-                <sk-button *skHasRole="P.diets.edit" variant="ghost" size="sm" (click)="onEditDietClick(diet)">
-                  <span class="material-symbols-outlined text-[16px]">edit</span>
-                </sk-button>
-                <sk-button *skHasRole="P.diets.delete" variant="ghost" size="sm" (click)="onDeleteDietClick(diet)">
-                  <span class="material-symbols-outlined text-[16px] text-rose-500">delete</span>
-                </sk-button>
-              </div>
-
-            </div>
-          }
-        </div>
-      }
-    </sk-card>
-
   }
 
   @if (isLoading()) {
@@ -350,33 +345,36 @@
         <!-- Row counter -->
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 mt-3 w-4 shrink-0 select-none">{{ i + 1 }}</span>
 
-        <!-- Fields grid -->
-        <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <!-- Fields -->
+        <div class="flex-1 space-y-3">
 
-          <!-- Meal interval -->
-          <sk-select
-            label="Meal"
-            placeholder="Select meal…"
-            [options]="mealIntervalOptions"
-            [formControl]="$any(entry.mealInterval)"
-          />
-
-          <!-- Meal time (datetime-local — no sk-input equivalent) -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Time</label>
-            <input
-              type="datetime-local"
-              [formControl]="$any(entry.mealTime)"
-              class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]"
+          <!-- Meal + Description row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <sk-select
+              label="Meal"
+              placeholder="Select meal…"
+              [options]="mealIntervalOptions"
+              [formControl]="$any(entry.mealInterval)"
+            />
+            <sk-input
+              label="Description"
+              placeholder="Describe the meal…"
+              [formControl]="$any(entry.mealDescription)"
             />
           </div>
 
-          <!-- Description -->
-          <sk-input
-            label="Description"
-            placeholder="Describe the meal…"
-            [formControl]="$any(entry.mealDescription)"
-          />
+          <!-- Time — only shown when Specific is selected -->
+          @if (entry.mealInterval.value === 'SPECIFIC') {
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Time</label>
+              <input
+                type="datetime-local"
+                [formControl]="$any(entry.mealTime)"
+                class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]"
+              />
+            </div>
+          }
+
         </div>
 
         <!-- Remove row button (only when >1 row) -->
@@ -438,14 +436,17 @@
         [formControl]="$any(editIntervalCtrl)"
       />
 
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Time</label>
-        <input
-          type="datetime-local"
-          [formControl]="$any(editTimeCtrl)"
-          class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]"
-        />
-      </div>
+      <!-- Time — only shown when Specific is selected -->
+      @if (editIntervalCtrl.value === 'SPECIFIC') {
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Time</label>
+          <input
+            type="datetime-local"
+            [formControl]="$any(editTimeCtrl)"
+            class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]"
+          />
+        </div>
+      }
 
       <sk-input
         label="Description"

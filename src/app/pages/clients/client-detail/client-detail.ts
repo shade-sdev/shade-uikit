@@ -429,7 +429,8 @@ export class ClientDetailComponent {
       .filter((e) => e.mealInterval.value)
       .map((e) => ({
         mealInterval:    e.mealInterval.value,
-        mealTime:        e.mealTime.value        || undefined,
+        // mealTime is only relevant (and visible) when interval is SPECIFIC
+        mealTime:        e.mealInterval.value === 'SPECIFIC' ? (e.mealTime.value || undefined) : undefined,
         mealDescription: e.mealDescription.value || undefined,
       }));
 
@@ -482,8 +483,9 @@ export class ClientDetailComponent {
         `${this.apiBaseUrl}/api/companies/${this.companyId}/client/${this.clientId}/diets/${diet.id}`,
         {
           mealInterval:    this.editIntervalCtrl.value,
-          mealTime:        this.editTimeCtrl.value        || undefined,
-          mealDescription: this.editDescCtrl.value        || undefined,
+          // mealTime is only relevant (and visible) when interval is SPECIFIC
+          mealTime:        this.editIntervalCtrl.value === 'SPECIFIC' ? (this.editTimeCtrl.value || undefined) : undefined,
+          mealDescription: this.editDescCtrl.value || undefined,
         },
       )
       .subscribe({
