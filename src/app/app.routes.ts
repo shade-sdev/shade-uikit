@@ -143,10 +143,26 @@ export const routes: Routes = [
           import('./pages/settings/settings').then((m) => m.SettingsComponent),
       },
       {
+        path: 'metric-definitions',
+        canActivate: [roleGuard(...APP_PERMISSIONS.clientMetricDefinitions.view)],
+        loadComponent: () =>
+          import('./pages/client-metric-definitions/client-metric-definitions').then(
+            (m) => m.ClientMetricDefinitionsComponent,
+          ),
+      },
+      {
         path: 'my-profile',
         canActivate: [roleGuard(...APP_PERMISSIONS.selfProfile.view)],
         loadComponent: () =>
           import('./pages/my-profile/my-profile').then((m) => m.MyProfileComponent),
+      },
+      {
+        path: 'metric-values',
+        canActivate: [roleGuard(...APP_PERMISSIONS.clientMetricValues.view)],
+        loadComponent: () =>
+          import('./pages/client-metric-values/client-metric-values').then(
+            (m) => m.ClientMetricValuesComponent,
+          ),
       },
       {
         path: 'showcase',

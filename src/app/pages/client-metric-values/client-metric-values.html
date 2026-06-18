@@ -1,0 +1,201 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="breadcrumbs" />
+
+  <sk-page-header title="Client Metrics" subtitle="Record and update metric values per client" />
+
+  <!-- ── Client selector card (admin only) ─────────────────────────────────── -->
+  @if (!isClientRole()) {
+    <sk-card>
+      <div class="flex items-start gap-4">
+        <div class="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+          <span class="material-symbols-outlined text-[18px] text-primary">manage_search</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-0.5">Select a Client</p>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mb-3">Search by first name to find the client whose metrics you want to record.</p>
+          <sk-async-select
+            [formControl]="clientCtrl"
+            [loadFn]="clientLoadFn"
+            label="Client"
+            placeholder="Search by first name..."
+          />
+        </div>
+      </div>
+    </sk-card>
+  }
+
+  <!-- ── Loading definitions skeleton ──────────────────────────────────────── -->
+  @if (isLoading()) {
+    <div class="flex flex-col gap-6">
+      @for (i of [1, 2]; track i) {
+        <sk-card>
+          <div class="flex items-center gap-3 mb-5">
+            <sk-skeleton height="10px" width="10px" />
+            <sk-skeleton height="18px" width="140px" />
+            <sk-skeleton height="20px" width="32px" />
+          </div>
+          <div class="flex flex-col gap-3">
+            @for (j of [1, 2, 3]; track j) {
+              <sk-skeleton height="44px" />
+            }
+          </div>
+        </sk-card>
+      }
+    </div>
+
+  <!-- ── No definitions ────────────────────────────────────────────────────── -->
+  } @else if (!fields().length) {
+    <sk-card>
+      <div class="flex flex-col items-center justify-center py-16 gap-4">
+        <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+          <span class="material-symbols-outlined text-[32px] text-slate-400">monitoring</span>
+        </div>
+        <div class="text-center">
+          <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">No metric definitions</p>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Add metric definitions first before recording values.</p>
+        </div>
+      </div>
+    </sk-card>
+
+  <!-- ── No client selected yet (admin only) ───────────────────────────────── -->
+  } @else if (!isClientRole() && !selectedClient() && !isLoadingClient()) {
+    <sk-card>
+      <div class="flex flex-col items-center justify-center py-14 gap-4">
+        <div class="w-16 h-16 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+          <span class="material-symbols-outlined text-[32px] text-primary">person_search</span>
+        </div>
+        <div class="text-center">
+          <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Select a client above</p>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">
+            {{ fields().length }} metric{{ fields().length === 1 ? '' : 's' }} ready to be recorded
+          </p>
+        </div>
+      </div>
+    </sk-card>
+
+  <!-- ── Client loading skeleton ───────────────────────────────────────────── -->
+  } @else if (isLoadingClient()) {
+    <div class="flex flex-col gap-6">
+      <sk-card>
+        <div class="flex items-center gap-4">
+          <sk-skeleton height="48px" width="48px" />
+          <div class="flex flex-col gap-2">
+            <sk-skeleton height="18px" width="180px" />
+            <sk-skeleton height="14px" width="100px" />
+          </div>
+        </div>
+      </sk-card>
+      @for (i of [1, 2, 3]; track i) {
+        <sk-card>
+          <div class="flex items-center gap-3 mb-5">
+            <sk-skeleton height="10px" width="10px" />
+            <sk-skeleton height="18px" width="140px" />
+            <sk-skeleton height="20px" width="32px" />
+          </div>
+          <div class="flex flex-col gap-3">
+            @for (j of [1, 2, 3]; track j) {
+              <sk-skeleton height="44px" />
+            }
+          </div>
+        </sk-card>
+      }
+    </div>
+
+  <!-- ── Client + grouped fields ───────────────────────────────────────────── -->
+  } @else {
+    <div class="flex flex-col gap-6">
+
+      <!-- Client identity banner -->
+      <sk-card>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shrink-0">
+            <span class="text-white font-bold text-sm">{{ initials(selectedClient()!.name) }}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-base font-semibold text-slate-900 dark:text-white leading-tight">
+              {{ selectedClient()!.name }}
+            </p>
+            @if (selectedClient()!.plan) {
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 mt-2 rounded-full bg-primary/10 text-primary border border-primary/20">
+                <span class="material-symbols-outlined text-[11px]">verified</span>
+                {{ selectedClient()!.plan }}
+              </span>
+            }
+          </div>
+          <div class="text-right shrink-0">
+            <p class="text-xs text-slate-400 dark:text-slate-500">
+              {{ fields().length }} metric{{ fields().length === 1 ? '' : 's' }}
+            </p>
+          </div>
+        </div>
+      </sk-card>
+
+      <!-- Grouped metric cards -->
+      @for (group of groupedFields(); track group[0]) {
+        <sk-card>
+
+          <!-- Group header -->
+          <div class="flex items-center gap-2.5 mb-4">
+            <div [class]="dotClass(group[0])"></div>
+            <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ group[0] }}</h3>
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ countBadgeClass(group[0]) }}">
+              {{ group[1].length }}
+            </span>
+          </div>
+
+          <!-- Divider -->
+          <div class="h-px bg-slate-100 dark:bg-border-dark mb-4"></div>
+
+          <!-- Field rows -->
+          <div class="flex flex-col gap-3">
+            @for (field of group[1]; track field.definitionId) {
+              <div class="flex items-center gap-3">
+
+                <!-- Left: code + unit -->
+                <div class="flex flex-col gap-1 w-44 shrink-0">
+                  <span class="font-mono text-[11px] font-bold tracking-wide px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 self-start select-all">
+                    {{ field.code }}
+                  </span>
+                  @if (field.unit) {
+                    <span class="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 pl-1">
+                      <span class="material-symbols-outlined text-[12px]">straighten</span>
+                      {{ field.unit }}
+                    </span>
+                  } @else {
+                    <span class="text-[11px] text-slate-300 dark:text-slate-600 italic pl-1">no unit</span>
+                  }
+                </div>
+
+                <!-- Right: input -->
+                <div class="flex-1 min-w-0">
+                  <sk-input
+                    [placeholder]="field.unit ? 'Enter value in ' + field.unit : 'Enter value'"
+                    [formControl]="field.ctrl"
+                  />
+                </div>
+
+              </div>
+            }
+          </div>
+
+        </sk-card>
+      }
+
+      <!-- Sticky save bar — only for users with edit permission -->
+      <div *skHasRole="P.clientMetricValues.edit" class="sticky bottom-4 z-10">
+        <div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-2xl shadow-lg px-5 py-3.5 flex items-center justify-between gap-4">
+          <p class="text-sm text-slate-500 dark:text-slate-400">
+            Recording metrics for <span class="font-semibold text-slate-800 dark:text-slate-200">{{ selectedClient()!.name }}</span>
+          </p>
+          <sk-button [loading]="isSaving()" (click)="onSave()">
+            <span class="material-symbols-outlined text-[16px]">save</span>
+            Save Changes
+          </sk-button>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</sk-page-container>

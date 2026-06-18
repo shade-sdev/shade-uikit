@@ -1,0 +1,212 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="breadcrumbs" />
+
+  <sk-page-header title="Metric Definitions" subtitle="Measurement fields used for tracking client progress">
+    <sk-button *skHasRole="P.clientMetricDefinitions.create" (click)="onAddClick()">
+      <span class="material-symbols-outlined text-[18px]">add</span>
+      Add Definition
+    </sk-button>
+  </sk-page-header>
+
+  <!-- ── Loading state ──────────────────────────────────────────────────── -->
+  @if (isLoading()) {
+    <div class="space-y-6">
+      @for (i of [1, 2, 3]; track i) {
+        <sk-card>
+          <div class="flex items-center gap-3 mb-5">
+            <sk-skeleton height="10px" width="10px" />
+            <sk-skeleton height="18px" width="140px" />
+            <sk-skeleton height="20px" width="32px" />
+          </div>
+          <div class="space-y-2">
+            @for (j of [1, 2, 3, 4]; track j) {
+              <sk-skeleton height="40px" />
+            }
+          </div>
+        </sk-card>
+      }
+    </div>
+
+  <!-- ── Empty state ────────────────────────────────────────────────────── -->
+  } @else if (!definitions().length) {
+    <sk-card>
+      <div class="flex flex-col items-center justify-center py-16 gap-4">
+        <div class="w-16 h-16 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+          <span class="material-symbols-outlined text-[32px] text-primary">analytics</span>
+        </div>
+        <div class="text-center">
+          <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">No metric definitions yet</p>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Add definitions to start tracking client progress metrics</p>
+        </div>
+        <sk-button *skHasRole="P.clientMetricDefinitions.create" (click)="onAddClick()">
+          <span class="material-symbols-outlined text-[18px]">add</span>
+          Add Definition
+        </sk-button>
+      </div>
+    </sk-card>
+
+  <!-- ── Grouped definitions ────────────────────────────────────────────── -->
+  } @else {
+    <div class="flex flex-col gap-6">
+      @for (group of groupedDefinitions(); track group[0]) {
+        <sk-card>
+
+          <!-- Group header -->
+          <div class="flex items-center gap-2.5 mb-4">
+            <div [class]="dotClass(group[0])"></div>
+            <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ group[0] }}</h3>
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ countBadgeClass(group[0]) }}">
+              {{ group[1].length }}
+            </span>
+          </div>
+
+          <!-- Divider -->
+          <div class="h-px bg-slate-100 dark:bg-border-dark mb-2"></div>
+
+          <!-- Rows -->
+          <div class="space-y-0.5">
+            @for (def of group[1]; track def.id) {
+              <div class="group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-background-dark/60 transition-colors">
+
+                <!-- Code chip -->
+                <span class="font-mono text-[11px] font-bold tracking-wide px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0 select-all">
+                  {{ def.code }}
+                </span>
+
+                <!-- Unit -->
+                <span class="flex-1 text-xs text-slate-500 dark:text-slate-400 truncate min-w-0">
+                  @if (def.unit) {
+                    <span class="inline-flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px] text-slate-400">straighten</span>
+                      {{ def.unit }}
+                    </span>
+                  } @else {
+                    <span class="text-slate-300 dark:text-slate-600 italic">no unit</span>
+                  }
+                </span>
+
+                <!-- Actions (appear on row hover) -->
+                <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                  <sk-button *skHasRole="P.clientMetricDefinitions.edit" variant="ghost" size="sm" (click)="onEditClick(def)">
+                    <span class="material-symbols-outlined text-[16px]">edit</span>
+                  </sk-button>
+                  <sk-button *skHasRole="P.clientMetricDefinitions.delete" variant="ghost" size="sm" (click)="onDeleteClick(def)">
+                    <span class="material-symbols-outlined text-[16px] text-rose-500">delete</span>
+                  </sk-button>
+                </div>
+
+              </div>
+            }
+          </div>
+
+        </sk-card>
+      }
+    </div>
+  }
+
+  <!-- ── Add modal ──────────────────────────────────────────────────────── -->
+  <sk-modal
+    title="Add Metric Definition"
+    size="sm"
+    [isOpen]="isAddModalOpen()"
+    (closed)="onAddModalClosed()"
+  >
+    <div class="px-6 py-5 space-y-4">
+      <sk-input
+        label="Code"
+        placeholder="e.g. BODY_WEIGHT"
+        hint="Unique identifier for this metric"
+        [formControl]="codeCtrl"
+      />
+      <sk-input
+        label="Unit"
+        placeholder="e.g. kg, %, bpm"
+        hint="Optional — the measurement unit"
+        [formControl]="unitCtrl"
+      />
+      <sk-input
+        label="Group"
+        placeholder="e.g. Body Composition"
+        hint="Category this metric belongs to"
+        [formControl]="groupCtrl"
+      />
+    </div>
+    <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+      <sk-button variant="outline" (click)="onAddModalClosed()">Cancel</sk-button>
+      <sk-button [loading]="isSubmitting()" (click)="onSubmitAdd()">
+        <span class="material-symbols-outlined text-[16px]">add</span>
+        Add Definition
+      </sk-button>
+    </div>
+  </sk-modal>
+
+  <!-- ── Edit modal ─────────────────────────────────────────────────────── -->
+  <sk-modal
+    title="Edit Metric Definition"
+    size="sm"
+    [isOpen]="isEditModalOpen()"
+    (closed)="onEditModalClosed()"
+  >
+    <div class="px-6 py-5 space-y-4">
+      <sk-input
+        label="Code"
+        placeholder="e.g. BODY_WEIGHT"
+        hint="Unique identifier for this metric"
+        [formControl]="codeCtrl"
+      />
+      <sk-input
+        label="Unit"
+        placeholder="e.g. kg, %, bpm"
+        hint="Optional — the measurement unit"
+        [formControl]="unitCtrl"
+      />
+      <sk-input
+        label="Group"
+        placeholder="e.g. Body Composition"
+        hint="Category this metric belongs to"
+        [formControl]="groupCtrl"
+      />
+    </div>
+    <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+      <sk-button variant="outline" (click)="onEditModalClosed()">Cancel</sk-button>
+      <sk-button [loading]="isUpdating()" (click)="onSubmitEdit()">
+        <span class="material-symbols-outlined text-[16px]">check</span>
+        Save Changes
+      </sk-button>
+    </div>
+  </sk-modal>
+
+  <!-- ── Delete confirmation modal ──────────────────────────────────────── -->
+  <sk-modal
+    title="Delete Definition"
+    size="sm"
+    [isOpen]="isDeleteModalOpen()"
+    (closed)="onDeleteModalClosed()"
+  >
+    <div class="px-6 py-5">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px] text-rose-500">warning</span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-slate-800 dark:text-slate-200">
+            Delete
+            <span class="font-mono font-bold text-slate-900 dark:text-white">{{ defToDelete()?.code }}</span>?
+          </p>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-1.5">
+            This definition will be permanently removed. Any client metric values linked to it may be affected.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+      <sk-button variant="outline" (click)="onDeleteModalClosed()">Cancel</sk-button>
+      <sk-button variant="danger" [loading]="isDeleting()" (click)="onConfirmDelete()">
+        <span class="material-symbols-outlined text-[16px]">delete</span>
+        Delete
+      </sk-button>
+    </div>
+  </sk-modal>
+
+</sk-page-container>
