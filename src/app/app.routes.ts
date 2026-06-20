@@ -165,6 +165,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'metric-formulas',
+        canActivate: [roleGuard(...APP_PERMISSIONS.metricFormulas.view)],
+        loadComponent: () =>
+          import('./pages/metric-formulas/metric-formulas').then(
+            (m) => m.MetricFormulasComponent,
+          ),
+      },
+      {
         path: 'showcase',
         loadComponent: () => import('./showcase/showcase').then((m) => m.ShowcaseComponent),
       },

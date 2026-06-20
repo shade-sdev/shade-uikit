@@ -1,0 +1,303 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="breadcrumbs" />
+
+  <sk-page-header title="Metric Formulas" subtitle="Calculated expressions built from client metric definitions">
+    <sk-button *skHasRole="P.metricFormulas.create" (click)="onAddClick()">
+      <span class="material-symbols-outlined text-[18px]">add</span>
+      Add Formula
+    </sk-button>
+  </sk-page-header>
+
+  <!-- ── Loading ───────────────────────────────────────────────────────── -->
+  @if (isLoading()) {
+    <div class="flex flex-col gap-4">
+      @for (i of [1, 2, 3]; track i) {
+        <sk-card>
+          <div class="flex items-start gap-4">
+            <sk-skeleton height="40px" width="40px" />
+            <div class="flex-1 flex flex-col gap-3">
+              <sk-skeleton height="18px" width="180px" />
+              <sk-skeleton height="44px" />
+              <sk-skeleton height="14px" width="260px" />
+            </div>
+          </div>
+        </sk-card>
+      }
+    </div>
+
+  <!-- ── Empty ─────────────────────────────────────────────────────────── -->
+  } @else if (!formulas().length) {
+    <sk-card>
+      <div class="flex flex-col items-center justify-center py-16 gap-4">
+        <div class="w-16 h-16 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+          <span class="material-symbols-outlined text-[32px] text-primary">calculate</span>
+        </div>
+        <div class="text-center">
+          <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">No metric formulas yet</p>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Define formulas to derive calculated insights from client metrics</p>
+        </div>
+        <sk-button *skHasRole="P.metricFormulas.create" (click)="onAddClick()">
+          <span class="material-symbols-outlined text-[18px]">add</span>
+          Add Formula
+        </sk-button>
+      </div>
+    </sk-card>
+
+  <!-- ── Formula cards ─────────────────────────────────────────────────── -->
+  } @else {
+    <div class="flex flex-col gap-4">
+      @for (formula of formulas(); track formula.id) {
+        <sk-card>
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+              <span class="material-symbols-outlined text-[20px] text-primary">function</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white leading-snug">{{ formula.label }}</h3>
+                <div class="flex items-center gap-0.5 shrink-0 -mt-0.5">
+                  <sk-button *skHasRole="P.metricFormulas.edit" variant="ghost" size="sm" (click)="onEditClick(formula)">
+                    <span class="material-symbols-outlined text-[16px]">edit</span>
+                  </sk-button>
+                  <sk-button *skHasRole="P.metricFormulas.delete" variant="ghost" size="sm" (click)="onDeleteClick(formula)">
+                    <span class="material-symbols-outlined text-[16px] text-rose-500">delete</span>
+                  </sk-button>
+                </div>
+              </div>
+              <div class="bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-lg px-3.5 py-2.5 mb-2">
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[14px] text-slate-400 shrink-0">terminal</span>
+                  <code class="font-mono text-[13px] font-semibold text-primary break-all">{{ formula.expression }}</code>
+                </span>
+              </div>
+              @if (formula.description) {
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{{ formula.description }}</p>
+              }
+            </div>
+          </div>
+        </sk-card>
+      }
+    </div>
+  }
+
+  <!-- ── Add modal ──────────────────────────────────────────────────────── -->
+  <sk-modal
+    title="Add Metric Formula"
+    size="lg"
+    [isOpen]="isAddModalOpen()"
+    (closed)="onAddModalClosed()"
+  >
+    <div class="px-6 py-5 space-y-5">
+      <sk-input
+        label="Label"
+        placeholder="e.g. Body Mass Index"
+        hint="A human-readable name for this formula"
+        [formControl]="labelCtrl"
+      />
+
+      <!-- Definition chips -->
+      <div>
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Metric Definitions</p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mb-3">
+          Click a definition to insert it at the cursor — highlighted chips are already in the expression
+        </p>
+        @if (isLoadingDefs()) {
+          <div class="flex flex-wrap gap-2">
+            @for (i of [1, 2, 3, 4, 5, 6]; track i) { <sk-skeleton height="28px" width="72px" /> }
+          </div>
+        } @else if (!availableDefinitions().length) {
+          <p class="text-xs text-slate-400 italic">No definitions found — add metric definitions first.</p>
+        } @else {
+          <div class="flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1 pb-1">
+            @for (def of availableDefinitions(); track def.id) {
+              <button
+                type="button"
+                (click)="insertCode(def.code, addExprRef)"
+                [class]="usedDefinitionIds().has(def.id)
+                  ? 'inline-flex items-center gap-1.5 font-mono text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-primary text-white border border-primary cursor-pointer transition-all shadow-sm select-none'
+                  : 'inline-flex items-center gap-1.5 font-mono text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent hover:bg-primary/10 hover:text-primary hover:border-primary/30 cursor-pointer transition-all select-none'"
+              >
+                {{ def.code }}
+                @if (def.unit) {
+                  <span class="font-normal text-[10px] opacity-70">{{ def.unit }}</span>
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Operators -->
+      <div>
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Operators</p>
+        <div class="flex items-center gap-2">
+          @for (op of ['+', '-', '/', '*', '(', ')'] ; track op) {
+            <button
+              type="button"
+              (click)="insertCode(op, addExprRef)"
+              class="inline-flex items-center justify-center w-9 h-9 font-mono text-sm font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-border-dark hover:bg-primary/10 hover:text-primary hover:border-primary/30 cursor-pointer transition-all select-none"
+            >{{ op }}</button>
+          }
+        </div>
+      </div>
+
+      <!-- Expression -->
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">
+          Expression <span class="text-rose-400">*</span>
+        </label>
+        <textarea
+          #addExprRef
+          [formControl]="expressionCtrl"
+          placeholder="e.g. BODY_WEIGHT / (HEIGHT * HEIGHT)"
+          rows="3"
+          class="w-full rounded-lg border border-transparent bg-slate-100 dark:bg-background-dark text-sm font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/60 dark:focus:border-primary/40 transition-shadow px-3 py-2.5 resize-y"
+        ></textarea>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1.5">
+          Click definitions and operators above — each token is spaced automatically
+        </p>
+      </div>
+
+      <sk-textarea
+        label="Description"
+        placeholder="What does this formula calculate and how should results be interpreted?"
+        [rows]="2"
+        [formControl]="descriptionCtrl"
+      />
+    </div>
+    <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+      <sk-button variant="outline" (click)="onAddModalClosed()">Cancel</sk-button>
+      <sk-button [loading]="isSubmitting()" (click)="onSubmitAdd()">
+        <span class="material-symbols-outlined text-[16px]">add</span>
+        Add Formula
+      </sk-button>
+    </div>
+  </sk-modal>
+
+  <!-- ── Edit modal ─────────────────────────────────────────────────────── -->
+  <sk-modal
+    title="Edit Metric Formula"
+    size="lg"
+    [isOpen]="isEditModalOpen()"
+    (closed)="onEditModalClosed()"
+  >
+    <div class="px-6 py-5 space-y-5">
+      <sk-input
+        label="Label"
+        placeholder="e.g. Body Mass Index"
+        hint="A human-readable name for this formula"
+        [formControl]="labelCtrl"
+      />
+
+      <!-- Definition chips -->
+      <div>
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Metric Definitions</p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mb-3">
+          Click a definition to insert it at the cursor — highlighted chips are already in the expression
+        </p>
+        @if (isLoadingDefs()) {
+          <div class="flex flex-wrap gap-2">
+            @for (i of [1, 2, 3, 4, 5, 6]; track i) { <sk-skeleton height="28px" width="72px" /> }
+          </div>
+        } @else if (!availableDefinitions().length) {
+          <p class="text-xs text-slate-400 italic">No definitions found — add metric definitions first.</p>
+        } @else {
+          <div class="flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1 pb-1">
+            @for (def of availableDefinitions(); track def.id) {
+              <button
+                type="button"
+                (click)="insertCode(def.code, editExprRef)"
+                [class]="usedDefinitionIds().has(def.id)
+                  ? 'inline-flex items-center gap-1.5 font-mono text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-primary text-white border border-primary cursor-pointer transition-all shadow-sm select-none'
+                  : 'inline-flex items-center gap-1.5 font-mono text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent hover:bg-primary/10 hover:text-primary hover:border-primary/30 cursor-pointer transition-all select-none'"
+              >
+                {{ def.code }}
+                @if (def.unit) {
+                  <span class="font-normal text-[10px] opacity-70">{{ def.unit }}</span>
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Operators -->
+      <div>
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Operators</p>
+        <div class="flex items-center gap-2">
+          @for (op of ['+', '-', '/', '*', '(', ')'] ; track op) {
+            <button
+              type="button"
+              (click)="insertCode(op, editExprRef)"
+              class="inline-flex items-center justify-center w-9 h-9 font-mono text-sm font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-border-dark hover:bg-primary/10 hover:text-primary hover:border-primary/30 cursor-pointer transition-all select-none"
+            >{{ op }}</button>
+          }
+        </div>
+      </div>
+
+      <!-- Expression -->
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">
+          Expression <span class="text-rose-400">*</span>
+        </label>
+        <textarea
+          #editExprRef
+          [formControl]="expressionCtrl"
+          placeholder="e.g. BODY_WEIGHT / (HEIGHT * HEIGHT)"
+          rows="3"
+          class="w-full rounded-lg border border-transparent bg-slate-100 dark:bg-background-dark text-sm font-mono text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/60 dark:focus:border-primary/40 transition-shadow px-3 py-2.5 resize-y"
+        ></textarea>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1.5">
+          Click definitions and operators above — each token is spaced automatically
+        </p>
+      </div>
+
+      <sk-textarea
+        label="Description"
+        placeholder="What does this formula calculate and how should results be interpreted?"
+        [rows]="2"
+        [formControl]="descriptionCtrl"
+      />
+    </div>
+    <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+      <sk-button variant="outline" (click)="onEditModalClosed()">Cancel</sk-button>
+      <sk-button [loading]="isUpdating()" (click)="onSubmitEdit()">
+        <span class="material-symbols-outlined text-[16px]">check</span>
+        Save Changes
+      </sk-button>
+    </div>
+  </sk-modal>
+
+  <!-- ── Delete confirmation modal ──────────────────────────────────────── -->
+  <sk-modal
+    title="Delete Formula"
+    size="sm"
+    [isOpen]="isDeleteModalOpen()"
+    (closed)="onDeleteModalClosed()"
+  >
+    <div class="px-6 py-5">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px] text-rose-500">warning</span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-slate-800 dark:text-slate-200">
+            Delete <span class="font-bold text-slate-900 dark:text-white">{{ formulaToDelete()?.label }}</span>?
+          </p>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-1.5">
+            This formula will be permanently removed and can no longer be evaluated.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+      <sk-button variant="outline" (click)="onDeleteModalClosed()">Cancel</sk-button>
+      <sk-button variant="danger" [loading]="isDeleting()" (click)="onConfirmDelete()">
+        <span class="material-symbols-outlined text-[16px]">delete</span>
+        Delete
+      </sk-button>
+    </div>
+  </sk-modal>
+
+</sk-page-container>
