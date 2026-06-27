@@ -173,6 +173,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'training-sessions',
+        canActivate: [roleGuard(...APP_PERMISSIONS.trainingSessions.view)],
+        loadComponent: () =>
+          import('./pages/training-sessions/training-sessions').then(
+            (m) => m.TrainingSessionsComponent,
+          ),
+      },
+      {
         path: 'showcase',
         loadComponent: () => import('./showcase/showcase').then((m) => m.ShowcaseComponent),
       },

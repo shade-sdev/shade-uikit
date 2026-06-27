@@ -9,12 +9,15 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { API_BASE_URL } from '../../../core/api.config';
 import { JwtService, HasRoleDirective } from '../../../core/jwt';
 import { APP_PERMISSIONS } from '../../../core/permissions';
 import { ToastService } from '../../../components/feedback/toast/toast.service';
 import { ModalComponent } from '../../../components/feedback/modal/modal';
 import { SelectOption, SelectComponent } from '../../../components/forms/select/select';
+import { AsyncLoadFn, AsyncSelectComponent } from '../../../components/forms/async-select/async-select';
 import { InputComponent } from '../../../components/forms/input/input';
 import { PageContainerComponent } from '../../../components/layout/page-container/page-container';
 import { BreadcrumbComponent } from '../../../components/layout/breadcrumb/breadcrumb';
@@ -159,6 +162,7 @@ interface ClientResponse {
     ModalComponent,
     SelectComponent,
     InputComponent,
+    AsyncSelectComponent,
     DatePipe,
     DecimalPipe,
     CurrencyPipe,
@@ -264,6 +268,35 @@ export class ClientDetailComponent {
     { label: 'November',  value: 11 },
     { label: 'December',  value: 12 },
   ];
+
+  // ── Add Training Session modal ─────────────────────────────────────────────
+
+  protected readonly isAddSessionModalOpen  = signal(false);
+  protected readonly isSubmittingSession    = signal(false);
+  protected readonly sessionTitleCtrl       = new FormControl<string | null>(null);
+  protected readonly sessionDateCtrl        = new FormControl<string | null>(null);
+  protected readonly sessionStartTimeCtrl   = new FormControl<string | null>(null);
+  protected readonly sessionEndTimeCtrl     = new FormControl<string | null>(null);
+  protected readonly sessionCoachCtrl       = new FormControl<string | null>(null);
+
+  /** Admins/managers with OTHER permissions need to select a coach when booking. */
+  protected readonly showSessionCoachSelector = computed(() => {
+    const r = this.jwt.roles();
+    return r.includes('TRAINING_SESSION_OTHER_MANAGEMENT') ||
+           r.includes('TRAINING_SESSION_OTHER_CREATE');
+  });
+
+  protected readonly coachLoadFn: AsyncLoadFn<string> = (search) =>
+    this.http.get<{ coaches: Array<{ id: string; information: { firstName: string; lastName: string } }> }>(
+      `${this.apiBaseUrl}/api/companies/${this.companyId}/coaches`,
+      { params: { pageNumber: '0', pageSize: '20', firstName: search } },
+    ).pipe(
+      map(d => (d.coaches ?? []).map(c => ({
+        label: `${c.information.firstName} ${c.information.lastName}`,
+        value: c.id,
+      }))),
+      catchError(() => of([])),
+    );
 
   protected readonly breadcrumbs = computed(() => {
     const c = this.client();
@@ -730,6 +763,52 @@ export class ClientDetailComponent {
     this.isDeleteTrainingPlanModalOpen.set(false);
     this.isDeletingTrainingPlan.set(false);
     this.trainingPlanToDelete.set(null);
+  }
+
+  // ── Add Training Session ───────────────────────────────────────────────────
+
+  protected onAddSessionClick(): void {
+    this.sessionTitleCtrl.setValue(null);
+    this.sessionDateCtrl.setValue(null);
+    this.sessionStartTimeCtrl.setValue(null);
+    this.sessionEndTimeCtrl.setValue(null);
+    this.sessionCoachCtrl.setValue(null);
+    this.isAddSessionModalOpen.set(true);
+  }
+
+  protected onSessionModalClosed(): void {
+    this.isAddSessionModalOpen.set(false);
+    this.isSubmittingSession.set(false);
+  }
+
+  protected onSubmitSession(): void {
+    const title = this.sessionTitleCtrl.value?.trim();
+    const date  = this.sessionDateCtrl.value;
+    const start = this.sessionStartTimeCtrl.value;
+    const end   = this.sessionEndTimeCtrl.value;
+    if (!title || !date || !start || !end) return;
+
+    const body: Record<string, unknown> = {
+      sessionTitle:  title,
+      startDateTime: `${date}T${start}:00`,
+      endDateTime:   `${date}T${end}:00`,
+    };
+    if (this.showSessionCoachSelector() && this.sessionCoachCtrl.value) {
+      body['coachId'] = this.sessionCoachCtrl.value;
+    }
+
+    this.isSubmittingSession.set(true);
+    this.http.post(
+      `${this.apiBaseUrl}/api/companies/${this.companyId}/client/${this.clientId}/training-sessions`,
+      body,
+    ).subscribe({
+      next: () => {
+        this.isSubmittingSession.set(false);
+        this.toast.success('Training session added');
+        this.onSessionModalClosed();
+      },
+      error: () => this.isSubmittingSession.set(false),
+    });
   }
 
   protected onConfirmDeleteTrainingPlan(): void {

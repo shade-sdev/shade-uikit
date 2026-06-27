@@ -1,0 +1,484 @@
+<sk-page-container>
+
+  <sk-breadcrumb [items]="breadcrumbs" />
+
+  <sk-page-header title="Training Sessions" subtitle="View and manage client training schedules" />
+
+  <!-- ── Calendar toolbar ───────────────────────────────────────────────── -->
+  <sk-card>
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+
+      <!-- Left: navigation + date label -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="flex items-center gap-0">
+          <button
+            (click)="navigate(-1)"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+          </button>
+          <button
+            (click)="navigate(1)"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+          </button>
+        </div>
+
+        <sk-button variant="outline" size="sm" (click)="goToToday()">Today</sk-button>
+
+        <!-- Date label + picker -->
+        <div class="relative">
+          <button
+            (click)="openPicker()"
+            class="px-3 py-1.5 rounded-lg text-sm font-bold text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5"
+          >
+            @if (view() === 'month') { {{ monthYearLabel() }} }
+            @else if (view() === 'week') { {{ weekLabel() }} }
+            @else { {{ dayLabel() }} }
+            <span class="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
+          </button>
+
+          <!-- Backdrop -->
+          @if (isPickerOpen()) {
+            <div class="fixed inset-0 z-20" (click)="closePicker()"></div>
+
+            <!-- Picker panel -->
+            <div class="absolute top-full left-0 mt-1 z-30 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-200 dark:border-border-dark p-4 w-72">
+
+              @if (pickerMode() === 'year') {
+                <!-- Year grid -->
+                <div class="flex items-center justify-between mb-3">
+                  <button
+                    (click)="navigatePickerDecade(-1)"
+                    class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  ><span class="material-symbols-outlined text-[16px]">chevron_left</span></button>
+                  <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                    {{ pickerYears()[0] }} – {{ pickerYears()[11] }}
+                  </span>
+                  <button
+                    (click)="navigatePickerDecade(1)"
+                    class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  ><span class="material-symbols-outlined text-[16px]">chevron_right</span></button>
+                </div>
+                <div class="grid grid-cols-4 gap-1">
+                  @for (year of pickerYears(); track year) {
+                    <button
+                      (click)="selectPickerYear(year)"
+                      [class]="year === currentDate().getFullYear()
+                        ? 'py-1.5 rounded-lg text-xs font-bold bg-primary text-white'
+                        : 'py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors'"
+                    >{{ year }}</button>
+                  }
+                </div>
+
+              } @else {
+                <!-- Month grid -->
+                <button
+                  (click)="pickerMode.set('year')"
+                  class="flex items-center gap-1 mb-3 text-sm font-semibold text-primary hover:underline"
+                >
+                  <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                  {{ pickerYear() }}
+                </button>
+                <div class="grid grid-cols-3 gap-1">
+                  @for (month of monthNames; track month; let i = $index) {
+                    <button
+                      (click)="selectPickerMonth(i)"
+                      [class]="i === currentDate().getMonth() && pickerYear() === currentDate().getFullYear()
+                        ? 'py-2 rounded-lg text-xs font-bold bg-primary text-white'
+                        : 'py-2 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors'"
+                    >{{ month.slice(0, 3) }}</button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Right: view switcher -->
+      <div class="flex items-center gap-1 bg-slate-100 dark:bg-background-dark rounded-xl p-1">
+        @for (v of views; track v.value) {
+          <button
+            (click)="switchView(v.value)"
+            [class]="view() === v.value
+              ? 'px-3 py-1.5 text-sm font-medium rounded-lg bg-white dark:bg-surface-dark text-primary shadow-sm transition-all'
+              : 'px-3 py-1.5 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors'"
+          >{{ v.label }}</button>
+        }
+      </div>
+    </div>
+  </sk-card>
+
+  <!-- ── Loading skeleton ────────────────────────────────────────────────── -->
+  @if (isLoading()) {
+    <sk-card>
+      <div class="flex flex-col gap-3">
+        <sk-skeleton height="24px" width="200px" />
+        <sk-skeleton height="420px" />
+      </div>
+    </sk-card>
+
+  } @else {
+
+    <!-- ── MONTH VIEW ──────────────────────────────────────────────────── -->
+    @if (view() === 'month') {
+      <sk-card class="overflow-hidden p-0">
+
+        <!-- Day-of-week header -->
+        <div class="grid grid-cols-7 border-b border-slate-200 dark:border-border-dark">
+          @for (name of ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']; track name) {
+            <div class="py-2.5 text-center text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
+              {{ name }}
+            </div>
+          }
+        </div>
+
+        <!-- Day cells grid -->
+        <div class="grid grid-cols-7 divide-x divide-y divide-slate-100 dark:divide-border-dark border-slate-100 dark:border-border-dark">
+          @for (day of monthDays(); track day.date.getTime()) {
+            <div
+              class="min-h-[96px] p-1.5 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
+              [class.bg-slate-50]="!day.isCurrentMonth"
+              [class.dark:bg-slate-900]="!day.isCurrentMonth"
+              (click)="onDayClick(day.date)"
+            >
+              <!-- Day number -->
+              <div class="flex items-center justify-start mb-1">
+                <span
+                  class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-semibold transition-colors"
+                  [class.bg-primary]="day.isToday"
+                  [class.text-white]="day.isToday"
+                  [class.text-slate-700]="!day.isToday && day.isCurrentMonth"
+                  [class.dark:text-slate-300]="!day.isToday && day.isCurrentMonth"
+                  [class.text-slate-400]="!day.isCurrentMonth"
+                  [class.dark:text-slate-600]="!day.isCurrentMonth"
+                >{{ day.date.getDate() }}</span>
+              </div>
+
+              <!-- Session chips -->
+              @for (session of day.sessions.slice(0, 2); track session.startDateTime) {
+                <div
+                  class="group relative text-[11px] font-medium bg-primary/10 dark:bg-primary/20 text-primary rounded-md px-1.5 py-0.5 mb-0.5 transition-colors hover:bg-primary/20 dark:hover:bg-primary/30"
+                  [class.cursor-pointer]="canEdit()"
+                  (click)="$event.stopPropagation(); onEditClick(session)"
+                >
+                  <div class="flex items-center gap-1 truncate pr-8">
+                    <span class="shrink-0">{{ formatTime(session.startDateTime) }}</span>
+                    <span class="truncate">{{ session.sessionTitle }}</span>
+                  </div>
+                  @if (sessionSubtitle(session)) {
+                    <p class="text-[10px] text-primary/60 truncate leading-tight">{{ sessionSubtitle(session) }}</p>
+                  }
+                  @if (session.id) {
+                    <div class="absolute top-0 right-0 bottom-0 flex items-center gap-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      @if (canEdit()) {
+                        <button
+                          (click)="$event.stopPropagation(); onEditClick(session)"
+                          class="w-5 h-5 flex items-center justify-center rounded bg-white/80 dark:bg-slate-800/80 text-slate-600 hover:text-primary"
+                        ><span class="material-symbols-outlined text-[11px]">edit</span></button>
+                      }
+                      @if (canDelete()) {
+                        <button
+                          (click)="$event.stopPropagation(); onDeleteClick(session)"
+                          class="w-5 h-5 flex items-center justify-center rounded bg-white/80 dark:bg-slate-800/80 text-rose-400 hover:text-rose-600"
+                        ><span class="material-symbols-outlined text-[11px]">delete</span></button>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+              @if (day.sessions.length > 2) {
+                <p class="text-[11px] text-slate-400 dark:text-slate-500 pl-1 mt-0.5">
+                  +{{ day.sessions.length - 2 }} more
+                </p>
+              }
+            </div>
+          }
+        </div>
+      </sk-card>
+    }
+
+    <!-- ── WEEK VIEW ───────────────────────────────────────────────────── -->
+    @if (view() === 'week') {
+      <sk-card class="overflow-hidden p-0">
+
+        <!-- Week day headers -->
+        <div class="flex border-b border-slate-200 dark:border-border-dark">
+          <div class="w-14 shrink-0"></div>
+          @for (day of weekDays(); track day.date.getTime()) {
+            <div
+              class="flex-1 min-w-[90px] flex flex-col items-center py-2 border-l border-slate-100 dark:border-border-dark"
+              [class.bg-primary/5]="day.isToday"
+            >
+              <span class="text-[11px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wide">{{ day.dayLabel }}</span>
+              <span
+                class="mt-0.5 w-7 h-7 flex items-center justify-center rounded-full text-sm font-bold"
+                [class.bg-primary]="day.isToday"
+                [class.text-white]="day.isToday"
+                [class.text-slate-700]="!day.isToday"
+                [class.dark:text-slate-300]="!day.isToday"
+              >{{ day.dateNum }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Scrollable time grid -->
+        <div class="overflow-auto" style="max-height: 600px">
+          <div class="flex min-w-[700px]">
+
+            <!-- Time labels -->
+            <div class="w-14 shrink-0 relative select-none" [style.height.px]="gridHeight">
+              @for (h of gridHours; track h) {
+                <div
+                  class="absolute left-0 right-0 flex justify-end pr-2"
+                  [style.top.px]="h * HOUR_HEIGHT"
+                  [style.height.px]="HOUR_HEIGHT"
+                >
+                  <span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 pt-1">{{ formatHour(h) }}</span>
+                </div>
+              }
+            </div>
+
+            <!-- Day columns -->
+            @for (day of weekDays(); track day.date.getTime()) {
+              <div
+                class="flex-1 min-w-[90px] relative border-l border-slate-100 dark:border-border-dark"
+                [style.height.px]="gridHeight"
+                [class.bg-primary/[0.02]]="day.isToday"
+              >
+                <!-- Hour lines -->
+                @for (h of gridHours; track h) {
+                  <div
+                    class="absolute left-0 right-0 border-t border-slate-100 dark:border-border-dark/40"
+                    [style.top.px]="h * HOUR_HEIGHT"
+                  ></div>
+                }
+
+                <!-- Sessions -->
+                @for (session of day.sessions; track session.startDateTime) {
+                  <div
+                    class="absolute inset-x-0.5 rounded-lg bg-primary/15 dark:bg-primary/20 border border-primary/30 px-1.5 py-1 overflow-hidden cursor-pointer hover:bg-primary/25 dark:hover:bg-primary/30 transition-colors group"
+                    [style.top.px]="getSessionTop(session)"
+                    [style.height.px]="getSessionHeight(session)"
+                    (click)="onEditClick(session)"
+                  >
+                    <p class="text-[11px] font-bold text-primary leading-tight truncate">{{ session.sessionTitle }}</p>
+                    <p class="text-[10px] text-primary/70 leading-tight">{{ formatTime(session.startDateTime) }}</p>
+                    @if (sessionSubtitle(session)) {
+                      <p class="text-[10px] text-slate-400 dark:text-slate-500 leading-tight truncate flex items-center gap-0.5">
+                        <span class="material-symbols-outlined text-[10px]">{{ sessionSubtitleIcon() }}</span>
+                        {{ sessionSubtitle(session) }}
+                      </p>
+                    }
+                    <!-- Action buttons on hover -->
+                    <div class="absolute top-0.5 right-0.5 flex gap-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      @if (canEdit()) {
+                        <button
+                          (click)="$event.stopPropagation(); onEditClick(session)"
+                          class="w-5 h-5 flex items-center justify-center rounded bg-white/80 dark:bg-slate-800/80 text-slate-600 hover:text-primary"
+                        ><span class="material-symbols-outlined text-[12px]">edit</span></button>
+                      }
+                      @if (canDelete()) {
+                        <button
+                          (click)="$event.stopPropagation(); onDeleteClick(session)"
+                          class="w-5 h-5 flex items-center justify-center rounded bg-white/80 dark:bg-slate-800/80 text-rose-400 hover:text-rose-600"
+                        ><span class="material-symbols-outlined text-[12px]">delete</span></button>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </sk-card>
+    }
+
+    <!-- ── DAY VIEW ────────────────────────────────────────────────────── -->
+    @if (view() === 'day') {
+      <sk-card class="overflow-hidden p-0">
+
+        <!-- Day header -->
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-slate-200 dark:border-border-dark">
+          <div
+            class="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black shrink-0"
+            [class.bg-primary]="isToday(currentDate())"
+            [class.text-white]="isToday(currentDate())"
+            [class.bg-slate-100]="!isToday(currentDate())"
+            [class.dark:bg-slate-800]="!isToday(currentDate())"
+            [class.text-slate-800]="!isToday(currentDate())"
+            [class.dark:text-slate-200]="!isToday(currentDate())"
+          >{{ currentDate().getDate() }}</div>
+          <div>
+            <p class="text-base font-bold text-slate-900 dark:text-white">
+              {{ currentDate().toLocaleDateString('en-US', { weekday: 'long' }) }}
+            </p>
+            <p class="text-sm text-slate-400 dark:text-slate-500">
+              {{ currentDate().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) }}
+            </p>
+          </div>
+          <div class="ml-auto">
+            <span class="text-sm font-medium text-primary">{{ daySessions().length }} session{{ daySessions().length !== 1 ? 's' : '' }}</span>
+          </div>
+        </div>
+
+        <!-- Scrollable time grid -->
+        <div class="overflow-auto" style="max-height: 600px">
+          <div class="flex">
+
+            <!-- Time labels -->
+            <div class="w-16 shrink-0 relative select-none" [style.height.px]="gridHeight">
+              @for (h of gridHours; track h) {
+                <div
+                  class="absolute left-0 right-0 flex justify-end pr-3"
+                  [style.top.px]="h * HOUR_HEIGHT"
+                  [style.height.px]="HOUR_HEIGHT"
+                >
+                  <span class="text-[11px] font-medium text-slate-400 dark:text-slate-500 pt-1">{{ formatHour(h) }}</span>
+                </div>
+              }
+            </div>
+
+            <!-- Single day column -->
+            <div
+              class="flex-1 relative border-l border-slate-200 dark:border-border-dark"
+              [style.height.px]="gridHeight"
+            >
+              @for (h of gridHours; track h) {
+                <div
+                  class="absolute left-0 right-0 border-t border-slate-100 dark:border-border-dark/40"
+                  [style.top.px]="h * HOUR_HEIGHT"
+                ></div>
+              }
+
+              <!-- Sessions -->
+              @for (session of daySessions(); track session.startDateTime) {
+                <div
+                  class="absolute left-2 right-2 rounded-xl bg-primary/15 dark:bg-primary/20 border border-primary/30 p-3 cursor-pointer hover:bg-primary/20 dark:hover:bg-primary/25 transition-colors group"
+                  [style.top.px]="getSessionTop(session)"
+                  [style.height.px]="getSessionHeight(session)"
+                  (click)="onEditClick(session)"
+                >
+                  <div class="flex items-start justify-between gap-2 h-full">
+                    <div class="flex-1 min-w-0 overflow-hidden">
+                      <p class="text-sm font-bold text-primary leading-tight truncate">{{ session.sessionTitle }}</p>
+                      <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        {{ formatTime(session.startDateTime) }} – {{ formatTime(session.endDateTime) }}
+                      </p>
+                      @if (sessionSubtitle(session)) {
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5 flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[12px]">{{ sessionSubtitleIcon() }}</span>
+                          {{ sessionSubtitle(session) }}
+                        </p>
+                      }
+                    </div>
+                    <div class="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      @if (canEdit()) {
+                        <button
+                          (click)="$event.stopPropagation(); onEditClick(session)"
+                          class="w-6 h-6 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800 text-slate-500 hover:text-primary shadow-sm transition-colors"
+                        ><span class="material-symbols-outlined text-[14px]">edit</span></button>
+                      }
+                      @if (canDelete()) {
+                        <button
+                          (click)="$event.stopPropagation(); onDeleteClick(session)"
+                          class="w-6 h-6 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800 text-rose-400 hover:text-rose-600 shadow-sm transition-colors"
+                        ><span class="material-symbols-outlined text-[14px]">delete</span></button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </sk-card>
+    }
+  }
+
+  <!-- ── Edit modal ──────────────────────────────────────────────────────── -->
+  <sk-modal
+    title="Edit Training Session"
+    size="md"
+    [isOpen]="isEditModalOpen()"
+    (closed)="onEditModalClosed()"
+  >
+    <div class="px-6 py-5 space-y-4">
+      <sk-input
+        label="Session Title"
+        placeholder="e.g. Morning Strength Training"
+        [formControl]="titleCtrl"
+      />
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Date</label>
+        <input type="date" [formControl]="dateCtrl"
+          class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Start Time</label>
+          <input type="time" [formControl]="startTimeCtrl"
+            class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-slate-700 dark:text-slate-300">End Time</label>
+          <input type="time" [formControl]="endTimeCtrl"
+            class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]" />
+        </div>
+      </div>
+
+      @if (showCoachSelector()) {
+        <sk-async-select
+          label="Coach"
+          placeholder="Search coach…"
+          [loadFn]="coachLoadFn"
+          [formControl]="coachCtrl"
+          [initialLabel]="editingSession()?.coachName ?? ''"
+        />
+      }
+    </div>
+    <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+      <sk-button variant="outline" (click)="onEditModalClosed()">Cancel</sk-button>
+      <sk-button [loading]="isUpdating()" (click)="onSubmitEdit()">
+        <span class="material-symbols-outlined text-[16px]">check</span>
+        Save Changes
+      </sk-button>
+    </div>
+  </sk-modal>
+
+  <!-- ── Delete confirmation modal ──────────────────────────────────────── -->
+  <sk-modal
+    title="Delete Session"
+    size="sm"
+    [isOpen]="isDeleteModalOpen()"
+    (closed)="onDeleteModalClosed()"
+  >
+    <div class="px-6 py-5">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px] text-rose-500">warning</span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-slate-800 dark:text-slate-200">
+            Delete <span class="font-bold text-slate-900 dark:text-white">{{ sessionToDelete()?.sessionTitle }}</span>?
+          </p>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-1.5">
+            This training session will be permanently removed.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+      <sk-button variant="outline" (click)="onDeleteModalClosed()">Cancel</sk-button>
+      <sk-button variant="danger" [loading]="isDeleting()" (click)="onConfirmDelete()">
+        <span class="material-symbols-outlined text-[16px]">delete</span>
+        Delete
+      </sk-button>
+    </div>
+  </sk-modal>
+
+</sk-page-container>

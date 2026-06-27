@@ -16,6 +16,10 @@
           <span class="material-symbols-outlined text-[16px]">payments</span>
           Pay
         </sk-button>
+        <sk-button *skHasRole="P.trainingSessions.create" variant="outline" size="sm" (click)="onAddSessionClick()">
+          <span class="material-symbols-outlined text-[16px]">event_available</span>
+          Add Session
+        </sk-button>
         <sk-button *skHasRole="P.clients.edit" variant="primary" size="sm" (click)="onEdit()">
           <span class="material-symbols-outlined text-[16px]">edit</span>
           Edit
@@ -663,6 +667,79 @@
       } @else {
         <span class="material-symbols-outlined text-[16px]">delete</span>
         Delete
+      }
+    </sk-button>
+  </div>
+</sk-modal>
+
+<!-- ── Add Training Session modal ───────────────────────────────────────────── -->
+<sk-modal
+  [isOpen]="isAddSessionModalOpen()"
+  title="Add Training Session"
+  size="md"
+  (closed)="onSessionModalClosed()"
+>
+  <div class="space-y-4">
+    <sk-input
+      label="Session Title"
+      placeholder="e.g. Upper Body Strength…"
+      [formControl]="$any(sessionTitleCtrl)"
+    />
+
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Date</label>
+      <input
+        type="date"
+        [formControl]="$any(sessionDateCtrl)"
+        class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]"
+      />
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Start Time</label>
+        <input
+          type="time"
+          [formControl]="$any(sessionStartTimeCtrl)"
+          class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]"
+        />
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">End Time</label>
+        <input
+          type="time"
+          [formControl]="$any(sessionEndTimeCtrl)"
+          class="w-full rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 px-3 py-2.5 transition-all dark:[color-scheme:dark]"
+        />
+      </div>
+    </div>
+
+    @if (showSessionCoachSelector()) {
+      <sk-async-select
+        label="Coach"
+        placeholder="Search coach…"
+        [loadFn]="coachLoadFn"
+        [formControl]="$any(sessionCoachCtrl)"
+      />
+    }
+  </div>
+
+  <div modal-footer class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-border-dark">
+    <sk-button variant="ghost" type="button" (click)="onSessionModalClosed()" [disabled]="isSubmittingSession()">
+      Cancel
+    </sk-button>
+    <sk-button
+      variant="primary"
+      type="button"
+      [disabled]="isSubmittingSession() || !sessionTitleCtrl.value || !sessionDateCtrl.value || !sessionStartTimeCtrl.value || !sessionEndTimeCtrl.value"
+      (click)="onSubmitSession()"
+    >
+      @if (isSubmittingSession()) {
+        <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+        Saving…
+      } @else {
+        <span class="material-symbols-outlined text-[16px]">event_available</span>
+        Add Session
       }
     </sk-button>
   </div>
